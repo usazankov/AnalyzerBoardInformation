@@ -13,7 +13,6 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     arincparametr.cpp \
     data32.cpp \
     dataarinc32.cpp \
@@ -22,9 +21,11 @@ SOURCES += main.cpp\
     arincboardmpc429linux.cpp \
     arincboardpci429linux.cpp \
     controllerarinc.cpp \
-    arincreader.cpp
+    arincreader.cpp \
+    mainview.cpp \
+    mdiform.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     arincparametr.h \
     dataarinc32.h \
     databehavior.h \
@@ -39,6 +40,13 @@ HEADERS  += mainwindow.h \
     controllerinterface.h \
     pci429LNX.h \
     readingbuffer.h \
-    arincreader.h
+    arincreader.h \
+    mainview.h \
+    mdiform.h
 
-FORMS    += mainwindow.ui
+FORMS    += \
+    mainview.ui \
+    mdiform.ui
+
+RESOURCES += \
+    rsc.qrc

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainView</class>
+ <widget class="QMainWindow" name="MainView">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>548</width>
+    <height>381</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QMdiArea" name="mdiArea"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>548</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>&amp;Файл</string>
+    </property>
+    <addaction name="action_open"/>
+    <addaction name="action_save"/>
+    <addaction name="separator"/>
+    <addaction name="action_exit"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>&amp;Устройство</string>
+    </property>
+    <addaction name="action_add_device"/>
+    <addaction name="action_del_device"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="action_open">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/open.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Открыть</string>
+   </property>
+  </action>
+  <action name="action_add_device">
+   <property name="icon">
+    <iconset resource="../Demos/MDI/mdi.qrc">
+     <normaloff>:/images/cut.png</normaloff>:/images/cut.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Добавить</string>
+   </property>
+  </action>
+  <action name="action_del_device">
+   <property name="icon">
+    <iconset resource="../Demos/MDI/mdi.qrc">
+     <normaloff>:/images/paste.png</normaloff>:/images/paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Удалить</string>
+   </property>
+  </action>
+  <action name="action_save">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/save.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Сохранить</string>
+   </property>
+  </action>
+  <action name="action_exit">
+   <property name="text">
+    <string>&amp;Выход</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

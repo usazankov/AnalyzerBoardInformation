@@ -5,8 +5,9 @@ namespace dev {
 enum TypeDev{PCI429,MPC429};
 }
 class ControllerInterface{
-    virtual void Start();
-    virtual void Stop();
-    virtual void setConfigurationArincChannel();
+public:
+    virtual void Start()=0;
+    virtual void Stop()=0;
+    virtual void setConfigurationArincChannel()=0;
 };
 #endif // CONTROLLERINTERFACE_H
