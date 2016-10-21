@@ -27,6 +27,7 @@ void ArincReader::update()
                 adress=0;
             }
         }
+
         notifyObservers();
         cout<<"Создано слов:"<<count<<endl;
         cout<<"Всего элементов: "<<arinc_map.size()<<endl;
@@ -78,7 +79,7 @@ void ArincReader::removeObserver(ArincParametrObserver *o)
 void ArincReader::notifyObservers()
 {
     for(int i=0;i<observers.size();i++){
-        observers[i]->update(&arinc_map);
+        observers[i]->update(arinc_map);
     }
 }
 

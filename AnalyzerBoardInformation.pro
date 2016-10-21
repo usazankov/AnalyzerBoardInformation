@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     controllerarinc.cpp \
     arincreader.cpp \
     mainview.cpp \
-    mdiform.cpp
+    mdiform.cpp \
+    maincontroller.cpp
 
 HEADERS  += \
     arincparametr.h \
@@ -42,7 +43,8 @@ HEADERS  += \
     readingbuffer.h \
     arincreader.h \
     mainview.h \
-    mdiform.h
+    mdiform.h \
+    maincontroller.h
 
 FORMS    += \
     mainview.ui \

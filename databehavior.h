@@ -18,6 +18,7 @@ public:
     virtual int Part(params::Part p)const=0;//Получить часть данных
     virtual void setPart(params::Part part,int value)=0;
     virtual int LengthData()const=0;//Длина данных в битах
+    virtual ~DataBehavior(){}
 };
 
 #endif // DATABEHAVIOR_H

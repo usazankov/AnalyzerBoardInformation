@@ -12,5 +12,6 @@ public:
     virtual void registerObserver(ArincParametrObserver *o)=0;
     virtual void removeObserver(ArincParametrObserver *o)=0;
     virtual void notifyObservers()=0;
+    virtual ~ArincModelInterface(){}
 };
 #endif // ARINCMODELINTERFACE_H

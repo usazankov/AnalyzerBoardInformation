@@ -6,6 +6,12 @@ MainView::MainView(QWidget *parent) :
     ui(new Ui::MainView)
 {
     ui->setupUi(this);
+    ui->mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->mdiArea->setViewMode(QMdiArea::TabbedView);
+    //ui->mdiArea->setTabsClosable(true);
+    ui->mdiArea->setTabsMovable(true);
+    ui->mdiArea->setDocumentMode(true);
     createToolBars();
 }
 
@@ -25,7 +31,38 @@ void MainView::createToolBars()
     deviceToolBar->addAction(ui->action_del_device);
 }
 
-void MainView::modifyActions()
+MdiForm *MainView::activeMdiChild()
+{
+    if (QMdiSubWindow *activeSubWindow = ui->mdiArea->activeSubWindow())
+        return qobject_cast<MdiForm *>(activeSubWindow->widget());
+    return 0;
+}
+
+QMdiSubWindow *MainView::findMdiChild(const QString &fileName)
 {
 
 }
+
+void MainView::setStyle()
+{
+
+}
+
+void MainView::setActiveSubWindow(QWidget *window)
+{
+    if (!window)
+        return;
+    ui->mdiArea->setActiveSubWindow(qobject_cast<QMdiSubWindow *>(window));
+}
+
+MdiForm *MainView::createMdiChild(ControllerInterface *cont,ArincModelInterface *ami)
+{
+    MdiForm *child = new MdiForm(cont,ami);
+
+    ui->mdiArea->addSubWindow(child);
+    child->showMaximized();
+
+    return child;
+}
+
+

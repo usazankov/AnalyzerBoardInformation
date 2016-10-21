@@ -20,11 +20,13 @@ Parametr::Parametr(QString Name,QString Dimension)
 
 QString Parametr::Name()const
 {
+    if(name=="")return "Параметр";
     return name;
 }
 
 QString Parametr::Dimension() const
 {
+    if(dimension=="")return "б/р";
     return dimension;
 }
 

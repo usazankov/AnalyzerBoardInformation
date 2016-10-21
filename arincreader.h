@@ -7,7 +7,7 @@
 #include <QThread>
 #include <QMap>
 #include <QTimer>
-class ArincReader: public QThread, ArincModelInterface
+class ArincReader: public QThread, public ArincModelInterface
 {
     Q_OBJECT
 public:

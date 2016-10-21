@@ -11,6 +11,7 @@ public:
     virtual int sizeOfBuffer()const=0;
     virtual void Start()=0;
     virtual void Stop()=0;
+    virtual ~ReadingBuffer(){}
 };
 
 #endif // READINGBUFFER_H

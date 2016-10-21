@@ -8,6 +8,6 @@ class ControllerInterface{
 public:
     virtual void Start()=0;
     virtual void Stop()=0;
-    virtual void setConfigurationArincChannel()=0;
+    virtual ~ControllerInterface(){}
 };
 #endif // CONTROLLERINTERFACE_H

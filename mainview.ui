@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>548</width>
-    <height>381</height>
+    <width>760</width>
+    <height>499</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,14 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QMdiArea" name="mdiArea"/>
+     <widget class="QMdiArea" name="mdiArea">
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustIgnored</enum>
+      </property>
+      <property name="viewMode">
+       <enum>QMdiArea::TabbedView</enum>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -25,7 +32,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>548</width>
+     <width>760</width>
      <height>19</height>
     </rect>
    </property>
@@ -61,7 +68,7 @@
   </action>
   <action name="action_add_device">
    <property name="icon">
-    <iconset resource="../Demos/MDI/mdi.qrc">
+    <iconset resource="rsc.qrc">
      <normaloff>:/images/cut.png</normaloff>:/images/cut.png</iconset>
    </property>
    <property name="text">
@@ -70,7 +77,7 @@
   </action>
   <action name="action_del_device">
    <property name="icon">
-    <iconset resource="../Demos/MDI/mdi.qrc">
+    <iconset resource="rsc.qrc">
      <normaloff>:/images/paste.png</normaloff>:/images/paste.png</iconset>
    </property>
    <property name="text">
@@ -94,6 +101,8 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="rsc.qrc"/>
+ </resources>
  <connections/>
 </ui>
