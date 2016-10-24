@@ -71,10 +71,14 @@ QString ArincParametr::FormatValue(Parametr::Format f) const
         return "0"+QString::number(Adress(),8);
         break;
     case UnpackValue:
-        return "0x"+QString::number(UnpackWord(),16);
+        if(HasValue()==1)
+            return "0x"+QString::number(UnpackWord(),16);
+        else return "Слово отсутствует";
         break;
     default:
-        return "-";
+        if(HasValue()==1)
+            return "-";
+        else return "Слово отсутствует";
         break;
     }
 }
@@ -200,15 +204,12 @@ QString ArincDiscrParametr::displayStates() const
 QStringList ArincDiscrParametr::getStates() const
 {
     QStringList temp_stringlist;
-    QString temp_str="";
     if(hasStates()){
         for(int i=0;i<states->getSize();i++){
             State *temp=states->getState(i);
-            temp_str+=temp->getNameState();
-            if(db->Bit(temp->getDigit())==1)temp_str+=temp->getState1();
-                else temp_str+=temp->getState0();
-            temp_stringlist.push_back(temp_str);
-            temp_str="";
+            temp_stringlist.push_back(temp->getNameState());
+            if(db->Bit(temp->getDigit())==1)temp_stringlist.push_back(temp->getState1());
+                else temp_stringlist.push_back(temp->getState0());
         }
         return temp_stringlist;
     }else return temp_stringlist;
@@ -226,6 +227,32 @@ QString ArincDiscrParametr::FormatValue(Parametr::Format f) const
             return displayStates();
         else return "-";
     }else return ArincParametr::FormatValue(f);
+}
+
+QStringList ArincDiscrParametr::getNameStates() const
+{
+    QStringList temp_stringlist;
+    if(hasStates()){
+        for(int i=0;i<states->getSize();i++){
+            State *temp=states->getState(i);
+            cout<<temp->getNameState().toStdString()<<endl;
+            temp_stringlist.push_back(temp->getNameState());
+        }
+        return temp_stringlist;
+    }else return temp_stringlist;
+}
+
+QStringList ArincDiscrParametr::getValueStates() const
+{
+    QStringList temp_stringlist;
+    if(hasStates()){
+        for(int i=0;i<states->getSize();i++){
+            State *temp=states->getState(i);
+            if(db->Bit(temp->getDigit())==1)temp_stringlist.push_back(temp->getState1());
+                else temp_stringlist.push_back(temp->getState0());
+        }
+        return temp_stringlist;
+    }else return temp_stringlist;
 }
 
 QStringList ArincDiscrParametr::FormatAllValues() const
@@ -252,11 +279,16 @@ Parametr::TypeParametr ArincDiscrParametr::Type() const
 
 bool ArincDiscrParametr::hasStates() const
 {
-    if(states!=NULL)return true;
+    if(states!=0)return true;
     else return false;
 }
 
 ArincDecDiscrParametr::ArincDecDiscrParametr(int word)
+{
+
+}
+
+ArincDecDiscrParametr::ArincDecDiscrParametr(int word, QString name)
 {
 
 }

@@ -14,10 +14,9 @@ MainController::MainController(MainView *view, QObject *parent) : QObject(parent
     pciChannels.push_back(channel);
     ArincReader *reader=new ArincReader(channel);
     readers.push_back(reader);
-    reader->start();
     ControllerArinc *controller=new ControllerArinc(reader,view);
     controllers.push_back(controller);
-
+    controller->Start();
 }
 
 MainController::~MainController()

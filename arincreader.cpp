@@ -7,6 +7,7 @@ ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc)
     this->arinc=arinc;
     time_step=1000;
     index=count_model++;
+
 }
 
 void ArincReader::update()
@@ -20,9 +21,11 @@ void ArincReader::update()
                 if(!arinc_map.contains(adress)){
                     ++count;
                     ArincParametr *word=new ArincParametr(arinc->readBuffer()[i]);
+                    word->setHasValue(true);
                     arinc_map[adress]=word;
                 }else if(arinc_map.contains(adress)){
                     arinc_map[adress]->setWord(arinc->readBuffer()[i]);
+                    arinc_map[adress]->setHasValue(true);
                 }
                 adress=0;
             }
@@ -31,36 +34,48 @@ void ArincReader::update()
         notifyObservers();
         cout<<"Создано слов:"<<count<<endl;
         cout<<"Всего элементов: "<<arinc_map.size()<<endl;
+
     }
+}
+
+bool ArincReader::hasArincParametr(int adress)
+{
+    if(arinc_map.contains(adress))return true;
+        else return false;
 }
 
 void ArincReader::setTypeParametr(int adress, Parametr::TypeParametr type)
 {
+    if(arinc_map.contains(adress))
     if(arinc_map[adress]->Type()!=type){
-    int word = arinc_map[adress]->UnpackValue;
-    delete arinc_map[adress];
-    switch(type){
-        case Parametr::ARINC_DEC:
-            arinc_map[adress] = new ArincDecParametr(word);
-            break;
-        case Parametr::ARINC_DEC_DISCR:
-            arinc_map[adress] = new ArincDecDiscrParametr(word);
-            break;
-        case Parametr::ARINC_DISCR:
-            arinc_map[adress] = new ArincDiscrParametr(word);
-            break;
-        case Parametr::ARINC_PARAM:
-            arinc_map[adress] = new ArincParametr(word);
-            break;
-        default:
-            break;
-    }
+        int word = arinc_map[adress]->UnpackWord();
+        QString name = arinc_map[adress]->Name();
+        QString dimension = arinc_map[adress]->Dimension();
+        delete arinc_map[adress];
+        switch(type){
+            case Parametr::ARINC_DEC:
+                arinc_map[adress] = new ArincDecParametr(word,name,dimension);
+                break;
+            case Parametr::ARINC_DEC_DISCR:
+                arinc_map[adress] = new ArincDecDiscrParametr(word,name);
+                break;
+            case Parametr::ARINC_DISCR:
+                arinc_map[adress] = new ArincDiscrParametr(word,name);
+                break;
+            case Parametr::ARINC_PARAM:
+                arinc_map[adress] = new ArincParametr(word,name,dimension);
+                break;
+            default:
+                break;
+        }
     }
 }
 
 ArincParametr *ArincReader::getParametr(int adress)
 {
-    return arinc_map[adress];
+    if(arinc_map.contains(adress))
+        return arinc_map[adress];
+    else return Q_NULLPTR;
 }
 
 void ArincReader::registerObserver(ArincParametrObserver *o)
@@ -85,7 +100,17 @@ void ArincReader::notifyObservers()
 
 Parametr::TypeParametr ArincReader::TypeParametr(int adress)
 {
-    return arinc_map[adress]->Type();
+    if(arinc_map.contains(adress))
+        return arinc_map[adress]->Type();
+    else return Parametr::NoType;
+}
+
+void ArincReader::addArincParametr(ArincParametr *arincword)
+{
+    int adress=arincword->Adress();
+    if(!arinc_map.contains(adress)){
+        arinc_map[adress]=arincword;
+    }
 }
 
 int ArincReader::indexModel()

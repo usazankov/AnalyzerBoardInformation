@@ -57,6 +57,8 @@ public:
     void setStates(StateContanier *sc);
     QStringList FormatAllValues()const;
     QString FormatValue(Format f)const;
+    QStringList getNameStates()const;
+    QStringList getValueStates()const;
     TypeParametr Type()const;
     static int k;
 private:
@@ -69,6 +71,7 @@ class ArincDecDiscrParametr:public ArincParametr
 
 public:
     explicit ArincDecDiscrParametr(int word);
+    explicit ArincDecDiscrParametr(int word,QString name);
 };
 
 #endif // ARINCPARAMETR_H

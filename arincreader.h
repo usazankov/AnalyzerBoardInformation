@@ -22,12 +22,14 @@ private:
     int size;
     int time_step;
     int index;
+
     // ArincModelInterface interface
     void stopArinc();
     void startArinc(int time_milliseconds=1000);
     void setTypeParametr(int adress, Parametr::TypeParametr type);
     ArincParametr *getParametr(int adress);
     Parametr::TypeParametr TypeParametr(int adress);
+    void addArincParametr(ArincParametr *arincword);
     int indexModel();
     void registerObserver(ArincParametrObserver *o);
     void removeObserver(ArincParametrObserver *o);
@@ -38,6 +40,10 @@ signals:
 private slots:
     void update();
 
+
+    // ArincModelInterface interface
+public:
+    bool hasArincParametr(int adress);
 };
 
 #endif // ARINCREADER_H

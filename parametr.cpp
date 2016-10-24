@@ -8,6 +8,7 @@ Parametr::Parametr()
 {
     name="";
     dimension="";
+    hasValue=0;
     setDefaultFormat();
 }
 
@@ -15,6 +16,7 @@ Parametr::Parametr(QString Name,QString Dimension)
 {
     name=Name;
     dimension=Dimension;
+    hasValue=0;
     setDefaultFormat();
 }
 
@@ -54,6 +56,16 @@ void Parametr::setName(QString name)
 void Parametr::setDimension(QString dim)
 {
     this->dimension=dim;
+}
+
+void Parametr::setHasValue(bool flag)
+{
+    hasValue=flag;
+}
+
+bool Parametr::HasValue() const
+{
+    return hasValue;
 }
 
 
