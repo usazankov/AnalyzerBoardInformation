@@ -1,11 +1,15 @@
 #ifndef ARINCBOARDMPC429LINUX_H
 #define ARINCBOARDMPC429LINUX_H
 #include "readingbuffer.h"
+namespace dev {
+class ArincBoardlMPC429;
+class ArincChannelMPC429;
 
+}
 class ArincBoardMPC429
 {
 public:
-    explicit ArincBoardMPC429(char *boardname, int MAX_NUMBER_CHANNEL);
+    explicit ArincBoardMPC429(const char *boardname, int MAX_NUMBER_CHANNEL);
     void stopBoard();//Остановить плату
     void closeBoard();//Закрыть устройство
     ~ArincBoardMPC429();

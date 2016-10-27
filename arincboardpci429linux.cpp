@@ -1,12 +1,11 @@
 #include "arincboardpci429linux.h"
 
 
-ArincBoardlPCI429::ArincBoardlPCI429(char* boardname, int MAX_NUMBER_CHANNEL)
+ArincBoardlPCI429::ArincBoardlPCI429(const char *boardname, int MAX_NUMBER_CHANNEL)
 {
     this->name=boardname;
     this->MIN_NUMBER_CHANNEL=1;
     this->MAX_NUMBER_CHANNEL=MAX_NUMBER_CHANNEL;
-    initArincBoard();
 }
 
 void ArincBoardlPCI429::initArincBoard()
@@ -45,6 +44,59 @@ void ArincBoardlPCI429::stopBoard()
 void ArincBoardlPCI429::closeBoard()
 {
     close(hARINC);
+}
+
+bool ArincBoardlPCI429::BoardIsValid(const char *boardname)
+{
+    int h = open(boardname, 0);
+    if (h == -1)
+    {
+        close(h);
+        return 1;
+    }else {
+        close(h);
+        return 0;
+    }
+}
+
+QString ArincBoardlPCI429::getStatusBoard(const char *boardname)
+{
+    int h = open(boardname, 0);
+    if (h == -1)
+    {
+        close(h);
+        return "Устройство не обнаружено";
+    }else {
+        close(h);
+        return "Устройство обнаружено";
+    }
+
+}
+
+QString ArincBoardlPCI429::getDescriptionBoard(const char *boardname)
+{
+    QString temp;
+    int h=open(boardname, 0);
+    short unsigned int d[32768];
+    int rj;
+    if (h == -1){
+        close(h);
+        temp="open error ";
+        temp+=QString(boardname);
+        temp+=" (hArinc=-1)";
+        return temp;
+    }else{
+        temp="SN0 = 0x";
+        temp+=QString::number(d[0x1850],16);
+        ioctl(h,IOCTL_RJ ,d);
+        GET_RJ_M(d,rj);
+        temp+="RJ0 = 0x"+QString::number(rj,16);
+        GET_RJ(h,d,rj);
+        temp+="RJ1 = 0x"+QString::number(rj,16);
+        close(h);
+        return temp;
+    }
+
 }
 
 ArincBoardlPCI429::~ArincBoardlPCI429()

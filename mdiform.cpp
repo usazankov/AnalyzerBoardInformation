@@ -47,7 +47,7 @@ void MdiForm::addDiscrTable(int adress)
 {
     ModelDiscrTable *mod=new ModelDiscrTable(adress);
     discr_models.push_back(mod);
-    QSizePolicy sizePolicy1(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+    QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Fixed);
     QTableView *view = new QTableView(ui->scrollAreaWidgetContents_2);
     view->setSizePolicy(sizePolicy1);
     view->setModel(mod);
@@ -351,11 +351,7 @@ ModelDiscrTable::~ModelDiscrTable()
 void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map)
 {
 
-    cout<<map.contains(adress)<<endl;
     ArincDiscrParametr *temp = dynamic_cast<ArincDiscrParametr*>(map[adress]);
-
-    cout<<"Тип слова:"<<map[adress]->Type()<<endl;
-    cout<<"Адресс: 0"<<oct<<adress<<endl;
     if(temp!=0){
         if(countOfStates!=temp->getNameStates().count()){
             countOfStates=temp->getNameStates().count();

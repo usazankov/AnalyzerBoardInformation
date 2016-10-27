@@ -1,7 +1,7 @@
 #include "arincboardmpc429linux.h"
 
 
-ArincBoardMPC429::ArincBoardMPC429(char *boardname, int MAX_NUMBER_CHANNEL)
+ArincBoardMPC429::ArincBoardMPC429(const char *boardname, int MAX_NUMBER_CHANNEL)
 {
 
 }

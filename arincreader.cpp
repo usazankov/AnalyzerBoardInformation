@@ -30,11 +30,7 @@ void ArincReader::update()
                 adress=0;
             }
         }
-
         notifyObservers();
-        cout<<"Создано слов:"<<count<<endl;
-        cout<<"Всего элементов: "<<arinc_map.size()<<endl;
-
     }
 }
 

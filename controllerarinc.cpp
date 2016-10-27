@@ -1,11 +1,12 @@
 #include "controllerarinc.h"
 
-ControllerArinc::ControllerArinc(ArincModelInterface *model, MainView *view)
+ControllerArinc::ControllerArinc(MainView *view, ArincModelInterface *model)
 {
     this->model=model;
-    this->view=view;
     this->form=view->createMdiChild(this,model);
 }
+
+
 
 ControllerArinc::~ControllerArinc()
 {

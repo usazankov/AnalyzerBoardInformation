@@ -6,26 +6,37 @@
 #include <QIcon>
 #include "mdiform.h"
 #include <QMdiSubWindow>
+#include <QMenuBar>
+#include <QMenu>
+#include <QAction>
 namespace Ui {
 class MainView;
 }
-
 class MainView : public QMainWindow
 {
     Q_OBJECT
-
 public:
     explicit MainView(QWidget *parent = 0);
-
+    void connectActionsToSlots();
+    QAction *action_add_device;
+    QAction *action_del_device;
+    QAction *action_open_file;
+    QAction *action_save_file;
+    QAction *action_exit;
     ~MainView();
 private:
+    Ui::MainView *ui;
     QToolBar *fileToolBar;
     QToolBar *deviceToolBar;
-    void createToolBars();
-    Ui::MainView *ui;
+    QMenuBar *menuBar;
+    QMenu *menuFile;
+    QMenu *menuDevice;
     MdiForm *activeMdiChild();
     QMdiSubWindow *findMdiChild(const QString &fileName);
     void setStyle();
+    void createMenu();
+    void createToolBars();
+    void createActions();
 private slots:
     void setActiveSubWindow(QWidget *window);
 public slots:

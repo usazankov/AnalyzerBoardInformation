@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     arincreader.cpp \
     mainview.cpp \
     mdiform.cpp \
-    maincontroller.cpp
+    maincontroller.cpp \
+    formadddevice.cpp
 
 HEADERS  += \
     arincparametr.h \
@@ -44,11 +45,13 @@ HEADERS  += \
     arincreader.h \
     mainview.h \
     mdiform.h \
-    maincontroller.h
+    maincontroller.h \
+    formadddevice.h
 
 FORMS    += \
     mainview.ui \
-    mdiform.ui
+    mdiform.ui \
+    formadddevice.ui
 
 RESOURCES += \
     rsc.qrc

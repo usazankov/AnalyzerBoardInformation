@@ -1,22 +1,30 @@
 #include "maincontroller.h"
 
-MainController::MainController(QObject *parent) : QObject(parent)
-{
-
-}
-
 MainController::MainController(MainView *view, QObject *parent) : QObject(parent)
 {
     this->view=view;
-    ArincBoardlPCI429 *board=new ArincBoardlPCI429("dev/pci429_0",8);
-    pciBoards.push_back(board);
-    ArincChannelPCI429 *channel=new ArincChannelPCI429(board,1,1);
-    pciChannels.push_back(channel);
-    ArincReader *reader=new ArincReader(channel);
-    readers.push_back(reader);
-    ControllerArinc *controller=new ControllerArinc(reader,view);
-    controllers.push_back(controller);
-    controller->Start();
+
+    connectActionsToSlots();
+}
+
+QVector<ArincBoardlPCI429 *> MainController::PCIBoards()
+{
+    return pciBoards;
+}
+
+QVector<ArincChannelPCI429 *> MainController::PCIChannels()
+{
+    return pciChannels;
+}
+
+QVector<ArincReader *> MainController::Readers()
+{
+    return readers;
+}
+
+QVector<ControllerArinc *> MainController::Controllers()
+{
+    return controllers;
 }
 
 MainController::~MainController()
@@ -38,4 +46,28 @@ MainController::~MainController()
         delete contr;
         cout<<"deleted contr"<<endl;
     }
+}
+
+void MainController::connectActionsToSlots()
+{
+    connect(view->action_add_device,SIGNAL(triggered()),this,SLOT(addDevice()));
+}
+
+void MainController::addDevice()
+{
+    cout<<"Добавлено устройство"<<endl;
+    FormAddDevice *form = new FormAddDevice(view);
+
+    if(form->exec()==FormAddDevice::Accepted){
+        ArincBoardlPCI429 *board=new ArincBoardlPCI429(form->nameDevice().toStdString().c_str(),8);
+        pciBoards.push_back(board);
+        ArincChannelPCI429 *channel=new ArincChannelPCI429(board,form->numberChannel(),1);
+        pciChannels.push_back(channel);
+        ArincReader *reader=new ArincReader(channel);
+        readers.push_back(reader);
+        ControllerArinc *controller=new ControllerArinc(view,reader);
+        controllers.push_back(controller);
+        controller->Start();
+    }
+    delete form;
 }

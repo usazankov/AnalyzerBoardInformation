@@ -1,18 +1,21 @@
 #ifndef CONTROLLERARINC_H
 #define CONTROLLERARINC_H
+#include "mainview.h"
 #include "controllerinterface.h"
 #include "arincmodelinterface.h"
 #include "mdiform.h"
-#include "mainview.h"
+
 class ControllerArinc: public ControllerInterface
 {
 public:
-    explicit ControllerArinc(ArincModelInterface *model, MainView *view);
-    ArincModelInterface *model;
-    MainView *view;
-    MdiForm *form;
+    explicit ControllerArinc(MainView *view, ArincModelInterface *model);
+
     ~ControllerArinc();
     // ControllerInterface interface
+private:
+    ArincModelInterface *model;
+    //MainView *view;
+    MdiForm *form;
 public:
     void Start();
     void Stop();

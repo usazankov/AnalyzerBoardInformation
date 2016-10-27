@@ -7,24 +7,28 @@
 #include <iostream>
 #include <QMap>
 namespace dev {
-class ArincBoardlPCI429;
-class ArincChannelPCI429;
+    class ArincBoardlPCI429;
+    class ArincChannelPCI429;
+    enum TypeBoard{ArincPCI429,ArincMPC429};
 }
 using namespace std;
 class ArincBoardlPCI429
 {
 public:
-    explicit ArincBoardlPCI429(char *boardname, int MAX_NUMBER_CHANNEL);
+    explicit ArincBoardlPCI429(const char *boardname, int MAX_NUMBER_CHANNEL);
     void stopBoard();//Остановить плату
     void closeBoard();//Закрыть устройство
+    static bool BoardIsValid(const char *boardname);
+    static QString getStatusBoard(const char *boardname);
+    static QString getDescriptionBoard(const char *boardname);
+    void initArincBoard();//Инициализировать плату
     ~ArincBoardlPCI429();
 private:
     friend class ArincChannelPCI429;
-    void initArincBoard();//Инициализировать плату
     int k, rj;//Служебные переменные
     short unsigned int Data[32768];//Массив данных для обмена с платой
     int hARINC;//Дескриптор устройства
-    char* name;//Имя устройства
+    const char* name;//Имя устройства
     bool flagInitBoard;
     int MAX_NUMBER_CHANNEL;
     int MIN_NUMBER_CHANNEL;

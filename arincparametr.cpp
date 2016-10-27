@@ -235,7 +235,6 @@ QStringList ArincDiscrParametr::getNameStates() const
     if(hasStates()){
         for(int i=0;i<states->getSize();i++){
             State *temp=states->getState(i);
-            cout<<temp->getNameState().toStdString()<<endl;
             temp_stringlist.push_back(temp->getNameState());
         }
         return temp_stringlist;
