@@ -36,6 +36,7 @@ void MainView::createToolBars()
     deviceToolBar=this->addToolBar(tr("Device"));
     deviceToolBar->addAction(action_add_device);
     deviceToolBar->addAction(action_del_device);
+    deviceToolBar->addAction(action_confparams_device);
 }
 
 void MainView::createActions()
@@ -53,6 +54,13 @@ void MainView::createActions()
     icon1.addFile(QStringLiteral(":/images/paste.png"), QSize(), QIcon::Normal, QIcon::Off);
     action_del_device->setIcon(icon1);
     action_del_device->setText("&Удалить устройство");
+
+    action_confparams_device = new QAction(this);
+    action_confparams_device->setObjectName(QStringLiteral("action_confparams_device"));
+    QIcon icon5;
+    icon5.addFile(QStringLiteral(":/images/cut.png"), QSize(), QIcon::Normal, QIcon::Off);
+    action_confparams_device->setIcon(icon5);
+    action_confparams_device->setText("&Параметры распаковки");
 
     action_open_file = new QAction(this);
     action_open_file->setObjectName(QStringLiteral("action_open_file"));
@@ -114,6 +122,7 @@ void MainView::createMenu()
     menuFile->addAction(action_exit);
     menuDevice->addAction(action_add_device);
     menuDevice->addAction(action_del_device);
+    menuDevice->addAction(action_confparams_device);
 }
 
 
@@ -125,10 +134,9 @@ void MainView::setActiveSubWindow(QWidget *window)
 }
 
 
-MdiForm *MainView::createMdiChild(ControllerInterface *cont, ArincModelInterface *ami)
+MdiForm *MainView::createMdiChild(ControllerInterface *cont, ArincModelInterface *ami,int index)
 {
-    MdiForm *child = new MdiForm(cont,ami);
-
+    MdiForm *child = new MdiForm(cont,ami,index);
     ui->mdiArea->addSubWindow(child);
     child->showMaximized();
 

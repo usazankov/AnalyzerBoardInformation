@@ -7,7 +7,7 @@ FormAddDevice::FormAddDevice(QWidget *parent) :
 {
     ui->setupUi(this);
     devOk=0;
-    ui->lineEdit->setText("Входной канал 1");
+    ui->lineEdit->setText("Входной канал PCI429: "+QString::number(ArincChannelPCI429::count+1));
     ui->comboTypeDev->activated(ui->comboTypeDev->currentIndex());
 }
 
@@ -17,8 +17,14 @@ FormAddDevice::~FormAddDevice()
     delete ui;
 }
 
+QString FormAddDevice::nameChannel()
+{
+    return ui->lineEdit->text();
+}
+
 QString FormAddDevice::nameDevice()
 {
+
     return namedev;
 }
 
@@ -33,6 +39,7 @@ void FormAddDevice::on_comboTypeDev_activated(int index)
     switch (index) {
     case 0:
         temp="dev/pci429_"+ui->comboIndexDev->currentText();
+        ui->lineEdit->setText("Входной канал PCI429: "+QString::number(ArincChannelPCI429::count+1));
         if(ArincBoardlPCI429::BoardIsValid(temp.toStdString().c_str())){
             ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
             namedev=temp;
@@ -42,6 +49,7 @@ void FormAddDevice::on_comboTypeDev_activated(int index)
         ui->descriptionDev->setText(ArincBoardlPCI429::getDescriptionBoard(temp.toStdString().c_str()));
         break;
     case 1:
+        ui->lineEdit->setText("Входной канал MPC429: "+QString::number(ArincChannelMPC429::count+1));
         //MPC429;
         break;
     default:

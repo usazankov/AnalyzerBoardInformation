@@ -17,6 +17,7 @@ class FormAddDevice : public QDialog
 public:
     explicit FormAddDevice(QWidget *parent = 0);
     ~FormAddDevice();
+    QString nameChannel();
     QString nameDevice();
     int numberChannel();
 private slots:

@@ -21,6 +21,13 @@ ArincBoardMPC429::~ArincBoardMPC429()
     delete name;
 }
 
+int ArincChannelMPC429::count=0;
+
+ArincChannelMPC429::ArincChannelMPC429(ArincBoardMPC429 *board, int number_channel, int number_bank)
+{
+    ++count;
+}
+
 unsigned int *ArincChannelMPC429::readBuffer()
 {
 

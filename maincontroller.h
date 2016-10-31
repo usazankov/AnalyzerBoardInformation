@@ -7,6 +7,7 @@
 #include "arincreader.h"
 #include "arincboardpci429linux.h"
 #include "formadddevice.h"
+#include "formconfparamsdevice.h"
 #include <iostream>
 
 namespace Ui {
@@ -18,22 +19,23 @@ class MainController : public QObject
     Q_OBJECT
 public:
     explicit MainController(MainView *view, QObject *parent = 0);
-    QVector<ArincBoardlPCI429*> PCIBoards();
-    QVector<ArincChannelPCI429*> PCIChannels();
-    QVector<ArincReader*> Readers();
-    QVector<ControllerArinc*> Controllers();
+
     ~MainController();
 private:
     MainView *view;
-    QVector<ArincBoardlPCI429*> pciBoards;
-    QVector<ArincChannelPCI429*> pciChannels;
-    QVector<ArincReader*> readers;
-    QVector<ControllerArinc*> controllers;
+    QMap<int, ArincBoardlPCI429*> pciBoards;
+    QMap<int, ArincChannelPCI429*> pciChannels;
+    QMap<int, ArincReader*> readers;
+    QMap<int, ControllerArinc*> controllers;
+    int coutMVC;
+    int coutBoards;
     void connectActionsToSlots();
 signals:
 
 public slots:
     void addDevice();
+    void delDevice(int index);
+    void confParamsDevice();
 };
 
 #endif // MAINCONTROLLER_H

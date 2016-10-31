@@ -8,13 +8,18 @@ MdiForm::MdiForm(QWidget *parent) :
     ui->setupUi(this);
 }
 
-MdiForm::MdiForm(ControllerInterface *c, ArincModelInterface *ami, QWidget *parent):QWidget(parent), ui(new Ui::MdiForm)
+MdiForm::MdiForm(ControllerInterface *c, ArincModelInterface *ami, int index, QWidget *parent):QWidget(parent), ui(new Ui::MdiForm)
 {
     ui->setupUi(this);
+    this->index=index;
     controller=c;
     model=ami;
-    table=new ModelTable(Ui::ROWS_MAIN_TABLE,Ui::COLUMNS_MAIN_TABLE);
+    table=new ModelTable(0,0);
     ui->tableView->setModel(table);
+    ui->splitter->setStretchFactor(0,100);
+    ui->splitter->setStretchFactor(1,53);
+    connect(table,SIGNAL(changeContent()),this,SLOT(resizeTableToContent()));
+    ui->tableView->horizontalHeader()->setMinimumSectionSize(100);
     model->registerObserver(table);
     controller->addObserveredArincWord(0307);
     controller->setNameArincParametr("Параметр1",0307);
@@ -41,20 +46,38 @@ MdiForm::MdiForm(ControllerInterface *c, ArincModelInterface *ami, QWidget *pare
     addDiscrTable(0307);
     addDiscrTable(0300);
     addDiscrTable(0310);
+    addDiscrTable(0311);
 }
 
 void MdiForm::addDiscrTable(int adress)
 {
     ModelDiscrTable *mod=new ModelDiscrTable(adress);
     discr_models.push_back(mod);
-    QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    sizePolicy1.setHorizontalStretch(0);
+    sizePolicy1.setVerticalStretch(0);
     QTableView *view = new QTableView(ui->scrollAreaWidgetContents_2);
+    view->setMinimumWidth(300);
+
+    view->horizontalHeader()->setMinimumSectionSize(300);
+    view->horizontalHeader()->setDefaultSectionSize(300);
+    view->setObjectName(QStringLiteral("tableView"));
+    sizePolicy1.setHeightForWidth(view->sizePolicy().hasHeightForWidth());
+    view->setSizePolicy(sizePolicy1);
+
+    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    view->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    view->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+    //view->setMinimumWidth(500);
     view->setSizePolicy(sizePolicy1);
     view->setModel(mod);
     discr_tables.push_back(view);
     QVBoxLayout *layout = new QVBoxLayout();
     box_layout.push_back(layout);
     QLabel *label=new QLabel(ui->scrollAreaWidgetContents_2);
+    label->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
     QString name;
     if(model->getParametr(adress)!=0)
         name=model->getParametr(adress)->Name()+"(0"+QString::number(adress,8)+")";
@@ -62,6 +85,7 @@ void MdiForm::addDiscrTable(int adress)
     label->setText(name);
     layout->addWidget(label);
     layout->addWidget(view);
+    layout->setSpacing(6);
     ui->verticalLayout_2->addLayout(layout);
     model->registerObserver(mod);
 }
@@ -73,12 +97,22 @@ void MdiForm::deleteDiscrTable(int adress)
 
 MdiForm::~MdiForm()
 {
+    emit MdiFormDeleted(index);
     foreach(ModelDiscrTable *tmod,discr_models)
         delete tmod;
     foreach (QTableView *table, discr_tables) {
         delete table;
     }
+    foreach (QVBoxLayout *vbox, box_layout) {
+        delete vbox;
+    }
     delete ui;
+}
+
+void MdiForm::resizeTableToContent()
+{
+    ui->tableView->resizeColumnsToContents();
+    ui->tableView->resizeRowsToContents();
 }
 
 void ModelTable::setRowCount(int row)
@@ -112,6 +146,7 @@ ModelTable::ModelTable(int row, int column, QObject *parent):QAbstractTableModel
     rows=row;
     columns=column;
     maxRowCount=row;
+    visible_columns.push_back(Ui::TABLE_NAME);
     visible_columns.push_back(Ui::TABLE_VALUE);
     visible_columns.push_back(Ui::TABLE_DIMENSION);
     visible_columns.push_back(Ui::TABLE_MS);
@@ -187,11 +222,17 @@ void ModelTable::update(const QMap<int, ArincParametr *> &map)
 {
     if(rows!=map.count()){
         setRowCount(map.count());
+        setColumnCount(Ui::COLUMNS_MAIN_TABLE);
+
     }
     int count=0;
     foreach (int adress, map.keys()) {
+        names_header[count]=QString::number(count+1);
         //Имя параметра
-        names_header[count]=map.value(adress)->FormatValue(Parametr::NameParametr);
+        if(visible_columns.contains(Ui::TABLE_NAME)){
+            QModelIndex index=this->index(count,visible_columns.indexOf(Ui::TABLE_NAME));
+            dat[index]=map.value(adress)->FormatValue(Parametr::Format::NameParametr);
+        }
         //Значение параметра
         if(visible_columns.contains(Ui::TABLE_VALUE)){
             QModelIndex index=this->index(count,visible_columns.indexOf(Ui::TABLE_VALUE));
@@ -223,6 +264,7 @@ void ModelTable::update(const QMap<int, ArincParametr *> &map)
     QModelIndex bottomright=this->index(rows,columns);
     emit dataChanged(topleft, bottomright);
     emit headerDataChanged(Qt::Vertical,0,rows);
+    emit changeContent();
 }
 
 void ModelTable::setVisibleHeader(bool visible, Parametr::Format f)
@@ -258,6 +300,13 @@ void ModelTable::setVisibleHeader(bool visible, Parametr::Format f)
 void ModelDiscrTable::setRowCount(int row)
 {
     rows=row;
+    this->beginResetModel();
+    this->endResetModel();
+}
+
+void ModelDiscrTable::setColumnCount(int column)
+{
+    columns=column;
     this->beginResetModel();
     this->endResetModel();
 }
@@ -356,6 +405,7 @@ void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map)
         if(countOfStates!=temp->getNameStates().count()){
             countOfStates=temp->getNameStates().count();
             setRowCount(countOfStates);
+            setColumnCount(1);
         }
         names_states=temp->getNameStates();
         value_states=temp->getValueStates();
@@ -366,4 +416,9 @@ void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map)
             dat[index]=value_states.at(i);
         }
     }
+}
+
+void MdiForm::on_splitter_splitterMoved(int pos, int index)
+{
+
 }

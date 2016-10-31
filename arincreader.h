@@ -11,8 +11,9 @@ class ArincReader: public QThread, public ArincModelInterface
 {
     Q_OBJECT
 public:
-    ArincReader(ReadingBuffer<unsigned int*> *arinc);
+    ArincReader(ReadingBuffer<unsigned int*> *arinc,int index);
     void run();
+    int indexM();
     ~ArincReader();
 private:
     ReadingBuffer<unsigned int*> *arinc;
@@ -44,6 +45,10 @@ private slots:
     // ArincModelInterface interface
 public:
     bool hasArincParametr(int adress);
+
+    // ArincModelInterface interface
+public:
+    bool isRunningArinc();
 };
 
 #endif // ARINCREADER_H

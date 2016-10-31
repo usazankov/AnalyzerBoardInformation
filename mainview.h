@@ -20,6 +20,8 @@ public:
     void connectActionsToSlots();
     QAction *action_add_device;
     QAction *action_del_device;
+    QAction *action_config_device;
+    QAction *action_confparams_device;
     QAction *action_open_file;
     QAction *action_save_file;
     QAction *action_exit;
@@ -40,7 +42,7 @@ private:
 private slots:
     void setActiveSubWindow(QWidget *window);
 public slots:
-    MdiForm* createMdiChild(ControllerInterface *cont, ArincModelInterface *ami);
+    MdiForm* createMdiChild(ControllerInterface *cont, ArincModelInterface *ami, int index);
 };
 
 #endif // MAINVIEW_H

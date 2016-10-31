@@ -12,9 +12,10 @@
 namespace Ui {
 class MdiForm;
 class ModelTable;
-const int COLUMNS_MAIN_TABLE=5;
+const int COLUMNS_MAIN_TABLE=6;
 const int ROWS_MAIN_TABLE=5;
 
+const QString TABLE_NAME="Имя";
 const QString TABLE_VALUE="Значение";
 const QString TABLE_UNPACK="Всё слово";
 const QString TABLE_DIMENSION="Ед.изм";
@@ -49,10 +50,11 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     ~ModelTable();
-
     // ArincParametrObserver interface
 public:
     void update(const QMap<int, ArincParametr *> &map);
+signals:
+    void changeContent();
 public slots:
     void setVisibleHeader(bool visible,Parametr::Format f);
 };
@@ -70,9 +72,10 @@ private:
     QStringList names_states;
     QStringList value_states;
     void setRowCount(int row);
+    void setColumnCount(int column);
     int countOfStates;
 public:
-    explicit ModelDiscrTable(int adress, int row=0,int column=1, QObject *parent = 0);
+    explicit ModelDiscrTable(int adress, int row=0,int column=0, QObject *parent = 0);
     explicit ModelDiscrTable(const ModelDiscrTable &table, QObject *parent=0);
     int rowCount(const QModelIndex &) const;
     int columnCount(const QModelIndex &) const;
@@ -93,7 +96,7 @@ class MdiForm : public QWidget
 
 public:
     explicit MdiForm(QWidget *parent = 0);
-    explicit MdiForm(ControllerInterface *c, ArincModelInterface *ami, QWidget *parent = 0);
+    explicit MdiForm(ControllerInterface *c, ArincModelInterface *ami,int index, QWidget *parent = 0);
     void addDiscrTable(int adress);
     void deleteDiscrTable(int adress);
     ~MdiForm();
@@ -105,6 +108,13 @@ private:
     QVector<ModelDiscrTable*> discr_models;
     QVector<QTableView*> discr_tables;
     QVector<QVBoxLayout*> box_layout;
+    int index;
+public slots:
+    void resizeTableToContent();
+private slots:
+    void on_splitter_splitterMoved(int pos, int index);
+signals:
+    void MdiFormDeleted(int index);
 };
 
 

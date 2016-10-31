@@ -2,11 +2,11 @@
 
 int ArincReader::count_model=0;
 
-ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc)
+ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc, int index)
 {
     this->arinc=arinc;
     time_step=1000;
-    index=count_model++;
+    this->index=index;
 
 }
 
@@ -37,7 +37,12 @@ void ArincReader::update()
 bool ArincReader::hasArincParametr(int adress)
 {
     if(arinc_map.contains(adress))return true;
-        else return false;
+    else return false;
+}
+
+bool ArincReader::isRunningArinc()
+{
+    return this->isRunning();
 }
 
 void ArincReader::setTypeParametr(int adress, Parametr::TypeParametr type)
@@ -125,6 +130,7 @@ void ArincReader::startArinc(int time_milliseconds)
 void ArincReader::stopArinc()
 {
     emit stopTimer();
+    this->quit();
 }
 
 void ArincReader::run()
@@ -136,8 +142,17 @@ void ArincReader::run()
     exec();
 }
 
+int ArincReader::indexM()
+{
+    return index;
+}
+
 ArincReader::~ArincReader()
 {
+    stopArinc();
+
     for(iter=arinc_map.begin();iter!=arinc_map.end();++iter)
         delete iter.value();
+   // std::cout<<this->isRunning()<<std::endl;
+
 }

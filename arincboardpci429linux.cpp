@@ -1,20 +1,22 @@
 #include "arincboardpci429linux.h"
 
 
-ArincBoardlPCI429::ArincBoardlPCI429(const char *boardname, int MAX_NUMBER_CHANNEL)
+ArincBoardlPCI429::ArincBoardlPCI429(QString boardname, int index)
 {
     this->name=boardname;
     this->MIN_NUMBER_CHANNEL=1;
-    this->MAX_NUMBER_CHANNEL=MAX_NUMBER_CHANNEL;
+    this->MAX_NUMBER_CHANNEL=8;
+    this->index=index;
+    cout<<"Создана Плата PCI429"<<" index="<<index<<" name="<<boardname.toStdString()<<endl;
 }
 
 void ArincBoardlPCI429::initArincBoard()
 {
-    hARINC = open(name, 0);
+    hARINC = open(name.toStdString().c_str(), 0);
     if (hARINC == -1)
     {
            cout<<"Ошибка подключения платы: open error ";
-           cout<<name<<endl;
+           cout<<name.toStdString()<<endl;
            flagInitBoard=false;
     }
     else{
@@ -31,9 +33,14 @@ void ArincBoardlPCI429::initArincBoard()
         SET_RF_SO_N(Data,1,1,1,1,1,1,1,1);
         INIT_ARINC(hARINC,Data);
         cout<<"Плата инициализирована: ";
-        cout<<name<<endl;
+        cout<<name.toStdString()<<endl;
         flagInitBoard=true;
     }
+}
+
+QString ArincBoardlPCI429::boardName()
+{
+    return name;
 }
 
 void ArincBoardlPCI429::stopBoard()
@@ -46,9 +53,9 @@ void ArincBoardlPCI429::closeBoard()
     close(hARINC);
 }
 
-bool ArincBoardlPCI429::BoardIsValid(const char *boardname)
+bool ArincBoardlPCI429::BoardIsValid(QString boardname)
 {
-    int h = open(boardname, 0);
+    int h = open(boardname.toStdString().c_str(), 0);
     if (h == -1)
     {
         close(h);
@@ -59,9 +66,9 @@ bool ArincBoardlPCI429::BoardIsValid(const char *boardname)
     }
 }
 
-QString ArincBoardlPCI429::getStatusBoard(const char *boardname)
+QString ArincBoardlPCI429::getStatusBoard(QString boardname)
 {
-    int h = open(boardname, 0);
+    int h = open(boardname.toStdString().c_str(), 0);
     if (h == -1)
     {
         close(h);
@@ -73,16 +80,16 @@ QString ArincBoardlPCI429::getStatusBoard(const char *boardname)
 
 }
 
-QString ArincBoardlPCI429::getDescriptionBoard(const char *boardname)
+QString ArincBoardlPCI429::getDescriptionBoard(QString boardname)
 {
     QString temp;
-    int h=open(boardname, 0);
+    int h=open(boardname.toStdString().c_str(), 0);
     short unsigned int d[32768];
     int rj;
     if (h == -1){
         close(h);
         temp="open error ";
-        temp+=QString(boardname);
+        temp+=boardname;
         temp+=" (hArinc=-1)";
         return temp;
     }else{
@@ -101,13 +108,16 @@ QString ArincBoardlPCI429::getDescriptionBoard(const char *boardname)
 
 ArincBoardlPCI429::~ArincBoardlPCI429()
 {
-
+    stopBoard();
+    closeBoard();
 }
 
+int ArincChannelPCI429::count=0;
 
-ArincChannelPCI429::ArincChannelPCI429(ArincBoardlPCI429 *board,int number_channel, int number_bank)
+ArincChannelPCI429::ArincChannelPCI429(ArincBoardlPCI429 *board, int number_channel, int number_bank, int index)
 {
     this->board=board;
+    this->index=index;
     if((number_channel<=this->board->MAX_NUMBER_CHANNEL)&&(number_channel>=this->board->MIN_NUMBER_CHANNEL)){
         nc=number_channel;
     }else{
@@ -123,6 +133,7 @@ ArincChannelPCI429::ArincChannelPCI429(ArincBoardlPCI429 *board,int number_chann
     for(int i=0;i<SIZE_BUF;i++){
         buf[i]=1;
     }
+    ++count;
 }
 
 unsigned int *ArincChannelPCI429::readBuffer()
@@ -153,7 +164,12 @@ int ArincChannelPCI429::sizeOfBuffer() const
     return SIZE_BUF;
 }
 
+int ArincChannelPCI429::indexChannel()
+{
+    return index;
+}
+
 ArincChannelPCI429::~ArincChannelPCI429()
 {
-    cout<<"DELETED!"<<endl;
+    cout<<"DELETEDCNANNELPCI429!"<<endl;
 }

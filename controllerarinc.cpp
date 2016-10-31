@@ -1,12 +1,11 @@
 #include "controllerarinc.h"
 
-ControllerArinc::ControllerArinc(MainView *view, ArincModelInterface *model)
+ControllerArinc::ControllerArinc(MainView *view, ArincModelInterface *model, int index)
 {
     this->model=model;
-    this->form=view->createMdiChild(this,model);
+    this->form=view->createMdiChild(this,model,index);
+    this->index_contr=index;
 }
-
-
 
 ControllerArinc::~ControllerArinc()
 {
@@ -21,6 +20,8 @@ void ControllerArinc::Start()
 void ControllerArinc::Stop()
 {
     model->stopArinc();
+    cout<<"Поток работает:"<<model->isRunningArinc()<<endl;
+
 }
 
 void ControllerArinc::addObserveredArincWord(int adress)
@@ -36,6 +37,21 @@ void ControllerArinc::addDiscrModel(int adress)
 void ControllerArinc::deleteDiscrModel(int adress)
 {
 
+}
+
+void ControllerArinc::setTitleForm(const QString &name)
+{
+    form->setWindowTitle(name);
+}
+
+int ControllerArinc::index()
+{
+    return index_contr;
+}
+
+MdiForm *ControllerArinc::getMdiForm()
+{
+    return form;
 }
 
 void ControllerArinc::setNameArincParametr(const QString &name, int adress)
@@ -77,4 +93,6 @@ void ControllerArinc::setStateContanier(StateContanier *cont, int adress)
         }
     }
 }
+
+
 

@@ -28,6 +28,7 @@ public:
     void Start();
     void Stop();
     int sizeOfBuffer()const;
+    static int count;
 private:
     ArincBoardMPC429 *board;
     int nc;
