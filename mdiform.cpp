@@ -136,11 +136,6 @@ int ModelTable::ColumnCountOfVisibleHeaders()
     return count;
 }
 
-void ModelTable::restructColumns()
-{
-
-}
-
 ModelTable::ModelTable(int row, int column, QObject *parent):QAbstractTableModel(parent)
 {
     rows=row;

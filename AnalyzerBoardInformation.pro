@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     mdiform.cpp \
     maincontroller.cpp \
     formadddevice.cpp \
-    formconfparamsdevice.cpp
+    formconfparamsdevice.cpp \
+    modelconfparams.cpp
 
 HEADERS  += \
     arincparametr.h \
@@ -48,7 +49,8 @@ HEADERS  += \
     mdiform.h \
     maincontroller.h \
     formadddevice.h \
-    formconfparamsdevice.h
+    formconfparamsdevice.h \
+    modelconfparams.h
 
 FORMS    += \
     mainview.ui \

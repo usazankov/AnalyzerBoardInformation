@@ -37,7 +37,6 @@ private:
     void setRowCount(int row);
     void setColumnCount(int column);
     int ColumnCountOfVisibleHeaders();
-    void restructColumns();
     int maxRowCount;
     //QAbstractItemModel interface
 public:

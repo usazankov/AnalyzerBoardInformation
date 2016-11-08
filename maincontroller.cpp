@@ -94,7 +94,6 @@ void MainController::addDevice()
 
 void MainController::delDevice(int index)
 {
-    cout<<"MDIDELETED"<<endl;
 
     foreach (ControllerArinc *cont, controllers) {
         if(cont->index()==index){
