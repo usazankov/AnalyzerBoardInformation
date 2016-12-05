@@ -27,9 +27,12 @@ private:
     QMap<int, ArincChannelPCI429*> pciChannels;
     QMap<int, ArincReader*> readers;
     QMap<int, ControllerArinc*> controllers;
+
+    FormConfParamsDevice *formConfDev;
     int coutMVC;
     int coutBoards;
     void connectActionsToSlots();
+    int generateIndex();
 signals:
 
 public slots:

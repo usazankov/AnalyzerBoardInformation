@@ -4,15 +4,16 @@ ModelConfParams::ModelConfParams(int rows, int columns,QObject *parent):QAbstrac
 {
     this->rows=rows;
     this->columns=columns;
+    if(rows!=0){
+        dat.append(new ConfParametr());
+    }
 }
 
 void ModelConfParams::insertParam()
 {
+
+    dat.append(new ConfDecParametr());
     ++rows;
-    for(int i=0;i<columns;++i){
-        QModelIndex index=this->index(rows,i);
-        dat[index]="";
-    }
     QModelIndex index=this->index(rows,0);
     beginInsertRows(index,rows,rows);
     endInsertRows();
@@ -20,7 +21,28 @@ void ModelConfParams::insertParam()
 
 void ModelConfParams::delParam(int row)
 {
+    if(row>=0){
+        delete dat.at(row);
+        dat.removeAt(row);
+        --rows;
+        beginResetModel();
+        endResetModel();
+    }
+}
 
+ConfParametr *ModelConfParams::parametr_to_change(int row)
+{
+    return dat.at(row);
+}
+
+const ConfParametr *ModelConfParams::parametr(int row) const
+{
+    return dat.at(row);
+}
+
+TypeParametr ModelConfParams::typeParametr(int row)const
+{
+    return dat.at(row)->type;
 }
 
 int ModelConfParams::rowCount(const QModelIndex &parent) const
@@ -35,17 +57,97 @@ int ModelConfParams::columnCount(const QModelIndex &parent) const
 
 QVariant ModelConfParams::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid()) {
+    if (!index.isValid()){
         return QVariant();
     }
-    return (role == Qt::DisplayRole || role == Qt::EditRole) ? dat[index] : QVariant();
+    if(role == Qt::DisplayRole || role == Qt::EditRole){
+        switch(index.column()){
+        case 0:
+            return dat.at(index.row())->name;
+            break;
+        case 1:
+            return dat.at(index.row())->dimension;
+            break;
+        case 2:
+            return dat.at(index.row())->adress;
+            break;
+        case 3:
+            switch(dat.at(index.row())->type){
+            case DEC:
+                return "Десятичный";
+                break;
+            case DISCR:
+                return "Дискретный";
+                break;
+            case DISCR_DEC:
+                return "Дискретно-десятичный";
+                break;
+            case DD:
+                return "Двоично-десятичный";
+                break;
+            default:
+                return QVariant();
+                break;
+            }
+            break;
+        }
+    }else return QVariant();
 }
 
 bool ModelConfParams::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (index.isValid() && role == Qt::EditRole){
-        dat[index]=value;
+        ConfParametr *conf=dat.at(index.row());
+        ConfParametr *param_new;
+        TypeParametr temp=conf->type;
+        switch(index.column()){
+        case 0:
+            conf->name=value.toString();
+            break;
+        case 1:
+            conf->dimension=value.toString();
+
+            break;
+        case 2:
+            conf->adress=value.toInt();
+
+            break;
+        case 3:
+            switch(value.toInt()){
+            case 0:conf->type=DEC;
+                if(temp!=conf->type){
+                    param_new=new ConfDecParametr(*conf);
+                    delete dat.at(index.row());
+                    dat.replace(index.row(),param_new);
+                }
+                break;
+            case 1:conf->type=DISCR;
+                if(temp!=conf->type){
+                    param_new=new ConfDiscrParametr(*conf);
+                    delete dat.at(index.row());
+                    dat.replace(index.row(),param_new);
+                }
+                break;
+            case 2:conf->type=DISCR_DEC;
+                if(temp!=conf->type){
+
+                }
+                break;
+            case 3:conf->type=DD;
+                if(temp!=conf->type){
+
+                }
+                break;
+            default:
+                break;
+            }
+
+            break;
+        default:
+            break;
+        }
         emit dataChanged(index, index);
+        emit changeContent();
         return true;
     }
     return false;
@@ -56,7 +158,27 @@ QVariant ModelConfParams::headerData(int section, Qt::Orientation orientation, i
     if (role != Qt::DisplayRole){
         return QVariant();
     }
-    return (orientation == Qt::Horizontal) ? QString("Number") : QString::number(section+1);
+    if(orientation == Qt::Horizontal){
+        switch (section) {
+        case 0:
+            return QString("Имя");
+            break;
+        case 1:
+            return QString("Размерность");
+            break;
+        case 2:
+            return QString("Адрес");
+            break;
+        case 3:
+            return QString("Тип");
+            break;
+        default:
+            break;
+        }
+    }else if(orientation = Qt::Vertical){
+        return QString::number(section+1);
+    }
+    return QVariant();
 }
 
 Qt::ItemFlags ModelConfParams::flags(const QModelIndex &index) const
@@ -64,3 +186,4 @@ Qt::ItemFlags ModelConfParams::flags(const QModelIndex &index) const
     Qt::ItemFlags flags = QAbstractTableModel::flags(index);
     return index.isValid() ? (flags | Qt::ItemIsEditable) : flags;
 }
+

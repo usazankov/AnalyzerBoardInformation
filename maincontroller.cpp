@@ -5,6 +5,7 @@ MainController::MainController(MainView *view, QObject *parent) : QObject(parent
     this->view=view;
     coutMVC=0;
     coutBoards=0;
+    formConfDev=Q_NULLPTR;
     connectActionsToSlots();
 }
 
@@ -37,6 +38,7 @@ MainController::~MainController()
             delete contr;
         cout<<"deleted contr"<<endl;
     }
+    delete formConfDev;
 }
 
 void MainController::connectActionsToSlots()
@@ -46,9 +48,21 @@ void MainController::connectActionsToSlots()
 
 }
 
+int MainController::generateIndex()
+{
+    int i=0;
+    while(true){
+        if(!controllers.contains(i)){
+            return i;
+        }
+        ++i;
+    }
+}
+
 void MainController::addDevice()
 {
     cout<<"Добавлено устройство"<<endl;
+    int index=generateIndex();
     FormAddDevice *form = new FormAddDevice(view);
 
     if(form->exec()==FormAddDevice::Accepted){
@@ -59,9 +73,8 @@ void MainController::addDevice()
                 cout<<"boardName="<<board->boardName().toStdString()<<endl;
                 cout<<"nameDevice="<<form->nameDevice().toStdString().c_str()<<endl;
                 if(board->boardName()==form->nameDevice()){
-
-                    channel=new ArincChannelPCI429(board,form->numberChannel(),1, coutMVC);
-                    pciChannels[coutMVC]=channel;
+                    channel=new ArincChannelPCI429(board,form->numberChannel(),1, index);
+                    pciChannels[index]=channel;
                     flagToNotHasBoard=0;
                 }
             }
@@ -69,32 +82,32 @@ void MainController::addDevice()
                 ArincBoardlPCI429 *board=new ArincBoardlPCI429(form->nameDevice().toStdString().c_str(),coutBoards);
                 pciBoards[coutBoards]=board;
                 ++coutBoards;
-                channel=new ArincChannelPCI429(board,form->numberChannel(),1, coutMVC);
-                pciChannels[coutMVC]=channel;
+                channel=new ArincChannelPCI429(board,form->numberChannel(),1, index);
+                pciChannels[index]=channel;
             }
         }else{
             ArincBoardlPCI429 *board=new ArincBoardlPCI429(form->nameDevice().toStdString().c_str(),coutBoards);
             pciBoards[coutBoards]=board;
             ++coutBoards;
-            channel=new ArincChannelPCI429(board,form->numberChannel(),1, coutMVC);
-            pciChannels[coutMVC]=channel;
+            channel=new ArincChannelPCI429(board,form->numberChannel(),1, index);
+            pciChannels[index]=channel;
         }
 
-        ArincReader *reader=new ArincReader(channel,coutMVC);
-        readers[coutMVC]=reader;
-        ControllerArinc *controller=new ControllerArinc(view,reader,coutMVC);
+        ArincReader *reader=new ArincReader(channel,index);
+        readers[index]=reader;
+        ControllerArinc *controller=new ControllerArinc(view,reader,index);
         controller->setTitleForm(form->nameChannel());
-        controllers[coutMVC]=controller;
+        controllers[index]=controller;
         connect(controller->getMdiForm(), SIGNAL(MdiFormDeleted(int)), this, SLOT(delDevice(int)));
         controller->Start();
         ++coutMVC;
     }
     delete form;
+
 }
 
 void MainController::delDevice(int index)
 {
-
     foreach (ControllerArinc *cont, controllers) {
         if(cont->index()==index){
             delete cont;
@@ -115,15 +128,22 @@ void MainController::delDevice(int index)
             pciChannels.remove(index);
         }
     }
-
+    formConfDev->deleteChannel(index);
     --coutMVC;
 }
 
 void MainController::confParamsDevice()
 {
-    FormConfParamsDevice *form = new FormConfParamsDevice(view);
-    if(form->exec()==FormConfParamsDevice::Accepted){
+    if(formConfDev==Q_NULLPTR){
+        formConfDev = new FormConfParamsDevice(view);
+    }else
+        formConfDev->show();
+    foreach (ControllerArinc *cont, controllers) {
+        if(!formConfDev->ContainsChannel(cont->index()))
+            formConfDev->insertChannel(cont->TitleForm(),cont->index());
+    }
+    if(formConfDev->exec()==FormConfParamsDevice::Accepted){
 
     }
-    delete form;
+
 }

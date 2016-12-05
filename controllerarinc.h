@@ -26,6 +26,7 @@ public:
     void addDiscrModel(int adress);
     void deleteDiscrModel(int adress);  
     void setTitleForm(const QString &name);
+    QString TitleForm()const;
     int index();
     MdiForm* getMdiForm();
     // ControllerInterface interface

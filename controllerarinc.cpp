@@ -44,6 +44,11 @@ void ControllerArinc::setTitleForm(const QString &name)
     form->setWindowTitle(name);
 }
 
+QString ControllerArinc::TitleForm() const
+{
+    return form->windowTitle();
+}
+
 int ControllerArinc::index()
 {
     return index_contr;

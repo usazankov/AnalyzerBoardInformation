@@ -14,7 +14,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     arincparametr.cpp \
-    data32.cpp \
     dataarinc32.cpp \
     parametr.cpp \
     states.cpp \
@@ -27,7 +26,9 @@ SOURCES += main.cpp\
     maincontroller.cpp \
     formadddevice.cpp \
     formconfparamsdevice.cpp \
-    modelconfparams.cpp
+    modelconfparams.cpp \
+    formdecparam.cpp \
+    formdiscrparam.cpp
 
 HEADERS  += \
     arincparametr.h \
@@ -50,13 +51,17 @@ HEADERS  += \
     maincontroller.h \
     formadddevice.h \
     formconfparamsdevice.h \
-    modelconfparams.h
+    modelconfparams.h \
+    formdecparam.h \
+    formdiscrparam.h
 
 FORMS    += \
     mainview.ui \
     mdiform.ui \
     formadddevice.ui \
-    formconfparamsdevice.ui
+    formconfparamsdevice.ui \
+    formdecparam.ui \
+    formdiscrparam.ui
 
 RESOURCES += \
     rsc.qrc
