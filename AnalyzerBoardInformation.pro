@@ -65,3 +65,5 @@ FORMS    += \
 
 RESOURCES += \
     rsc.qrc
+
+DISTFILES +=

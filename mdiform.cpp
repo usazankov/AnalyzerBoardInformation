@@ -58,7 +58,9 @@ void MdiForm::addDiscrTable(int adress)
     sizePolicy1.setVerticalStretch(0);
     QTableView *view = new QTableView(ui->scrollAreaWidgetContents_2);
     view->setMinimumWidth(300);
-
+    view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    view->verticalHeader()->setMinimumSectionSize(18);
+    view->verticalHeader()->setDefaultSectionSize(23);
     view->horizontalHeader()->setMinimumSectionSize(300);
     view->horizontalHeader()->setDefaultSectionSize(300);
     view->setObjectName(QStringLiteral("tableView"));

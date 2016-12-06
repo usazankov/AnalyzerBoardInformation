@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>435</width>
-    <height>228</height>
+    <height>230</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -190,7 +190,7 @@
       </sizepolicy>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Box</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Sunken</enum>

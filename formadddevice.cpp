@@ -9,6 +9,12 @@ FormAddDevice::FormAddDevice(QWidget *parent) :
     devOk=0;
     ui->lineEdit->setText("Входной канал PCI429: "+QString::number(ArincChannelPCI429::count+1));
     ui->comboTypeDev->activated(ui->comboTypeDev->currentIndex());
+    QIcon icon;
+    icon.addFile(QStringLiteral(":/images/ok.png"), QSize(),QIcon::Normal, QIcon::Off);
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setIcon(icon);
+    QIcon icon2;
+    icon2.addFile(QStringLiteral(":/images/cancel.png"), QSize(),QIcon::Normal, QIcon::Off);
+    ui->buttonBox->button(QDialogButtonBox::Cancel)->setIcon(icon2);
 }
 
 FormAddDevice::~FormAddDevice()
