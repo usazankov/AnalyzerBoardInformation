@@ -128,7 +128,9 @@ void MainController::delDevice(int index)
             pciChannels.remove(index);
         }
     }
-    formConfDev->deleteChannel(index);
+    std::cout<<"index="<<index<<std::endl;
+    if(formConfDev!=Q_NULLPTR)
+        formConfDev->deleteChannel(index);
     --coutMVC;
 }
 

@@ -43,17 +43,38 @@ struct ConfDecParametr:public ConfParametr{
         unpack=90.0;
         least_bit=9;
         most_bit=29;
-
     }
     ~ConfDecParametr(){}
 };
-struct ConfDiscrParametr:public ConfParametr{
+
+class ModelConfDiscrParams : public QAbstractTableModel
+{
+    Q_OBJECT
+private:
+    int rows;
+    int columns;
     StateContanier states;
+public:
+    ModelConfDiscrParams(int rows=0, int columns=4, QObject *parent=0);
+    void insertParam();
+    void delParam(int row);
+    // QAbstractItemModel interface
+public:
+    int rowCount(const QModelIndex &) const;
+    int columnCount(const QModelIndex &) const;
+    QVariant data(const QModelIndex &index, int role) const;
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+    Qt::ItemFlags flags(const QModelIndex &index) const;
+};
+
+struct ConfDiscrParametr:public ConfParametr{
+    ModelConfDiscrParams model;
     ConfDiscrParametr(){
 
     }
     ConfDiscrParametr(const ConfDiscrParametr& conf):ConfParametr(conf){
-        states=conf.states;
+        //model=conf.model;
     }
     ConfDiscrParametr(const ConfParametr& conf):ConfParametr(conf){
 
@@ -85,5 +106,7 @@ public:
 signals:
     void changeContent();
 };
+
+
 
 #endif // MODELCONFPARAMS_H

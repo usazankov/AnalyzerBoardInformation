@@ -22,15 +22,21 @@ FormConfParamsDevice::FormConfParamsDevice(QWidget *parent) :
     stwidget=new QStackedWidget(ui->groupBox_2);
     formDec=new FormDecParam(ui->groupBox_2);
 
+    connect(del,SIGNAL(commitData(QWidget*)),this,SLOT(commit_type_param()));
+
     formDec->close();
     formDiscr=new FormDiscrParam(ui->groupBox_2);
+    connect(formDiscr->ButtonAdd(),SIGNAL(clicked()),this,SLOT(on_add_state()));
+    connect(formDiscr->ButtonDel(),SIGNAL(clicked()),this,SLOT(on_del_state()));
     formDiscr->close();
     stwidget->addWidget(formDec);
     stwidget->addWidget(formDiscr);
+    stwidget->setVisible(false);
     ui->verticalLayout_4->addWidget(stwidget);
     connect(formDec,SIGNAL(changeUnpackConst(double)),this, SLOT(change_unpack_const(double)));
     connect(formDec,SIGNAL(changeLeastBit(int)),this, SLOT(change_least_bit(int)));
     connect(formDec,SIGNAL(changeMostBit(int)),this, SLOT(change_most_bit(int)));
+
 }
 
 void FormConfParamsDevice::insertChannel(const QString &name, int index)
@@ -39,7 +45,9 @@ void FormConfParamsDevice::insertChannel(const QString &name, int index)
         channels[index]=name;
         ModelConfParams* model = new ModelConfParams();
         models[index]=model;
+        last_selected_index[index]=0;
         connect(model,SIGNAL(changeContent()),ui->tableView,SLOT(resizeColumnsToContents()));
+        current_index=index;
         ++cout_channel;
         updateItemsComboBox();
     }
@@ -48,6 +56,7 @@ void FormConfParamsDevice::insertChannel(const QString &name, int index)
 void FormConfParamsDevice::deleteChannel(int index)
 {
     channels.remove(index);
+    last_selected_index.remove(index);
     --cout_channel;
     updateItemsComboBox();
 }
@@ -108,18 +117,20 @@ void FormConfParamsDevice::on_pushButton_2_clicked()
 {
     int row=ui->tableView->currentIndex().row();
     models[channels.key(ui->comboNameChannel->currentText())]->delParam(row);
+
     if(row!=0)
         ui->tableView->selectRow(row-1);
-    else if(row==0)
-        ui->tableView->selectRow(row);
-
+    else if(row==0){
+        ui->tableView->selectRow(row);      
+    }
+    if(models[channels.key(ui->comboNameChannel->currentText())]->rowCount(QModelIndex())==0)
+        stwidget->setVisible(false);
 }
 
 void FormConfParamsDevice::on_comboNameChannel_activated(int index)
 {
 
 }
-
 
 void FormConfParamsDevice::updateItemsComboBox()
 {
@@ -133,15 +144,35 @@ void FormConfParamsDevice::updateItemsComboBox()
 
 void FormConfParamsDevice::on_comboNameChannel_currentIndexChanged(const QString &arg1)
 {
+    if(ui->tableView->selectionModel()!=Q_NULLPTR){
+        last_selected_index[current_index]=ui->tableView->selectionModel()->currentIndex().row();
+        disconnect(ui->tableView->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(changed_selection(QModelIndex,QModelIndex)));
+    }
     ui->tableView->setModel(models[channels.key(arg1)]);
+    ui->tableView->selectRow(last_selected_index[channels.key(arg1)]);
+    connect(ui->tableView->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(changed_selection(QModelIndex,QModelIndex)));
+    stwidget->setVisible(false);
+    current_index=channels.key(arg1);
+    if(ui->tableView->currentIndex().row()>=0)
+        changed_selection(ui->tableView->currentIndex(),ui->tableView->currentIndex());
 }
 
 void FormConfParamsDevice::on_tableView_clicked(const QModelIndex &index)
 {
+
+}
+
+
+void FormConfParamsDevice::changed_selection(const QModelIndex &index, const QModelIndex &previous)
+{
     const ModelConfParams *model=dynamic_cast<const ModelConfParams*>(index.model());
     const ConfDecParametr *dec;
+    const ConfDiscrParametr *discr;
+    ModelConfDiscrParams *m;
+    if(model->rowCount(QModelIndex())!=0){
         switch (model->typeParametr(index.row())){
         case DEC:
+            stwidget->setVisible(true);
             stwidget->setCurrentIndex(0);
             dec=dynamic_cast<const ConfDecParametr*>(model->parametr(index.row()));
             formDec->setUnpackConst(dec->unpack);
@@ -149,11 +180,41 @@ void FormConfParamsDevice::on_tableView_clicked(const QModelIndex &index)
             formDec->setMostBit(dec->most_bit);
             break;
         case DISCR:
+            discr=dynamic_cast<const ConfDiscrParametr*>(model->parametr(index.row()));
+            m=const_cast<ModelConfDiscrParams*>(&(discr->model));
+            formDiscr->TableView()->setModel(m);
+            stwidget->setVisible(true);
             stwidget->setCurrentIndex(1);
             break;
         default:
             break;
         }
+    }
+}
+
+void FormConfParamsDevice::commit_type_param()
+{
+    ui->tableView->selectionModel()->currentRowChanged(ui->tableView->currentIndex(),ui->tableView->currentIndex());
+}
+
+void FormConfParamsDevice::on_add_state()
+{
+    ModelConfParams *model=dynamic_cast<ModelConfParams*>(ui->tableView->model());
+    ConfDiscrParametr *discr=dynamic_cast<ConfDiscrParametr*>(model->parametr_to_change(ui->tableView->currentIndex().row()));
+    discr->model.insertParam();
+}
+
+void FormConfParamsDevice::on_del_state()
+{
+    ModelConfParams *model=dynamic_cast<ModelConfParams*>(ui->tableView->model());
+    ConfDiscrParametr *discr=dynamic_cast<ConfDiscrParametr*>(model->parametr_to_change(ui->tableView->currentIndex().row()));
+
+    int row=formDiscr->TableView()->currentIndex().row();
+    discr->model.delParam(row);
+    if(row!=0)
+        formDiscr->TableView()->selectRow(row-1);
+    else if(row==0)
+        formDiscr->TableView()->selectRow(row);
 }
 
 void FormConfParamsDevice::change_least_bit(int bit)
@@ -176,5 +237,3 @@ void FormConfParamsDevice::change_unpack_const(double uc)
     ConfDecParametr *dec=dynamic_cast<ConfDecParametr*>(model->parametr_to_change(ui->tableView->currentIndex().row()));
     dec->unpack=uc;
 }
-
-

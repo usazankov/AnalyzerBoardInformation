@@ -13,7 +13,6 @@ MainView::MainView(QWidget *parent) :
     ui->mdiArea->setTabsMovable(true);
     ui->mdiArea->setDocumentMode(true);
     QPalette palette;
-
     palette.setColor(QPalette::Light, QColor(70,70,70));
     ui->mdiArea->setPalette(palette);
     createActions();
@@ -36,13 +35,13 @@ void MainView::createToolBars()
     fileToolBar=this->addToolBar(tr("File"));
     fileToolBar->addAction(action_open_file);
     fileToolBar->addAction(action_save_file);
-    fileToolBar->setIconSize(QSize(32,32));
+    fileToolBar->setIconSize(QSize(24,24));
 
     deviceToolBar=this->addToolBar(tr("Device"));
     deviceToolBar->addAction(action_add_device);
     deviceToolBar->addAction(action_del_device);
     deviceToolBar->addAction(action_confparams_device);
-    deviceToolBar->setIconSize(QSize(32,32));
+    deviceToolBar->setIconSize(QSize(24,24));
 }
 
 void MainView::createActions()

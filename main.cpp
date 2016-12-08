@@ -3,6 +3,19 @@
 #include "mainview.h"
 #include "maincontroller.h"
 
+
+void setPalette();
+
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    setPalette();
+    MainView w;
+    MainController c(&w);
+    w.show();
+    return a.exec();
+}
+
 void setPalette(){
     QApplication::setStyle(QStyleFactory::create("Fusion"));
     QPalette palette;
@@ -21,14 +34,4 @@ void setPalette(){
     palette.setColor(QPalette::Highlight, QColor(140,140,140).lighter());
     palette.setColor(QPalette::HighlightedText, Qt::black);
     qApp->setPalette(palette);
-}
-
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    setPalette();
-    MainView w;
-    MainController c(&w);
-    w.show();
-    return a.exec();
 }

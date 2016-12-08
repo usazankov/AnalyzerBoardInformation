@@ -1,5 +1,5 @@
-#ifndef ARINCCHANNELPCI429LINUX_H
-#define ARINCCHANNELPCI429LINUX_H
+#ifndef ARINCBOARDPCI429LINUX_H
+#define ARINCBOARDPCI429LINUX_H
 #include "readingbuffer.h"
 #include "pci429LNX.h"
 #include <unistd.h>
@@ -57,4 +57,4 @@ private:
     unsigned int buf[SIZE_BUF];
 };
 
-#endif // ARINCCHANNELPCI429LINUX_H
+#endif // ARINCBOARDPCI429LINUX_H

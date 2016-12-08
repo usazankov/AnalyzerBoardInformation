@@ -10,11 +10,15 @@ public:
     State();
     State(const State& s);
     State(int digit,QString namestate,QString state0,QString state1);
-    QString getNameState();
-    QString getState0();
-    QString getState1();
+    QString getNameState()const;
+    QString getState0()const;
+    QString getState1()const;
     void setState(int digit,QString namestate,QString state0,QString state1);
-    int getDigit();
+    void setNameState(QString namestate);
+    void setDigit(int digit);
+    void setState0(QString state0);
+    void setState1(QString state1);
+    int getDigit()const;
     ~State();
     static int k;
 private:
@@ -29,11 +33,13 @@ class StateContanier
 public:
     StateContanier();
     void insertState(State *state);
-    State* getState(int index);
-    int getSize();
+    void deleteState(int index);
+    State* getState(int index)const;
+    State *getState_to_change(int index);
+    int getSize() const;
     ~StateContanier();
 private:
-    QVector<State*> PtrsState;
+    QList<State*> PtrsState;
 };
 
 #endif // STATES_H

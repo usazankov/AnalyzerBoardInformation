@@ -45,6 +45,10 @@ private slots:
     void on_comboNameChannel_activated(int index);
     void on_comboNameChannel_currentIndexChanged(const QString &arg1);
     void on_tableView_clicked(const QModelIndex &index);
+    void changed_selection(const QModelIndex &index, const QModelIndex &previous);
+    void commit_type_param();
+    void on_add_state();
+    void on_del_state();
 public slots:
     void change_least_bit(int bit);
     void change_most_bit(int bit);
@@ -53,7 +57,9 @@ private:
     void updateItemsComboBox();
     Ui::FormConfParamsDevice *ui;
     QMap<int, ModelConfParams*> models;
+    QMap<int, int> last_selected_index;
     int cout_channel;
+    int current_index;
     QMap<int, QString> channels;
     QStackedWidget *stwidget;
     FormDecParam *formDec;
