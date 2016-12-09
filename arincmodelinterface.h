@@ -11,7 +11,6 @@ public:
     virtual void addArincParametr(ArincParametr* arincword)=0;
     virtual bool hasArincParametr(int adress)=0;
     virtual bool isRunningArinc()=0;
-    virtual int indexModel()=0;
     virtual void registerObserver(ArincParametrObserver *o)=0;
     virtual void removeObserver(ArincParametrObserver *o)=0;
     virtual void notifyObservers()=0;

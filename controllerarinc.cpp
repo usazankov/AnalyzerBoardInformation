@@ -1,10 +1,9 @@
 #include "controllerarinc.h"
 
-ControllerArinc::ControllerArinc(MainView *view, ArincModelInterface *model, int index)
+ControllerArinc::ControllerArinc(MdiForm *form, ArincModelInterface *model)
 {
     this->model=model;
-    this->form=view->createMdiChild(this,model,index);
-    this->index_contr=index;
+    this->form=form;
 }
 
 ControllerArinc::~ControllerArinc()
@@ -47,11 +46,6 @@ void ControllerArinc::setTitleForm(const QString &name)
 QString ControllerArinc::TitleForm() const
 {
     return form->windowTitle();
-}
-
-int ControllerArinc::index()
-{
-    return index_contr;
 }
 
 MdiForm *ControllerArinc::getMdiForm()

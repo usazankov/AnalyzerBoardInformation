@@ -2,11 +2,10 @@
 
 int ArincReader::count_model=0;
 
-ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc, int index)
+ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc)
 {
     this->arinc=arinc;
     time_step=1000;
-    this->index=index;
 
 }
 
@@ -114,10 +113,6 @@ void ArincReader::addArincParametr(ArincParametr *arincword)
     }
 }
 
-int ArincReader::indexModel()
-{
-    return index;
-}
 
 void ArincReader::startArinc(int time_milliseconds)
 {
@@ -142,15 +137,10 @@ void ArincReader::run()
     exec();
 }
 
-int ArincReader::indexM()
-{
-    return index;
-}
-
 ArincReader::~ArincReader()
 {
     stopArinc();
-
+    delete arinc;
     for(iter=arinc_map.begin();iter!=arinc_map.end();++iter)
         delete iter.value();
    // std::cout<<this->isRunning()<<std::endl;

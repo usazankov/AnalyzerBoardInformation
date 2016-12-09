@@ -19,6 +19,7 @@ public:
     ~FormAddDevice();
     QString nameChannel();
     QString nameDevice();
+    dev::TypeBoard typeDev();
     int numberChannel();
 private slots:
     void on_comboTypeDev_activated(int index);

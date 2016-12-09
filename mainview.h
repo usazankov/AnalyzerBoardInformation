@@ -42,7 +42,7 @@ private:
 private slots:
     void setActiveSubWindow(QWidget *window);
 public slots:
-    MdiForm* createMdiChild(ControllerInterface *cont, ArincModelInterface *ami, int index);
+    MdiForm* createMdiChild(QString nameTitle, int index);
 };
 
 #endif // MAINVIEW_H

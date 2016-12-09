@@ -1,23 +1,40 @@
 #ifndef ARINCBOARDMPC429LINUX_H
 #define ARINCBOARDMPC429LINUX_H
 #include "readingbuffer.h"
+#include <iostream>
+#include <unistd.h>
+#include <fcntl.h>
+#include <QVector>
 namespace dev {
 class ArincBoardlMPC429;
 class ArincChannelMPC429;
 
 }
-class ArincBoardMPC429
+using namespace std;
+class ArincChannelMPC429;
+class ArincBoardMPC429:public ArincBoardInterface
 {
 public:
-    explicit ArincBoardMPC429(const char *boardname, int MAX_NUMBER_CHANNEL);
+    explicit ArincBoardMPC429(QString boardName, int index);
     void stopBoard();//Остановить плату
     void closeBoard();//Закрыть устройство
+    ReadingBuffer<unsigned int *> *createChannel(int number_channel, int number_bank);
+    bool containsChannel(int channel);
+    bool BoardIsValid();
+    QString getStatusBoard();
+    QString getDescriptionBoard();
+    void initArincBoard();
+    QString boardName();
+
     ~ArincBoardMPC429();
 private:
     friend class ArincChannelMPC429;
-    char* name;//Имя устройства
+    int i;
+    QVector<int> numbers_channel;
+    QString name;//Имя устройства
     int MAX_NUMBER_CHANNEL;
     int MIN_NUMBER_CHANNEL;
+
 };
 
 class ArincChannelMPC429: public ReadingBuffer<unsigned int*>
@@ -28,12 +45,16 @@ public:
     void Start();
     void Stop();
     int sizeOfBuffer()const;
+    QString nameBoard()const;
     static int count;
+    class bad_arinc_channel{};
+    ~ArincChannelMPC429();
 private:
     ArincBoardMPC429 *board;
+    QString nameArincBoard;
     int nc;
     int nb;
-    static const int SIZE_BUF = 20;
+    static const int SIZE_BUF = 300;
     unsigned int buf[SIZE_BUF];
 };
 

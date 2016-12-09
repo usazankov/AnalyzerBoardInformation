@@ -9,7 +9,7 @@
 #include "formadddevice.h"
 #include "formconfparamsdevice.h"
 #include <iostream>
-
+#include "device.h"
 namespace Ui {
 class MainController;
 }
@@ -23,14 +23,11 @@ public:
     ~MainController();
 private:
     MainView *view;
-    QMap<int, ArincBoardlPCI429*> pciBoards;
-    QMap<int, ArincChannelPCI429*> pciChannels;
-    QMap<int, ArincReader*> readers;
-    QMap<int, ControllerArinc*> controllers;
-
+    QMap<int, ArincBoardInterface*> pciBoards;
+    QMap<int, Device*> devices;
     FormConfParamsDevice *formConfDev;
-    int coutMVC;
-    int coutBoards;
+    int countDevices;
+    int countBoards;
     void connectActionsToSlots();
     int generateIndex();
 signals:

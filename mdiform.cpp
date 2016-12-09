@@ -8,41 +8,24 @@ MdiForm::MdiForm(QWidget *parent) :
     ui->setupUi(this);
 }
 
-MdiForm::MdiForm(ControllerInterface *c, ArincModelInterface *ami, int index, QWidget *parent):QWidget(parent), ui(new Ui::MdiForm)
+MdiForm::MdiForm(QString nameTitle,int index, QWidget *parent):QWidget(parent), ui(new Ui::MdiForm)
 {
     ui->setupUi(this);
-    this->index=index;
-    controller=c;
-    model=ami;
+    this->setWindowTitle(nameTitle);
     table=new ModelTable(0,0);
+    this->index=index;
     ui->tableView->setModel(table);
     ui->splitter->setStretchFactor(0,100);
     ui->splitter->setStretchFactor(1,53);
     connect(table,SIGNAL(changeContent()),this,SLOT(resizeTableToContent()));
     ui->tableView->horizontalHeader()->setMinimumSectionSize(100);
+
+}
+
+void MdiForm::setModel(ArincModelInterface *m)
+{
+    model=m;
     model->registerObserver(table);
-    controller->addObserveredArincWord(0307);
-    controller->setNameArincParametr("Параметр1",0307);
-    controller->addObserveredArincWord(0300);
-    controller->addObserveredArincWord(0311);
-    controller->setNameArincParametr("Параметр2",0300);
-    controller->setDimensionArincParametr("Км.ч",0300);
-    controller->addObserveredArincWord(0310);
-    StateContanier *states=new StateContanier();
-    states->insertState(new State(5,"5-Состояние:","0 - Нет","1 - Да"));
-    states->insertState(new State(6,"6-Состояние:","0 - Нет","1 - Да"));
-    states->insertState(new State(7,"7-Состояние:","0 - Нет","1 - Да"));
-    states->insertState(new State(8,"8-Состояние:","0 - Нет","1 - Да"));
-    states->insertState(new State(9,"9-Состояние:","0 - Нет","1 - Да"));
-    controller->setTypeParametr(Parametr::ARINC_DISCR,0300);
-    controller->setStateContanier(states,0300);
-    controller->setTypeParametr(Parametr::ARINC_DISCR,0307);
-    controller->setStateContanier(states,0307);
-    controller->setTypeParametr(Parametr::ARINC_DISCR,0310);
-    controller->setStateContanier(states,0310);
-    controller->setTypeParametr(Parametr::ARINC_DEC,0311);
-    controller->setUnpackConst(90,0311);
-    controller->setDimensionArincParametr("км.ч",0311);
     addDiscrTable(0307);
     addDiscrTable(0300);
     addDiscrTable(0310);

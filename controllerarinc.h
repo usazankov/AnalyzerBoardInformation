@@ -10,7 +10,7 @@ class ControllerArinc: public ControllerInterface
 {
 
 public:
-    explicit ControllerArinc(MainView *view, ArincModelInterface *model, int index);
+    explicit ControllerArinc(MdiForm *form, ArincModelInterface *model);
 
     ~ControllerArinc();
     // ControllerInterface interface
@@ -18,7 +18,6 @@ private:
     ArincModelInterface *model;
     //MainView *view;
     MdiForm *form;
-    int index_contr;
 public:
     void Start();
     void Stop();
@@ -27,7 +26,6 @@ public:
     void deleteDiscrModel(int adress);  
     void setTitleForm(const QString &name);
     QString TitleForm()const;
-    int index();
     MdiForm* getMdiForm();
     // ControllerInterface interface
 public:

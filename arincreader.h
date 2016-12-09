@@ -11,9 +11,8 @@ class ArincReader: public QThread, public ArincModelInterface
 {
     Q_OBJECT
 public:
-    ArincReader(ReadingBuffer<unsigned int*> *arinc,int index);
+    ArincReader(ReadingBuffer<unsigned int*> *arinc);
     void run();
-    int indexM();
     ~ArincReader();
 private:
     ReadingBuffer<unsigned int*> *arinc;
@@ -22,7 +21,6 @@ private:
     QVector<ArincParametrObserver*> observers;
     int size;
     int time_step;
-    int index;
 
     // ArincModelInterface interface
     void stopArinc();
@@ -31,7 +29,7 @@ private:
     ArincParametr *getParametr(int adress);
     Parametr::TypeParametr TypeParametr(int adress);
     void addArincParametr(ArincParametr *arincword);
-    int indexModel();
+
     void registerObserver(ArincParametrObserver *o);
     void removeObserver(ArincParametrObserver *o);
     void notifyObservers();

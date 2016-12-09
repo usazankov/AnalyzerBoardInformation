@@ -3,40 +3,25 @@
 MainController::MainController(MainView *view, QObject *parent) : QObject(parent)
 {
     this->view=view;
-    coutMVC=0;
-    coutBoards=0;
+    countDevices=0;
+    countBoards=0;
     formConfDev=Q_NULLPTR;
     connectActionsToSlots();
 }
 
-
 MainController::~MainController()
 {
-    foreach (ArincBoardlPCI429 *board, pciBoards) {
+    foreach (ArincBoardInterface *board, pciBoards) {
         if (board!=0){
             delete board;
-
         }
         cout<<"deleted board"<<endl;
     }
-
-    foreach (ArincChannelPCI429 *channel, pciChannels) {
-        if(channel!=0)
-         delete channel;
-        cout<<"deleted channel"<<endl;
-    }
-    foreach (ArincReader *reader, readers) {
-        if(reader!=0){
-            reader->quit();
-            reader->wait();
-            delete reader;
-        }
-        cout<<"deleted reader"<<endl;
-    }
-    foreach (ControllerArinc *contr, controllers) {
-        if (contr!=0)
-            delete contr;
-        cout<<"deleted contr"<<endl;
+    cout<<"cout dev="<<devices.count()<<endl;
+    foreach (Device *dev, devices) {
+        if (dev!=0)
+            delete dev;
+        cout<<"deleted dev"<<endl;
     }
     delete formConfDev;
 }
@@ -52,7 +37,7 @@ int MainController::generateIndex()
 {
     int i=0;
     while(true){
-        if(!controllers.contains(i)){
+        if(!devices.contains(i)){
             return i;
         }
         ++i;
@@ -66,41 +51,45 @@ void MainController::addDevice()
     FormAddDevice *form = new FormAddDevice(view);
 
     if(form->exec()==FormAddDevice::Accepted){
-        ArincChannelPCI429 *channel;
-        if(!pciBoards.empty()){
-            bool flagToNotHasBoard=1;
-            foreach (ArincBoardlPCI429 *board, pciBoards){
-                cout<<"boardName="<<board->boardName().toStdString()<<endl;
-                cout<<"nameDevice="<<form->nameDevice().toStdString().c_str()<<endl;
-                if(board->boardName()==form->nameDevice()){
-                    channel=new ArincChannelPCI429(board,form->numberChannel(),1, index);
-                    pciChannels[index]=channel;
-                    flagToNotHasBoard=0;
-                }
+        QString nameDev=form->nameDevice();
+        int indexDev;
+        bool hasDev=false;
+        ArincBoardInterface *arincBoard;
+        ReadingBuffer<unsigned int*> *channel=Q_NULLPTR;
+        //Создаем Arinc-плату
+        foreach (ArincBoardInterface *item, pciBoards){
+            if(item->boardName()==nameDev){
+                hasDev=true;
+                indexDev=pciBoards.key(item);
             }
-            if(flagToNotHasBoard){
-                ArincBoardlPCI429 *board=new ArincBoardlPCI429(form->nameDevice().toStdString().c_str(),coutBoards);
-                pciBoards[coutBoards]=board;
-                ++coutBoards;
-                channel=new ArincChannelPCI429(board,form->numberChannel(),1, index);
-                pciChannels[index]=channel;
-            }
-        }else{
-            ArincBoardlPCI429 *board=new ArincBoardlPCI429(form->nameDevice().toStdString().c_str(),coutBoards);
-            pciBoards[coutBoards]=board;
-            ++coutBoards;
-            channel=new ArincChannelPCI429(board,form->numberChannel(),1, index);
-            pciChannels[index]=channel;
         }
-
-        ArincReader *reader=new ArincReader(channel,index);
-        readers[index]=reader;
-        ControllerArinc *controller=new ControllerArinc(view,reader,index);
-        controller->setTitleForm(form->nameChannel());
-        controllers[index]=controller;
-        connect(controller->getMdiForm(), SIGNAL(MdiFormDeleted(int)), this, SLOT(delDevice(int)));
-        controller->Start();
-        ++coutMVC;
+        if(hasDev){
+            arincBoard=pciBoards[indexDev];
+            if(!arincBoard->containsChannel(form->numberChannel()))
+                channel=arincBoard->createChannel(form->numberChannel(),1);
+        }else{
+            switch (form->typeDev()){
+            case dev::ArincPCI429:
+                    arincBoard=new ArincBoardlPCI429(nameDev, countBoards);
+                break;
+            case dev::ArincMPC429:
+                    arincBoard=new ArincBoardMPC429(nameDev, countBoards);
+                break;
+            default:
+                break;
+            }
+            pciBoards[countBoards]=arincBoard;
+            channel=arincBoard->createChannel(form->numberChannel(),1);
+            ++countBoards;
+        }
+        if(channel!=Q_NULLPTR){
+            MdiForm *mdi=view->createMdiChild(form->nameChannel(),index);
+            connect(mdi, SIGNAL(MdiFormDeleted(int)), this, SLOT(delDevice(int)));
+            Device* dev = new Device(index,channel,mdi);
+            devices[index]=dev;
+            cout<<"Created dev index="<<index<<endl;
+            ++countDevices;
+        }
     }
     delete form;
 
@@ -108,30 +97,12 @@ void MainController::addDevice()
 
 void MainController::delDevice(int index)
 {
-    foreach (ControllerArinc *cont, controllers) {
-        if(cont->index()==index){
-            delete cont;
-            controllers.remove(index);
-        }
-    }
-    foreach (ArincReader *reader, readers) {
-        if(reader->indexM()==index){
-            reader->quit();
-            reader->wait();
-            delete reader;
-            readers.remove(index);
-        }
-    }
-    foreach (ArincChannelPCI429 *channel, pciChannels) {
-        if(channel->indexChannel()==index){
-            delete channel;
-            pciChannels.remove(index);
-        }
-    }
-    std::cout<<"index="<<index<<std::endl;
+    delete devices[index];
+    devices.remove(index);
+    std::cout<<"Deleted index="<<index<<std::endl;
     if(formConfDev!=Q_NULLPTR)
         formConfDev->deleteChannel(index);
-    --coutMVC;
+    --countDevices;
 }
 
 void MainController::confParamsDevice()
@@ -140,9 +111,9 @@ void MainController::confParamsDevice()
         formConfDev = new FormConfParamsDevice(view);
     }else
         formConfDev->show();
-    foreach (ControllerArinc *cont, controllers) {
-        if(!formConfDev->ContainsChannel(cont->index()))
-            formConfDev->insertChannel(cont->TitleForm(),cont->index());
+    foreach (Device *dev, devices) {
+        if(!formConfDev->ContainsChannel(dev->index()))
+            formConfDev->insertChannel(dev->title(), dev->index());
     }
     if(formConfDev->exec()==FormConfParamsDevice::Accepted){
 

@@ -53,9 +53,9 @@ void ArincBoardlPCI429::closeBoard()
     close(hARINC);
 }
 
-bool ArincBoardlPCI429::BoardIsValid(QString boardname)
+bool ArincBoardlPCI429::BoardIsValid()
 {
-    int h = open(boardname.toStdString().c_str(), 0);
+    int h = open(name.toStdString().c_str(), 0);
     if (h == -1)
     {
         close(h);
@@ -66,9 +66,9 @@ bool ArincBoardlPCI429::BoardIsValid(QString boardname)
     }
 }
 
-QString ArincBoardlPCI429::getStatusBoard(QString boardname)
+QString ArincBoardlPCI429::getStatusBoard()
 {
-    int h = open(boardname.toStdString().c_str(), 0);
+    int h = open(name.toStdString().c_str(), 0);
     if (h == -1)
     {
         close(h);
@@ -80,16 +80,16 @@ QString ArincBoardlPCI429::getStatusBoard(QString boardname)
 
 }
 
-QString ArincBoardlPCI429::getDescriptionBoard(QString boardname)
+QString ArincBoardlPCI429::getDescriptionBoard()
 {
     QString temp;
-    int h=open(boardname.toStdString().c_str(), 0);
+    int h=open(name.toStdString().c_str(), 0);
     short unsigned int d[32768];
     int rj;
     if (h == -1){
         close(h);
         temp="open error ";
-        temp+=boardname;
+        temp+=name;
         temp+=" (hArinc=-1)";
         return temp;
     }else{
@@ -112,12 +112,23 @@ ArincBoardlPCI429::~ArincBoardlPCI429()
     closeBoard();
 }
 
+ReadingBuffer<unsigned int *> *ArincBoardlPCI429::createChannel(int channel,int number_bank)
+{
+    numbers_channel.push_back(channel);
+    return new ArincChannelPCI429(this,channel,number_bank);
+}
+
+bool ArincBoardlPCI429::containsChannel(int channel)
+{
+    return numbers_channel.contains(channel);
+}
+
 int ArincChannelPCI429::count=0;
 
-ArincChannelPCI429::ArincChannelPCI429(ArincBoardlPCI429 *board, int number_channel, int number_bank, int index)
+ArincChannelPCI429::ArincChannelPCI429(ArincBoardInterface *board, int number_channel, int number_bank)
 {
-    this->board=board;
-    this->index=index;
+    this->board=dynamic_cast<ArincBoardlPCI429*>(board);
+    nameArincBoard=board->boardName();
     if((number_channel<=this->board->MAX_NUMBER_CHANNEL)&&(number_channel>=this->board->MIN_NUMBER_CHANNEL)){
         nc=number_channel;
     }else{
@@ -164,9 +175,9 @@ int ArincChannelPCI429::sizeOfBuffer() const
     return SIZE_BUF;
 }
 
-int ArincChannelPCI429::indexChannel()
+QString ArincChannelPCI429::nameBoard() const
 {
-    return index;
+
 }
 
 ArincChannelPCI429::~ArincChannelPCI429()

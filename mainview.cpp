@@ -148,9 +148,9 @@ void MainView::setActiveSubWindow(QWidget *window)
 }
 
 
-MdiForm *MainView::createMdiChild(ControllerInterface *cont, ArincModelInterface *ami,int index)
+MdiForm *MainView::createMdiChild(QString nameTitle,int index)
 {
-    MdiForm *child = new MdiForm(cont,ami,index);
+    MdiForm *child = new MdiForm(nameTitle,index);
     ui->mdiArea->addSubWindow(child);
     child->showMaximized();
 

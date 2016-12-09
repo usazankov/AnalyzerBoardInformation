@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     formconfparamsdevice.cpp \
     modelconfparams.cpp \
     formdecparam.cpp \
-    formdiscrparam.cpp
+    formdiscrparam.cpp \
+    device.cpp
 
 HEADERS  += \
     arincparametr.h \
@@ -53,7 +54,8 @@ HEADERS  += \
     formconfparamsdevice.h \
     modelconfparams.h \
     formdecparam.h \
-    formdiscrparam.h
+    formdiscrparam.h \
+    device.h
 
 FORMS    += \
     mainview.ui \

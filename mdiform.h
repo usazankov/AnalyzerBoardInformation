@@ -95,13 +95,13 @@ class MdiForm : public QWidget
 
 public:
     explicit MdiForm(QWidget *parent = 0);
-    explicit MdiForm(ControllerInterface *c, ArincModelInterface *ami,int index, QWidget *parent = 0);
+    explicit MdiForm(QString nameTitle, int index, QWidget *parent = 0);
+    void setModel(ArincModelInterface *m);
     void addDiscrTable(int adress);
     void deleteDiscrTable(int adress);
     ~MdiForm();
 private:
     Ui::MdiForm *ui;
-    ControllerInterface *controller;
     ArincModelInterface *model;
     ModelTable *table;
     QVector<ModelDiscrTable*> discr_models;
