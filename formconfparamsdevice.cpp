@@ -21,9 +21,7 @@ FormConfParamsDevice::FormConfParamsDevice(QWidget *parent) :
     ui->tableView->setItemDelegateForColumn(3,del);
     stwidget=new QStackedWidget(ui->groupBox_2);
     formDec=new FormDecParam(ui->groupBox_2);
-
     connect(del,SIGNAL(commitData(QWidget*)),this,SLOT(commit_type_param()));
-
     formDec->close();
     formDiscr=new FormDiscrParam(ui->groupBox_2);
     connect(formDiscr->ButtonAdd(),SIGNAL(clicked()),this,SLOT(on_add_state()));
@@ -59,6 +57,11 @@ void FormConfParamsDevice::deleteChannel(int index)
     last_selected_index.remove(index);
     --cout_channel;
     updateItemsComboBox();
+}
+
+QList<ConfParametr *> FormConfParamsDevice::conf(int index) const
+{
+    return models[index]->getConfParametrs();
 }
 
 bool FormConfParamsDevice::ContainsChannel(int index) const

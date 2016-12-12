@@ -58,6 +58,7 @@ public:
     ModelConfDiscrParams(int rows=0, int columns=4, QObject *parent=0);
     void insertParam();
     void delParam(int row);
+    StateContanier* getStates();
     // QAbstractItemModel interface
 public:
     int rowCount(const QModelIndex &) const;
@@ -95,6 +96,7 @@ public:
     ConfParametr *parametr_to_change(int row);
     const ConfParametr *parametr(int row)const;
     TypeParametr typeParametr(int row) const;
+    QList<ConfParametr*> getConfParametrs()const;
     // QAbstractItemModel interface
 public:
     int rowCount(const QModelIndex &parent) const;

@@ -44,6 +44,14 @@ bool ArincReader::isRunningArinc()
     return this->isRunning();
 }
 
+void ArincReader::clearParametrs()
+{
+    foreach (ArincParametr* p, arinc_map) {
+        delete p;
+    }
+    arinc_map.clear();
+}
+
 void ArincReader::setTypeParametr(int adress, Parametr::TypeParametr type)
 {
     if(arinc_map.contains(adress))

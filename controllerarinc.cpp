@@ -30,17 +30,29 @@ void ControllerArinc::addObserveredArincWord(int adress)
 
 void ControllerArinc::addDiscrModel(int adress)
 {
-    form->addDiscrTable(adress);
+    if(!discrs_models.contains(adress)){
+        form->addDiscrTable(adress);
+        discrs_models.push_back(adress);
+    }
 }
 
 void ControllerArinc::deleteDiscrModel(int adress)
 {
-
+    form->deleteDiscrTable(adress);
+    discrs_models.removeOne(adress);
 }
 
 void ControllerArinc::setTitleForm(const QString &name)
 {
     form->setWindowTitle(name);
+}
+
+void ControllerArinc::deleteAllDiscrModel()
+{
+    while(!discrs_models.empty()){
+        deleteDiscrModel(discrs_models.back());
+    }
+
 }
 
 QString ControllerArinc::TitleForm() const
@@ -91,6 +103,11 @@ void ControllerArinc::setStateContanier(StateContanier *cont, int adress)
             arincdiscr->setStates(cont);
         }
     }
+}
+
+void ControllerArinc::clearArincParametrs()
+{
+    model->clearParametrs();
 }
 
 

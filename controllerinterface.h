@@ -17,6 +17,7 @@ public:
     virtual void setDimensionArincParametr(const QString &dim,int adress)=0;
     virtual void setUnpackConst(double unpack,int adress)=0;
     virtual void setTypeParametr(Parametr::TypeParametr type,int adress)=0;
+    virtual void clearArincParametrs()=0;
     virtual void setStateContanier(StateContanier *cont,int adress)=0;
     virtual ~ControllerInterface(){}
 };

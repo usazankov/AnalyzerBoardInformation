@@ -4,6 +4,7 @@
 #include "readingbuffer.h"
 #include "parametr_impl.h"
 #include "arincmodelinterface.h"
+#include <QVector>
 #include <QThread>
 #include <QMap>
 #include <QTimer>
@@ -47,6 +48,10 @@ public:
     // ArincModelInterface interface
 public:
     bool isRunningArinc();
+
+    // ArincModelInterface interface
+public:
+    void clearParametrs();
 };
 
 #endif // ARINCREADER_H

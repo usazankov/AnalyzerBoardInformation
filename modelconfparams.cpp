@@ -46,6 +46,11 @@ TypeParametr ModelConfParams::typeParametr(int row)const
     return dat.at(row)->type;
 }
 
+QList<ConfParametr *> ModelConfParams::getConfParametrs() const
+{
+    return dat;
+}
+
 int ModelConfParams::rowCount(const QModelIndex &parent) const
 {
     return rows;
@@ -214,6 +219,11 @@ void ModelConfDiscrParams::delParam(int row)
     }
 }
 
+StateContanier *ModelConfDiscrParams::getStates()
+{
+    return &states;
+}
+
 int ModelConfDiscrParams::rowCount(const QModelIndex &) const
 {
     return rows;
@@ -255,16 +265,16 @@ bool ModelConfDiscrParams::setData(const QModelIndex &index, const QVariant &val
     if (index.isValid() && role == Qt::EditRole){
         switch (index.column()) {
         case 0:
-            states.getState(index.row())->setNameState(value.toString());
+            states.setNameState(value.toString(),index.row());
             break;
         case 1:
-            states.getState(index.row())->setDigit(value.toInt());
+            states.setDigit(value.toInt(),index.row());
             break;
         case 2:
-            states.getState(index.row())->setState1(value.toString());
+            states.setState1(value.toString(),index.row());
             break;
         case 3:
-            states.getState(index.row())->setState0(value.toString());
+            states.setState0(value.toString(),index.row());
             break;
         default:
             break;

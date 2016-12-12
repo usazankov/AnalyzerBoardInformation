@@ -62,8 +62,8 @@ public:
     TypeParametr Type()const;
     static int k;
 private:
-    StateContanier *states;
-    bool hasStates()const;
+    StateContanier states;
+    bool hasStates() const;
 };
 
 class ArincDecDiscrParametr:public ArincParametr

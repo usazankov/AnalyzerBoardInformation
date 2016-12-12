@@ -5,12 +5,14 @@
 #include <readingbuffer.h>
 #include "arincreader.h"
 #include "controllerarinc.h"
+#include "modelconfparams.h"
 class Device
 {
 public:
-    explicit Device(int index, ReadingBuffer<unsigned int*>*buf, MdiForm *form);
+    explicit Device(int index, ReadingBuffer<unsigned int*> *buf, MdiForm *form);
     int index()const;
     QString title()const;
+    void applyConf(const QList<ConfParametr*> &list);
     virtual ~Device();
 private:
     int i;//Индекс Device

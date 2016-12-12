@@ -26,16 +26,12 @@ void MdiForm::setModel(ArincModelInterface *m)
 {
     model=m;
     model->registerObserver(table);
-    addDiscrTable(0307);
-    addDiscrTable(0300);
-    addDiscrTable(0310);
-    addDiscrTable(0311);
 }
 
 void MdiForm::addDiscrTable(int adress)
 {
     ModelDiscrTable *mod=new ModelDiscrTable(adress);
-    discr_models.push_back(mod);
+    discr_models[adress]=mod;
     QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
     sizePolicy1.setHorizontalStretch(0);
     sizePolicy1.setVerticalStretch(0);
@@ -58,10 +54,11 @@ void MdiForm::addDiscrTable(int adress)
     //view->setMinimumWidth(500);
     view->setSizePolicy(sizePolicy1);
     view->setModel(mod);
-    discr_tables.push_back(view);
+    discr_tables[adress]=view;
     QVBoxLayout *layout = new QVBoxLayout();
-    box_layout.push_back(layout);
+    box_layout[adress]=layout;
     QLabel *label=new QLabel(ui->scrollAreaWidgetContents_2);
+    labels[adress]=label;
     label->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
     QString name;
     if(model->getParametr(adress)!=0)
@@ -77,7 +74,15 @@ void MdiForm::addDiscrTable(int adress)
 
 void MdiForm::deleteDiscrTable(int adress)
 {
-
+    model->removeObserver(discr_models[adress]);
+    delete discr_models[adress];
+    discr_models.remove(adress);
+    delete discr_tables[adress];
+    discr_tables.remove(adress);
+    box_layout[adress]->deleteLater();
+    box_layout.remove(adress);
+    delete labels[adress];
+    labels.remove(adress);
 }
 
 MdiForm::~MdiForm()
@@ -290,6 +295,7 @@ void ModelDiscrTable::setColumnCount(int column)
     this->beginResetModel();
     this->endResetModel();
 }
+
 
 ModelDiscrTable::ModelDiscrTable(int adress, int row, int column, QObject *parent):QAbstractTableModel(parent)
 {

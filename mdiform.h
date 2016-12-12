@@ -9,6 +9,7 @@
 #include <iostream>
 #include <QTableView>
 #include <QVBoxLayout>
+#include <QLabel>
 namespace Ui {
 class MdiForm;
 class ModelTable;
@@ -104,9 +105,10 @@ private:
     Ui::MdiForm *ui;
     ArincModelInterface *model;
     ModelTable *table;
-    QVector<ModelDiscrTable*> discr_models;
-    QVector<QTableView*> discr_tables;
-    QVector<QVBoxLayout*> box_layout;
+    QMap<int, ModelDiscrTable*> discr_models;
+    QMap<int, QTableView*> discr_tables;
+    QMap<int, QVBoxLayout*> box_layout;
+    QMap<int, QLabel*> labels;
     int index;
 public slots:
     void resizeTableToContent();

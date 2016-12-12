@@ -18,6 +18,7 @@ private:
     ArincModelInterface *model;
     //MainView *view;
     MdiForm *form;
+    QList<int> discrs_models;
 public:
     void Start();
     void Stop();
@@ -25,6 +26,7 @@ public:
     void addDiscrModel(int adress);
     void deleteDiscrModel(int adress);  
     void setTitleForm(const QString &name);
+    void deleteAllDiscrModel();
     QString TitleForm()const;
     MdiForm* getMdiForm();
     // ControllerInterface interface
@@ -34,6 +36,7 @@ public:
     void setUnpackConst(double unpack, int adress);
     void setTypeParametr(Parametr::TypeParametr type, int adress);
     void setStateContanier(StateContanier *cont, int adress);
+    void clearArincParametrs();
 
 };
 

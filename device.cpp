@@ -6,7 +6,7 @@ Device::Device(int index, ReadingBuffer<unsigned int *> *buf, MdiForm *form)
     reader=new ArincReader(buf);
     form->setModel(reader);
     controller=new ControllerArinc(form,reader);
-    controller->addObserveredArincWord(0307);
+    /*controller->addObserveredArincWord(0307);
     controller->setNameArincParametr("Параметр1",0307);
     controller->addObserveredArincWord(0300);
     controller->addObserveredArincWord(0311);
@@ -27,7 +27,7 @@ Device::Device(int index, ReadingBuffer<unsigned int *> *buf, MdiForm *form)
     controller->setStateContanier(states,0310);
     controller->setTypeParametr(Parametr::ARINC_DEC,0311);
     controller->setUnpackConst(90,0311);
-    controller->setDimensionArincParametr("км.ч",0311);
+    controller->setDimensionArincParametr("км.ч",0311);*/
     controller->Start();
 }
 
@@ -39,6 +39,42 @@ int Device::index() const
 QString Device::title() const
 {
     return controller->TitleForm();
+}
+
+void Device::applyConf(const QList<ConfParametr *> &list)
+{
+    controller->clearArincParametrs();
+    controller->deleteAllDiscrModel();
+    foreach (ConfParametr* item, list){
+        controller->addObserveredArincWord(item->adress);
+        controller->setNameArincParametr(item->name,item->adress);
+        controller->setDimensionArincParametr(item->dimension,item->adress);
+        switch(item->type){
+        case DEC:{
+            ConfDecParametr *p=dynamic_cast<ConfDecParametr*>(item);
+            controller->setTypeParametr(Parametr::ARINC_DEC,p->adress);
+            controller->setUnpackConst(p->unpack,p->adress);
+            break;
+        }
+        case DISCR:{
+            ConfDiscrParametr *p=dynamic_cast<ConfDiscrParametr*>(item);
+            controller->setTypeParametr(Parametr::ARINC_DISCR,p->adress);
+            controller->setStateContanier(p->model.getStates(),p->adress);
+            controller->addDiscrModel(p->adress);
+            break;
+        }
+        case DISCR_DEC:{
+
+            break;
+        }
+        case DD:{
+
+            break;
+        }
+        default:
+            break;
+        }
+    }
 }
 
 Device::~Device()

@@ -87,6 +87,14 @@ StateContanier::StateContanier()
 
 }
 
+StateContanier::StateContanier(const StateContanier &states)
+{
+    foreach (State *s, states.PtrsState){
+        State *state=new State(*s);
+        PtrsState.push_back(state);
+    }
+}
+
 void StateContanier::insertState(State *state)
 {
     PtrsState.push_back(state);
@@ -94,7 +102,6 @@ void StateContanier::insertState(State *state)
 
 void StateContanier::deleteState(int index)
 {
-    delete PtrsState.at(index);
     PtrsState.removeAt(index);
 }
 
@@ -103,9 +110,31 @@ State *StateContanier::getState(int index) const
     return PtrsState.at(index);
 }
 
-State *StateContanier::getState_to_change(int index)
+void StateContanier::setNameState(QString namestate, int index)
 {
-    return PtrsState.at(index);
+    PtrsState.at(index)->setNameState(namestate);
+}
+
+void StateContanier::setDigit(int digit, int index)
+{
+    PtrsState.at(index)->setDigit(digit);
+}
+
+void StateContanier::setState0(QString state0, int index)
+{
+    PtrsState.at(index)->setState0(state0);
+}
+
+void StateContanier::setState1(QString state1, int index)
+{
+    PtrsState.at(index)->setState1(state1);
+}
+
+
+
+bool StateContanier::isEmptyContanier() const
+{
+    return PtrsState.empty();
 }
 
 int StateContanier::getSize()const
@@ -113,9 +142,24 @@ int StateContanier::getSize()const
     return PtrsState.size();
 }
 
+StateContanier &StateContanier::operator =(const StateContanier &cont)
+{
+    if(!PtrsState.isEmpty()){
+    cout<<"PTRSSTATE.SIZE="<<PtrsState.count()<<endl;
+    while(!PtrsState.empty()){
+        delete PtrsState.back();
+        PtrsState.pop_back();
+    }
+    }
+    foreach (State *s, cont.PtrsState){
+        State *state=new State(*s);
+        PtrsState.push_back(state);
+    }
+    cout<<"PTRSSTATE.SIZE="<<PtrsState.count()<<endl;
+    return *this;
+}
+
 StateContanier::~StateContanier()
 {
-    for(int i=0;i<PtrsState.size();i++){
-        delete PtrsState.at(i);
-    }
+
 }

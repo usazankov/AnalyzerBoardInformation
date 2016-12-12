@@ -116,7 +116,10 @@ void MainController::confParamsDevice()
             formConfDev->insertChannel(dev->title(), dev->index());
     }
     if(formConfDev->exec()==FormConfParamsDevice::Accepted){
-
+        foreach (Device *dev, devices) {
+            dev->applyConf(formConfDev->conf(dev->index()));
+            cout<<"APPLYED! index="<<dev->index()<<endl;
+        }
     }
 
 }

@@ -1,10 +1,12 @@
 #ifndef STATES_H
 #define STATES_H
-#include <QVector>
+#include <QList>
+#include <iostream>
 namespace params {
 class State;
 class StateContanier;
 }
+using namespace std;
 class State{
 public:
     State();
@@ -32,11 +34,17 @@ class StateContanier
 {
 public:
     StateContanier();
+    StateContanier(const StateContanier& states);
     void insertState(State *state);
     void deleteState(int index);
-    State* getState(int index)const;
-    State *getState_to_change(int index);
+    State *getState(int index)const;
+    void setNameState(QString namestate,int index);
+    void setDigit(int digit,int index);
+    void setState0(QString state0,int index);
+    void setState1(QString state1,int index);
     int getSize() const;
+    StateContanier& operator = (const StateContanier& cont);
+    bool isEmptyContanier()const;
     ~StateContanier();
 private:
     QList<State*> PtrsState;

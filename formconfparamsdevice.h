@@ -36,6 +36,7 @@ public:
     explicit FormConfParamsDevice(QWidget *parent = 0);
     void insertChannel(const QString &name,int index);
     void deleteChannel(int index);
+    QList<ConfParametr*> conf(int index)const;
     bool ContainsChannel(int index)const;
     ~FormConfParamsDevice();
 

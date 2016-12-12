@@ -54,7 +54,7 @@ private:
     QString nameArincBoard;
     int nc;
     int nb;
-    static const int SIZE_BUF = 300;
+    static const int SIZE_BUF = 3;
     unsigned int buf[SIZE_BUF];
 };
 
