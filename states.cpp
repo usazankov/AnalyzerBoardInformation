@@ -145,7 +145,6 @@ int StateContanier::getSize()const
 StateContanier &StateContanier::operator =(const StateContanier &cont)
 {
     if(!PtrsState.isEmpty()){
-    cout<<"PTRSSTATE.SIZE="<<PtrsState.count()<<endl;
     while(!PtrsState.empty()){
         delete PtrsState.back();
         PtrsState.pop_back();
@@ -155,7 +154,6 @@ StateContanier &StateContanier::operator =(const StateContanier &cont)
         State *state=new State(*s);
         PtrsState.push_back(state);
     }
-    cout<<"PTRSSTATE.SIZE="<<PtrsState.count()<<endl;
     return *this;
 }
 

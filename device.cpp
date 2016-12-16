@@ -6,6 +6,8 @@ Device::Device(int index, ReadingBuffer<unsigned int *> *buf, MdiForm *form)
     reader=new ArincReader(buf);
     form->setModel(reader);
     controller=new ControllerArinc(form,reader);
+    number_channel=buf->numberChannel();
+    name_board=buf->nameBoard();
     /*controller->addObserveredArincWord(0307);
     controller->setNameArincParametr("Параметр1",0307);
     controller->addObserveredArincWord(0300);
@@ -77,10 +79,19 @@ void Device::applyConf(const QList<ConfParametr *> &list)
     }
 }
 
+int Device::numberChannel()
+{
+    return number_channel;
+}
+
+QString Device::nameBoard()
+{
+    return name_board;
+}
+
 Device::~Device()
 {
-    reader->quit();
-    reader->wait();
+    controller->Stop();
     delete reader;
     delete controller;
 }

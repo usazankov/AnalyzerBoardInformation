@@ -25,7 +25,8 @@ void ControllerArinc::Stop()
 
 void ControllerArinc::addObserveredArincWord(int adress)
 {
-    model->addArincParametr(new ArincParametr(adress));
+    if(!model->hasArincParametr(adress))
+        model->addArincParametr(new ArincParametr(adress));
 }
 
 void ControllerArinc::addDiscrModel(int adress)

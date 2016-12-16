@@ -2,6 +2,7 @@
 #define STATES_H
 #include <QList>
 #include <iostream>
+#include <QDataStream>
 namespace params {
 class State;
 class StateContanier;
@@ -21,6 +22,20 @@ public:
     void setState0(QString state0);
     void setState1(QString state1);
     int getDigit()const;
+    friend QDataStream& operator >>(QDataStream& st, State &conf){
+        st>>conf.namestate;
+        st>>conf.state1;
+        st>>conf.state0;
+        st>>conf.digit;
+        return st;
+    }
+    friend QDataStream& operator <<(QDataStream& st, State conf){
+        st<<conf.namestate;
+        st<<conf.state1;
+        st<<conf.state0;
+        st<<conf.digit;
+        return st;
+    }
     ~State();
     static int k;
 private:
@@ -45,6 +60,19 @@ public:
     int getSize() const;
     StateContanier& operator = (const StateContanier& cont);
     bool isEmptyContanier()const;
+    friend QDataStream& operator <<(QDataStream& st, StateContanier conf){
+        foreach (State* state, conf.PtrsState) {
+            st<<*state;
+        }
+
+        return st;
+    }
+    friend QDataStream& operator >>(QDataStream& st, StateContanier &conf){
+        foreach (State* state, conf.PtrsState) {
+            st>>*state;
+        }
+        return st;
+    }
     ~StateContanier();
 private:
     QList<State*> PtrsState;

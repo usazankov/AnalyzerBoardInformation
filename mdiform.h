@@ -13,6 +13,7 @@
 namespace Ui {
 class MdiForm;
 class ModelTable;
+class QLabelHasWord;
 const int COLUMNS_MAIN_TABLE=6;
 const int ROWS_MAIN_TABLE=5;
 
@@ -24,6 +25,7 @@ const QString TABLE_MS="МС";
 const QString TABLE_ADRESS="Адрес";
 const QString TABLE_STATE="Значение";
 }
+class QLabelHasWord;
 using namespace std;
 class ModelTable: public QAbstractTableModel, public ArincParametrObserver
 {
@@ -108,7 +110,9 @@ private:
     QMap<int, ModelDiscrTable*> discr_models;
     QMap<int, QTableView*> discr_tables;
     QMap<int, QVBoxLayout*> box_layout;
+    QMap<int, QHBoxLayout*> labels_layout;
     QMap<int, QLabel*> labels;
+    QMap<int, QLabelHasWord*> labelshasword;
     int index;
 public slots:
     void resizeTableToContent();
@@ -117,6 +121,15 @@ private slots:
 signals:
     void MdiFormDeleted(int index);
 };
+class QLabelHasWord: public QLabel, public ArincParametrObserver{
+public:
+    explicit QLabelHasWord(int adress, QWidget* parent);
 
+    // ArincParametrObserver interface
+public:
+    void update(const QMap<int, ArincParametr *> &map);
+private:
+    int adress;
+};
 
 #endif // MDIFORM_H

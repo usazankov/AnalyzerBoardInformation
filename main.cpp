@@ -1,22 +1,19 @@
 #include <QApplication>
-#include <QStyleFactory>
 #include "mainview.h"
 #include "maincontroller.h"
 
-
-void setPalette();
-
+static void setStyle();
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    setPalette();
+    setStyle();
     MainView w;
     MainController c(&w);
     w.show();
     return a.exec();
 }
-
-void setPalette(){
+void setStyle()
+{
     QApplication::setStyle(QStyleFactory::create("Fusion"));
     QPalette palette;
     palette.setColor(QPalette::Window, QColor(53,53,53));
@@ -35,3 +32,5 @@ void setPalette(){
     palette.setColor(QPalette::HighlightedText, Qt::black);
     qApp->setPalette(palette);
 }
+
+

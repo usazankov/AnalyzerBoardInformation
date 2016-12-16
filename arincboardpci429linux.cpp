@@ -108,14 +108,24 @@ QString ArincBoardlPCI429::getDescriptionBoard()
 
 ArincBoardlPCI429::~ArincBoardlPCI429()
 {
+    foreach (ReadingBuffer<unsigned int*>* item, numbers_channel) {
+        delete item;
+    }
     stopBoard();
     closeBoard();
 }
 
+void ArincBoardlPCI429::deleteChannel(int number_channel)
+{
+    delete numbers_channel[number_channel];
+    numbers_channel.remove(number_channel);
+    cout<<"PCICHANNEL429 Deleted"<<" channels="<<numbers_channel.count()<<endl;
+}
+
 ReadingBuffer<unsigned int *> *ArincBoardlPCI429::createChannel(int channel,int number_bank)
 {
-    numbers_channel.push_back(channel);
-    return new ArincChannelPCI429(this,channel,number_bank);
+    numbers_channel[channel] = new ArincChannelPCI429(this,channel,number_bank);
+    return numbers_channel[channel];
 }
 
 bool ArincBoardlPCI429::containsChannel(int channel)
@@ -177,10 +187,16 @@ int ArincChannelPCI429::sizeOfBuffer() const
 
 QString ArincChannelPCI429::nameBoard() const
 {
+    return nameArincBoard;
+}
 
+int ArincChannelPCI429::numberChannel() const
+{
+    return nc;
 }
 
 ArincChannelPCI429::~ArincChannelPCI429()
 {
+    STOP_SI(board->hARINC, board->Data, nc);
     cout<<"DELETEDCNANNELPCI429!"<<endl;
 }

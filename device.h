@@ -13,12 +13,16 @@ public:
     int index()const;
     QString title()const;
     void applyConf(const QList<ConfParametr*> &list);
+    int numberChannel();
+    QString nameBoard();
     virtual ~Device();
 private:
     int i;//Индекс Device
-    ArincReader *reader;
+    int number_channel;
+    QString name_board;
+    ArincModelInterface *reader;
     ReadingBuffer<unsigned int*>* pciChannel;
-    ControllerArinc* controller;
+    ControllerInterface* controller;
 };
 
 #endif // DEVICE_H

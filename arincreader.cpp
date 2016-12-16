@@ -134,6 +134,7 @@ void ArincReader::stopArinc()
 {
     emit stopTimer();
     this->quit();
+    this->wait();
 }
 
 void ArincReader::run()
@@ -148,7 +149,6 @@ void ArincReader::run()
 ArincReader::~ArincReader()
 {
     stopArinc();
-    delete arinc;
     for(iter=arinc_map.begin();iter!=arinc_map.end();++iter)
         delete iter.value();
    // std::cout<<this->isRunning()<<std::endl;

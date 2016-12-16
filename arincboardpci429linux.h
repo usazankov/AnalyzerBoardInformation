@@ -35,12 +35,16 @@ private:
     short unsigned int Data[32768];//Массив данных для обмена с платой
     int hARINC;//Дескриптор устройства
     QString name;//Имя устройства
-    QVector<int> numbers_channel;
+    QMap<int,ReadingBuffer<unsigned int *>*> numbers_channel;
     bool flagInitBoard;
     int MAX_NUMBER_CHANNEL;
     int MIN_NUMBER_CHANNEL;
     int index;
 
+
+    // ArincBoardInterface interface
+public:
+    void deleteChannel(int number_channel);
 };
 
 class ArincChannelPCI429 : public ReadingBuffer<unsigned int*>
@@ -52,6 +56,7 @@ public:
     void Stop();//Остановить канал приема
     int sizeOfBuffer()const;//Размер буфера
     QString nameBoard()const;
+    int numberChannel()const;
     static int count;
     class bad_arinc_channel{};
     ~ArincChannelPCI429();

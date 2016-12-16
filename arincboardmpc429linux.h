@@ -4,7 +4,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>
-#include <QVector>
+#include <QMap>
 namespace dev {
 class ArincBoardlMPC429;
 class ArincChannelMPC429;
@@ -18,7 +18,7 @@ public:
     explicit ArincBoardMPC429(QString boardName, int index);
     void stopBoard();//Остановить плату
     void closeBoard();//Закрыть устройство
-    ReadingBuffer<unsigned int *> *createChannel(int number_channel, int number_bank);
+    ReadingBuffer<unsigned int *> *createChannel(int channel, int number_bank);
     bool containsChannel(int channel);
     bool BoardIsValid();
     QString getStatusBoard();
@@ -30,11 +30,15 @@ public:
 private:
     friend class ArincChannelMPC429;
     int i;
-    QVector<int> numbers_channel;
+    QMap<int,ReadingBuffer<unsigned int *>*> numbers_channel;
     QString name;//Имя устройства
     int MAX_NUMBER_CHANNEL;
     int MIN_NUMBER_CHANNEL;
 
+
+    // ArincBoardInterface interface
+public:
+    void deleteChannel(int number_channel);
 };
 
 class ArincChannelMPC429: public ReadingBuffer<unsigned int*>
@@ -46,12 +50,14 @@ public:
     void Stop();
     int sizeOfBuffer()const;
     QString nameBoard()const;
+    int numberChannel()const;
     static int count;
     class bad_arinc_channel{};
     ~ArincChannelMPC429();
 private:
     ArincBoardMPC429 *board;
     QString nameArincBoard;
+
     int nc;
     int nb;
     static const int SIZE_BUF = 3;

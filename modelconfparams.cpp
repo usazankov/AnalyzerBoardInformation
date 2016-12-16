@@ -51,6 +51,39 @@ QList<ConfParametr *> ModelConfParams::getConfParametrs() const
     return dat;
 }
 
+QList<ConfParametr *> *ModelConfParams::getConfParametrsPtr()
+{
+    return &dat;
+}
+
+void ModelConfParams::setConfParametrs(const QList<ConfParametr *> &list)
+{
+    /*foreach (ConfParametr* p, list) {
+        cout<<"name="<<p->name.toStdString()<<endl;
+
+    }*/
+    clearModel();
+    foreach (ConfParametr* p, list) {
+        dat.push_back(p);
+    }
+    rows=list.count();
+    columns=4;
+    beginResetModel();
+    endResetModel();
+}
+
+void ModelConfParams::clearModel()
+{
+    foreach (ConfParametr* p, dat) {
+        delete p;
+    }
+    dat.clear();
+    rows=0;
+    columns=0;
+    beginResetModel();
+    endResetModel();
+}
+
 int ModelConfParams::rowCount(const QModelIndex &parent) const
 {
     return rows;
@@ -200,6 +233,13 @@ ModelConfDiscrParams::ModelConfDiscrParams(int rows, int columns, QObject *paren
     this->columns=columns;
 }
 
+ModelConfDiscrParams::ModelConfDiscrParams(const ModelConfDiscrParams &m, QObject *parent):QAbstractTableModel(parent)
+{
+    rows=m.rows;
+    columns=m.columns;
+    states=m.states;
+}
+
 void ModelConfDiscrParams::insertParam()
 {
     states.insertState(new State());
@@ -222,6 +262,14 @@ void ModelConfDiscrParams::delParam(int row)
 StateContanier *ModelConfDiscrParams::getStates()
 {
     return &states;
+}
+
+ModelConfDiscrParams &ModelConfDiscrParams::operator =(const ModelConfDiscrParams &conf)
+{
+    rows=conf.rows;
+    columns=conf.columns;
+    states=conf.states;
+    return *this;
 }
 
 int ModelConfDiscrParams::rowCount(const QModelIndex &) const
@@ -317,4 +365,39 @@ Qt::ItemFlags ModelConfDiscrParams::flags(const QModelIndex &index) const
 {
     Qt::ItemFlags flags = QAbstractTableModel::flags(index);
     return index.isValid() ? (flags | Qt::ItemIsEditable) : flags;
+}
+
+TypeParametr ConfParametr::getType() const
+{
+        if (typeid(*this)==typeid(ConfDecParametr))
+            return DEC;
+        else if(typeid(*this)==typeid(ConfDiscrParametr))
+            return DISCR;
+        else{
+            cout<<"\nНеправильный тип";
+            return DEC;
+        }
+}
+
+TypeParametr ConfParametr::toTypeParametr(int i)
+{
+    TypeParametr t;
+    switch (i) {
+    case 0:
+        t=DEC;
+        break;
+    case 1:
+        t=DISCR;
+        break;
+    case 2:
+        t=DISCR_DEC;
+        break;
+    case 3:
+        t=DD;
+        break;
+    default:
+        t=DEC;
+        break;
+    }
+    return t;
 }

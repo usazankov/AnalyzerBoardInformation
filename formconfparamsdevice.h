@@ -10,9 +10,13 @@
 #include <QLineEdit>
 #include <iostream>
 #include <QStackedWidget>
+#include <QFile>
+#include <QFileDialog>
+#include <typeinfo>
 namespace Ui {
 class FormConfParamsDevice;
 class ComboBoxDelegate;
+
 }
 using namespace std;
 class ComboBoxDelegate: public QItemDelegate{
@@ -37,7 +41,12 @@ public:
     void insertChannel(const QString &name,int index);
     void deleteChannel(int index);
     QList<ConfParametr*> conf(int index)const;
+    void saveToFile(int index, const QString &filePath);
+    QList<ConfParametr*> openFile(const QString &filePath);
     bool ContainsChannel(int index)const;
+    bool ContainsChannel(const QString &name)const;
+    bool ChannelsIsEmpty()const;
+    void renameChannel(const QString &newname, int index);
     ~FormConfParamsDevice();
 
 private slots:
@@ -50,6 +59,9 @@ private slots:
     void commit_type_param();
     void on_add_state();
     void on_del_state();
+    void on_pushButton_4_clicked();
+    void on_pushButton_3_clicked();
+
 public slots:
     void change_least_bit(int bit);
     void change_most_bit(int bit);

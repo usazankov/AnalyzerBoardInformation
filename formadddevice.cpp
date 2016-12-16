@@ -86,16 +86,16 @@ void FormAddDevice::on_comboIndexDev_activated(int index)
 {
     QString temp;
     ArincBoardInterface *board;
-    switch (index) {
+    switch (ui->comboTypeDev->currentIndex()) {
     case 0:
         temp="dev/pci429_"+QString::number(index);
         ui->lineEdit->setText("Входной канал PCI429: "+QString::number(ArincChannelPCI429::count+1));
         board=new ArincBoardlPCI429(temp,0);
         break;
     case 1:
+        temp="dev/mpc429_"+QString::number(index);
         ui->lineEdit->setText("Входной канал MPC429: "+QString::number(ArincChannelMPC429::count+1));
         board=new ArincBoardMPC429(temp,0);
-        //MPC429;
         break;
     default:
         break;
@@ -106,7 +106,6 @@ void FormAddDevice::on_comboIndexDev_activated(int index)
         }else ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
         ui->statusDev->setText(board->getStatusBoard());
         ui->descriptionDev->setText(board->getDescriptionBoard());
-
     delete board;
 }
 

@@ -57,32 +57,51 @@ void MdiForm::addDiscrTable(int adress)
     discr_tables[adress]=view;
     QVBoxLayout *layout = new QVBoxLayout();
     box_layout[adress]=layout;
+    QHBoxLayout *layout_labels = new QHBoxLayout();
+    labels_layout[adress]=layout_labels;
     QLabel *label=new QLabel(ui->scrollAreaWidgetContents_2);
+    QLabelHasWord *labelhasword=new QLabelHasWord(adress, ui->scrollAreaWidgetContents_2);
+    labelhasword->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
     labels[adress]=label;
-    label->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    label->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Fixed);
+    label->setMinimumWidth(10);
+
+    labelshasword[adress]=labelhasword;
     QString name;
-    if(model->getParametr(adress)!=0)
-        name=model->getParametr(adress)->Name()+"(0"+QString::number(adress,8)+")";
-    else name="Неизвестный параметр (0"+QString::number(adress,8)+")";
+    bool hasWord=0;
+    if(model->getParametr(adress)!=0){
+        name=model->getParametr(adress)->Name()+" (0"+QString::number(adress,8)+")";
+        if(model->getParametr(adress)->HasValue())
+            hasWord=1;
+    }
     label->setText(name);
-    layout->addWidget(label);
+    layout_labels->addWidget(label);
+    layout_labels->addWidget(labelhasword);
+    layout->addLayout(layout_labels);
     layout->addWidget(view);
     layout->setSpacing(6);
     ui->verticalLayout_2->addLayout(layout);
+    model->registerObserver(labelhasword);
     model->registerObserver(mod);
 }
 
 void MdiForm::deleteDiscrTable(int adress)
 {
     model->removeObserver(discr_models[adress]);
+    model->removeObserver(labelshasword[adress]);
     delete discr_models[adress];
     discr_models.remove(adress);
     delete discr_tables[adress];
     discr_tables.remove(adress);
-    box_layout[adress]->deleteLater();
-    box_layout.remove(adress);
     delete labels[adress];
     labels.remove(adress);
+    delete labelshasword[adress];
+    labelshasword.remove(adress);
+    labels_layout[adress]->deleteLater();
+    labels_layout.remove(adress);
+    box_layout[adress]->deleteLater();
+    box_layout.remove(adress);
+
 }
 
 MdiForm::~MdiForm()
@@ -407,4 +426,17 @@ void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map)
 void MdiForm::on_splitter_splitterMoved(int pos, int index)
 {
 
+}
+
+QLabelHasWord::QLabelHasWord(int adress, QWidget *parent):QLabel(parent)
+{
+    this->adress=adress;
+}
+
+void QLabelHasWord::update(const QMap<int, ArincParametr *> &map)
+{
+    if(map[adress]->HasValue())
+        this->setText("");
+    else
+        this->setText("- Слово отсутствует");
 }

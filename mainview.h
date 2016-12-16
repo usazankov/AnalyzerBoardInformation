@@ -9,6 +9,7 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QAction>
+#include <QStyleFactory>
 namespace Ui {
 class MainView;
 }

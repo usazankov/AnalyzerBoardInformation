@@ -12,6 +12,7 @@
 #include "device.h"
 namespace Ui {
 class MainController;
+const QString EMPTY_CHANNEL="Нет устройств";
 }
 using namespace std;
 class MainController : public QObject

@@ -20,10 +20,10 @@ void ArincBoardMPC429::closeBoard()
 
 }
 
-ReadingBuffer<unsigned int *> *ArincBoardMPC429::createChannel(int number_channel, int number_bank)
+ReadingBuffer<unsigned int *> *ArincBoardMPC429::createChannel(int channel, int number_bank)
 {
-    numbers_channel.push_back(number_channel);
-    return new ArincChannelMPC429(this, number_channel, number_bank);
+    numbers_channel[channel] = new ArincChannelMPC429(this,channel,number_bank);
+    return numbers_channel[channel];
 }
 
 bool ArincBoardMPC429::containsChannel(int channel)
@@ -33,8 +33,18 @@ bool ArincBoardMPC429::containsChannel(int channel)
 
 ArincBoardMPC429::~ArincBoardMPC429()
 {
+    foreach (ReadingBuffer<unsigned int*>* item, numbers_channel) {
+        delete item;
+    }
     stopBoard();
     closeBoard();
+}
+
+void ArincBoardMPC429::deleteChannel(int number_channel)
+{
+    delete numbers_channel[number_channel];
+    numbers_channel.remove(number_channel);
+    cout<<"MPCCHANNEL429 Deleted"<<" channels="<<numbers_channel.count()<<endl;
 }
 
 bool ArincBoardMPC429::BoardIsValid()
@@ -149,7 +159,12 @@ QString ArincChannelMPC429::nameBoard() const
     return nameArincBoard;
 }
 
+int ArincChannelMPC429::numberChannel() const
+{
+    return nc;
+}
+
 ArincChannelMPC429::~ArincChannelMPC429()
 {
-
+    cout<<"DELETEDCNANNELMPC429!"<<endl;
 }

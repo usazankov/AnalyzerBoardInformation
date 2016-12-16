@@ -103,10 +103,7 @@ QMdiSubWindow *MainView::findMdiChild(const QString &fileName)
 
 }
 
-void MainView::setStyle()
-{
 
-}
 
 void MainView::createMenu()
 {

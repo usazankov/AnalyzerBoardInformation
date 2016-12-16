@@ -64,9 +64,111 @@ QList<ConfParametr *> FormConfParamsDevice::conf(int index) const
     return models[index]->getConfParametrs();
 }
 
+
+void FormConfParamsDevice::saveToFile(int index, const QString &filePath)
+{
+    cout<<"Сохранение параметров в файл"<<endl;
+    QFile file(filePath);
+    if(!file.open(QIODevice::WriteOnly)){
+        cout<<"Невозможно открыть файл\n";return;
+    }
+    QDataStream stream_file(&file);
+    QList<ConfParametr*> list=*(models[index]->getConfParametrsPtr());
+    int i=1;
+    foreach (ConfParametr* item, list) {
+        TypeParametr type=item->getType();
+        stream_file<<type;
+        switch (type) {
+        case DEC:
+            stream_file<<*(dynamic_cast<ConfDecParametr*>(item));
+            break;
+        case DISCR:
+            stream_file<<*(dynamic_cast<ConfDiscrParametr*>(item));
+            break;
+        case DISCR_DEC:
+
+            break;
+        case DD:
+
+            break;
+        default:
+
+            break;
+        }
+
+    }
+    file.close();
+}
+
+QList<ConfParametr *> FormConfParamsDevice::openFile(const QString &filePath)
+{
+    QFile file(filePath);
+    QList<ConfParametr*> *list=new QList<ConfParametr*>();
+    if(!file.open(QIODevice::ReadOnly)){
+        cout<<"Невозможно открыть файл\n";return *list;
+    }
+    QDataStream stream_file(&file);
+    while(!stream_file.atEnd()){
+        int i;
+        stream_file>>i;
+        TypeParametr type=ConfParametr::toTypeParametr(i);
+        ConfParametr *p;
+        switch (type) {
+        case DEC:{
+            ConfDecParametr *p=new ConfDecParametr();
+            stream_file>>*(p);
+            list->push_back(p);
+            break;
+        }
+        case DISCR:{
+            ConfDiscrParametr *p=new ConfDiscrParametr();
+            stream_file>>*(p);
+            list->push_back(p);
+            break;
+        }
+        case DISCR_DEC:{
+
+        }
+            break;
+        case DD:{
+
+        }
+            break;
+        default:{
+            ConfParametr *p=new ConfParametr();
+            stream_file>>*(p);
+            list->push_back(p);
+            break;
+        }
+        }
+
+
+    }
+    file.close();
+    return *list;
+}
+
 bool FormConfParamsDevice::ContainsChannel(int index) const
 {
     return channels.contains(index);
+}
+
+bool FormConfParamsDevice::ContainsChannel(const QString &name) const
+{
+    return channels.contains(channels.key(name));
+}
+
+bool FormConfParamsDevice::ChannelsIsEmpty() const
+{
+    return channels.empty();
+}
+
+void FormConfParamsDevice::renameChannel(const QString &newname, int index)
+{
+    if(channels.contains(index)){
+        channels[index]=newname;
+        updateItemsComboBox();
+    }
 }
 
 FormConfParamsDevice::~FormConfParamsDevice()
@@ -239,4 +341,21 @@ void FormConfParamsDevice::change_unpack_const(double uc)
     ModelConfParams *model=dynamic_cast<ModelConfParams*>(ui->tableView->model());
     ConfDecParametr *dec=dynamic_cast<ConfDecParametr*>(model->parametr_to_change(ui->tableView->currentIndex().row()));
     dec->unpack=uc;
+}
+
+void FormConfParamsDevice::on_pushButton_4_clicked()
+{
+    QString str = QFileDialog::getSaveFileName(this,"Сохранить файл","","*.conf");
+    if(!str.isEmpty()){
+        if(!str.endsWith(".conf"))
+            str.append(".conf");
+        saveToFile(current_index,str);
+    }
+}
+
+void FormConfParamsDevice::on_pushButton_3_clicked()
+{
+    QString str = QFileDialog::getOpenFileName(this, "Открыть файл", "", "*.conf");
+    if(!str.isEmpty())
+        models[current_index]->setConfParametrs(this->openFile(str));
 }

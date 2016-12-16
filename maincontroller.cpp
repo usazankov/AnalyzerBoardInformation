@@ -12,14 +12,15 @@ MainController::MainController(MainView *view, QObject *parent) : QObject(parent
 MainController::~MainController()
 {
     foreach (ArincBoardInterface *board, pciBoards) {
-        if (board!=0){
+        if (board!=Q_NULLPTR){
+
             delete board;
         }
         cout<<"deleted board"<<endl;
     }
     cout<<"cout dev="<<devices.count()<<endl;
     foreach (Device *dev, devices) {
-        if (dev!=0)
+        if (dev!=Q_NULLPTR)
             delete dev;
         cout<<"deleted dev"<<endl;
     }
@@ -97,8 +98,17 @@ void MainController::addDevice()
 
 void MainController::delDevice(int index)
 {
+    int channel=devices[index]->numberChannel();
+    QString nameBoard=devices[index]->nameBoard();
+    int indexBoard;
     delete devices[index];
     devices.remove(index);
+    foreach (ArincBoardInterface *item, pciBoards){
+        if(item->boardName()==nameBoard){
+            indexBoard=pciBoards.key(item);
+        }
+    }
+    pciBoards[indexBoard]->deleteChannel(channel);
     std::cout<<"Deleted index="<<index<<std::endl;
     if(formConfDev!=Q_NULLPTR)
         formConfDev->deleteChannel(index);
@@ -114,6 +124,12 @@ void MainController::confParamsDevice()
     foreach (Device *dev, devices) {
         if(!formConfDev->ContainsChannel(dev->index()))
             formConfDev->insertChannel(dev->title(), dev->index());
+        else if(formConfDev->ContainsChannel(Ui::EMPTY_CHANNEL)){
+            formConfDev->renameChannel(dev->title(),dev->index());
+        }
+    }
+    if(formConfDev->ChannelsIsEmpty()){
+        formConfDev->insertChannel(Ui::EMPTY_CHANNEL, 0);
     }
     if(formConfDev->exec()==FormConfParamsDevice::Accepted){
         foreach (Device *dev, devices) {
