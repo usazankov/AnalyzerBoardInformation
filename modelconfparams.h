@@ -7,14 +7,17 @@
 #include "states.h"
 #include <QDataStream>
 #include <typeinfo>
-enum TypeParametr{DEC,DISCR,DISCR_DEC,DD};
+namespace params {
+    enum TypeParametr{DEC,DISCR,DISCR_DEC,DD};
+}
+
 struct ConfParametr{
-    TypeParametr type;
+    params::TypeParametr type;
     QString name;
     QString dimension;
     int adress;
     ConfParametr(){
-        type=DEC;
+        type=params::DEC;
         name="-";
         dimension="-";
         adress=0;
@@ -25,8 +28,8 @@ struct ConfParametr{
         dimension=conf.dimension;
         adress=conf.adress;
     }
-    virtual TypeParametr getType()const;
-    static TypeParametr toTypeParametr(int i);
+    virtual params::TypeParametr getType()const;
+    static params::TypeParametr toTypeParametr(int i);
     friend QDataStream& operator >>(QDataStream& st, ConfParametr &conf){
         int type;
         st>>type;
@@ -52,7 +55,7 @@ struct ConfDecParametr:public ConfParametr{
     int least_bit;
     int most_bit;
     ConfDecParametr():ConfParametr(){
-        type=DEC;
+        type=params::DEC;
         unpack=90.0;
         least_bit=9;
         most_bit=29;
@@ -136,7 +139,7 @@ public:
 struct ConfDiscrParametr:public ConfParametr{
     ModelConfDiscrParams model;
     ConfDiscrParametr():ConfParametr(){
-        type=DISCR;
+        type=params::DISCR;
     }
     ConfDiscrParametr(const ConfDiscrParametr& conf):ConfParametr(conf){
         model=conf.model;
@@ -177,7 +180,7 @@ public:
     void delParam(int row);
     ConfParametr *parametr_to_change(int row);
     const ConfParametr *parametr(int row)const;
-    TypeParametr typeParametr(int row) const;
+    params::TypeParametr typeParametr(int row) const;
     QList<ConfParametr*> getConfParametrs()const;
     QList<ConfParametr*>* getConfParametrsPtr();
     void setConfParametrs(const QList<ConfParametr*> &list);

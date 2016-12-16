@@ -16,12 +16,13 @@ class ArincBoardMPC429:public ArincBoardInterface
 {
 public:
     explicit ArincBoardMPC429(QString boardName, int index);
-    void stopBoard();//Остановить плату
-    void closeBoard();//Закрыть устройство
+    void stopBoard();
+    void closeBoard();
     ReadingBuffer<unsigned int *> *createChannel(int channel, int number_bank);
+    void deleteChannel(int channel);
     bool containsChannel(int channel);
     bool BoardIsValid();
-    QString getStatusBoard();
+    QString getStatusBoard();//Обнаружено ли устройство
     QString getDescriptionBoard();
     void initArincBoard();
     QString boardName();
@@ -29,16 +30,12 @@ public:
     ~ArincBoardMPC429();
 private:
     friend class ArincChannelMPC429;
-    int i;
-    QMap<int,ReadingBuffer<unsigned int *>*> numbers_channel;
+    int i;//индекс платы
+    QMap<int,ReadingBuffer<unsigned int *>*> numbers_channel;//Контейнер созданных каналов
     QString name;//Имя устройства
     int MAX_NUMBER_CHANNEL;
     int MIN_NUMBER_CHANNEL;
 
-
-    // ArincBoardInterface interface
-public:
-    void deleteChannel(int number_channel);
 };
 
 class ArincChannelMPC429: public ReadingBuffer<unsigned int*>
@@ -49,8 +46,8 @@ public:
     void Start();
     void Stop();
     int sizeOfBuffer()const;
-    QString nameBoard()const;
-    int numberChannel()const;
+    QString name()const;
+    int index()const;
     static int count;
     class bad_arinc_channel{};
     ~ArincChannelMPC429();

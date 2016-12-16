@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     w.show();
     return a.exec();
 }
-void setStyle()
+static void setStyle()
 {
     QApplication::setStyle(QStyleFactory::create("Fusion"));
     QPalette palette;

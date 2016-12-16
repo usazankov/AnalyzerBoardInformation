@@ -6,7 +6,6 @@ FormConfParamsDevice::FormConfParamsDevice(QWidget *parent) :
     ui(new Ui::FormConfParamsDevice)
 {
     ui->setupUi(this);
-
     QVector<QString> list;
     list.push_back("Десятичный");
     list.push_back("Дискретный");
@@ -76,19 +75,19 @@ void FormConfParamsDevice::saveToFile(int index, const QString &filePath)
     QList<ConfParametr*> list=*(models[index]->getConfParametrsPtr());
     int i=1;
     foreach (ConfParametr* item, list) {
-        TypeParametr type=item->getType();
+        params::TypeParametr type=item->getType();
         stream_file<<type;
         switch (type) {
-        case DEC:
+        case params::DEC:
             stream_file<<*(dynamic_cast<ConfDecParametr*>(item));
             break;
-        case DISCR:
+        case params::DISCR:
             stream_file<<*(dynamic_cast<ConfDiscrParametr*>(item));
             break;
-        case DISCR_DEC:
+        case params::DISCR_DEC:
 
             break;
-        case DD:
+        case params::DD:
 
             break;
         default:
@@ -111,26 +110,26 @@ QList<ConfParametr *> FormConfParamsDevice::openFile(const QString &filePath)
     while(!stream_file.atEnd()){
         int i;
         stream_file>>i;
-        TypeParametr type=ConfParametr::toTypeParametr(i);
+        params::TypeParametr type=ConfParametr::toTypeParametr(i);
         ConfParametr *p;
         switch (type) {
-        case DEC:{
+        case params::DEC:{
             ConfDecParametr *p=new ConfDecParametr();
             stream_file>>*(p);
             list->push_back(p);
             break;
         }
-        case DISCR:{
+        case params::DISCR:{
             ConfDiscrParametr *p=new ConfDiscrParametr();
             stream_file>>*(p);
             list->push_back(p);
             break;
         }
-        case DISCR_DEC:{
+        case params::DISCR_DEC:{
 
         }
             break;
-        case DD:{
+        case params::DD:{
 
         }
             break;
@@ -276,7 +275,7 @@ void FormConfParamsDevice::changed_selection(const QModelIndex &index, const QMo
     ModelConfDiscrParams *m;
     if(model->rowCount(QModelIndex())!=0){
         switch (model->typeParametr(index.row())){
-        case DEC:
+        case params::DEC:
             stwidget->setVisible(true);
             stwidget->setCurrentIndex(0);
             dec=dynamic_cast<const ConfDecParametr*>(model->parametr(index.row()));
@@ -284,7 +283,7 @@ void FormConfParamsDevice::changed_selection(const QModelIndex &index, const QMo
             formDec->setLeastBit(dec->least_bit);
             formDec->setMostBit(dec->most_bit);
             break;
-        case DISCR:
+        case params::DISCR:
             discr=dynamic_cast<const ConfDiscrParametr*>(model->parametr(index.row()));
             m=const_cast<ModelConfDiscrParams*>(&(discr->model));
             formDiscr->TableView()->setModel(m);

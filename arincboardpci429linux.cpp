@@ -185,12 +185,12 @@ int ArincChannelPCI429::sizeOfBuffer() const
     return SIZE_BUF;
 }
 
-QString ArincChannelPCI429::nameBoard() const
+QString ArincChannelPCI429::name() const
 {
     return nameArincBoard;
 }
 
-int ArincChannelPCI429::numberChannel() const
+int ArincChannelPCI429::index() const
 {
     return nc;
 }

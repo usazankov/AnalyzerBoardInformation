@@ -6,8 +6,8 @@ Device::Device(int index, ReadingBuffer<unsigned int *> *buf, MdiForm *form)
     reader=new ArincReader(buf);
     form->setModel(reader);
     controller=new ControllerArinc(form,reader);
-    number_channel=buf->numberChannel();
-    name_board=buf->nameBoard();
+    number_channel=buf->index();
+    name_board=buf->name();
     /*controller->addObserveredArincWord(0307);
     controller->setNameArincParametr("Параметр1",0307);
     controller->addObserveredArincWord(0300);
@@ -52,24 +52,24 @@ void Device::applyConf(const QList<ConfParametr *> &list)
         controller->setNameArincParametr(item->name,item->adress);
         controller->setDimensionArincParametr(item->dimension,item->adress);
         switch(item->type){
-        case DEC:{
+        case params::DEC:{
             ConfDecParametr *p=dynamic_cast<ConfDecParametr*>(item);
             controller->setTypeParametr(Parametr::ARINC_DEC,p->adress);
             controller->setUnpackConst(p->unpack,p->adress);
             break;
         }
-        case DISCR:{
+        case params::DISCR:{
             ConfDiscrParametr *p=dynamic_cast<ConfDiscrParametr*>(item);
             controller->setTypeParametr(Parametr::ARINC_DISCR,p->adress);
             controller->setStateContanier(p->model.getStates(),p->adress);
             controller->addDiscrModel(p->adress);
             break;
         }
-        case DISCR_DEC:{
+        case params::DISCR_DEC:{
 
             break;
         }
-        case DD:{
+        case params::DD:{
 
             break;
         }

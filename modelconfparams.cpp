@@ -41,7 +41,7 @@ const ConfParametr *ModelConfParams::parametr(int row) const
     return dat.at(row);
 }
 
-TypeParametr ModelConfParams::typeParametr(int row)const
+params::TypeParametr ModelConfParams::typeParametr(int row)const
 {
     return dat.at(row)->type;
 }
@@ -112,16 +112,16 @@ QVariant ModelConfParams::data(const QModelIndex &index, int role) const
             break;
         case 3:
             switch(dat.at(index.row())->type){
-            case DEC:
+            case params::DEC:
                 return "Десятичный";
                 break;
-            case DISCR:
+            case params::DISCR:
                 return "Дискретный";
                 break;
-            case DISCR_DEC:
+            case params::DISCR_DEC:
                 return "Дискретно-десятичный";
                 break;
-            case DD:
+            case params::DD:
                 return "Двоично-десятичный";
                 break;
             default:
@@ -138,7 +138,7 @@ bool ModelConfParams::setData(const QModelIndex &index, const QVariant &value, i
     if (index.isValid() && role == Qt::EditRole){
         ConfParametr *conf=dat.at(index.row());
         ConfParametr *param_new;
-        TypeParametr temp=conf->type;
+        params::TypeParametr temp=conf->type;
         switch(index.column()){
         case 0:
             conf->name=value.toString();
@@ -153,26 +153,26 @@ bool ModelConfParams::setData(const QModelIndex &index, const QVariant &value, i
             break;
         case 3:
             switch(value.toInt()){
-            case 0:conf->type=DEC;
+            case 0:conf->type=params::DEC;
                 if(temp!=conf->type){
                     param_new=new ConfDecParametr(*conf);
                     delete dat.at(index.row());
                     dat.replace(index.row(),param_new);
                 }
                 break;
-            case 1:conf->type=DISCR;
+            case 1:conf->type=params::DISCR;
                 if(temp!=conf->type){
                     param_new=new ConfDiscrParametr(*conf);
                     delete dat.at(index.row());
                     dat.replace(index.row(),param_new);
                 }
                 break;
-            case 2:conf->type=DISCR_DEC;
+            case 2:conf->type=params::DISCR_DEC;
                 if(temp!=conf->type){
 
                 }
                 break;
-            case 3:conf->type=DD;
+            case 3:conf->type=params::DD;
                 if(temp!=conf->type){
 
                 }
@@ -367,36 +367,36 @@ Qt::ItemFlags ModelConfDiscrParams::flags(const QModelIndex &index) const
     return index.isValid() ? (flags | Qt::ItemIsEditable) : flags;
 }
 
-TypeParametr ConfParametr::getType() const
+params::TypeParametr ConfParametr::getType() const
 {
         if (typeid(*this)==typeid(ConfDecParametr))
-            return DEC;
+            return params::DEC;
         else if(typeid(*this)==typeid(ConfDiscrParametr))
-            return DISCR;
+            return params::DISCR;
         else{
             cout<<"\nНеправильный тип";
-            return DEC;
+            return params::DEC;
         }
 }
 
-TypeParametr ConfParametr::toTypeParametr(int i)
+params::TypeParametr ConfParametr::toTypeParametr(int i)
 {
-    TypeParametr t;
+    params::TypeParametr t;
     switch (i) {
     case 0:
-        t=DEC;
+        t=params::DEC;
         break;
     case 1:
-        t=DISCR;
+        t=params::DISCR;
         break;
     case 2:
-        t=DISCR_DEC;
+        t=params::DISCR_DEC;
         break;
     case 3:
-        t=DD;
+        t=params::DD;
         break;
     default:
-        t=DEC;
+        t=params::DEC;
         break;
     }
     return t;

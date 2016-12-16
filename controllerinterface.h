@@ -3,9 +3,7 @@
 #include <QString>
 #include "parametr.h"
 #include "states.h"
-namespace dev {
-enum TypeDev{PCI429,MPC429};
-}
+
 class ControllerInterface{
 public:
     virtual void Start()=0;

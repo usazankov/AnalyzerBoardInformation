@@ -55,8 +55,8 @@ public:
     void Start();//Запустить канал приема
     void Stop();//Остановить канал приема
     int sizeOfBuffer()const;//Размер буфера
-    QString nameBoard()const;
-    int numberChannel()const;
+    QString name()const;
+    int index()const;
     static int count;
     class bad_arinc_channel{};
     ~ArincChannelPCI429();

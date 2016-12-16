@@ -40,10 +40,10 @@ ArincBoardMPC429::~ArincBoardMPC429()
     closeBoard();
 }
 
-void ArincBoardMPC429::deleteChannel(int number_channel)
+void ArincBoardMPC429::deleteChannel(int channel)
 {
-    delete numbers_channel[number_channel];
-    numbers_channel.remove(number_channel);
+    delete numbers_channel[channel];
+    numbers_channel.remove(channel);
     cout<<"MPCCHANNEL429 Deleted"<<" channels="<<numbers_channel.count()<<endl;
 }
 
@@ -154,12 +154,12 @@ int ArincChannelMPC429::sizeOfBuffer() const
     return SIZE_BUF;
 }
 
-QString ArincChannelMPC429::nameBoard() const
+QString ArincChannelMPC429::name() const
 {
     return nameArincBoard;
 }
 
-int ArincChannelMPC429::numberChannel() const
+int ArincChannelMPC429::index() const
 {
     return nc;
 }

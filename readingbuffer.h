@@ -13,8 +13,8 @@ public:
     virtual int sizeOfBuffer()const=0;
     virtual void Start()=0;
     virtual void Stop()=0;
-    virtual QString nameBoard()const=0;
-    virtual int numberChannel()const=0;
+    virtual QString name()const=0;
+    virtual int index()const=0;
     virtual ~ReadingBuffer(){}
 };
 
