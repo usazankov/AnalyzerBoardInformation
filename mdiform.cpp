@@ -36,23 +36,22 @@ void MdiForm::addDiscrTable(int adress)
     sizePolicy1.setHorizontalStretch(0);
     sizePolicy1.setVerticalStretch(0);
     QTableView *view = new QTableView(ui->scrollAreaWidgetContents_2);
-    view->setMinimumWidth(300);
-    view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    view->setMinimumWidth(200);
     view->verticalHeader()->setMinimumSectionSize(18);
     view->verticalHeader()->setDefaultSectionSize(23);
-    view->horizontalHeader()->setMinimumSectionSize(300);
-    view->horizontalHeader()->setDefaultSectionSize(300);
+    view->horizontalHeader()->setMinimumSectionSize(100);
+    view->horizontalHeader()->setDefaultSectionSize(150);
+
     view->setObjectName(QStringLiteral("tableView"));
-    sizePolicy1.setHeightForWidth(view->sizePolicy().hasHeightForWidth());
+    //sizePolicy1.setHeightForWidth(view->sizePolicy().hasHeightForWidth());
     view->setSizePolicy(sizePolicy1);
 
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     view->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     view->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+    view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     //view->setMinimumWidth(500);
-    view->setSizePolicy(sizePolicy1);
     view->setModel(mod);
     discr_tables[adress]=view;
     QVBoxLayout *layout = new QVBoxLayout();
@@ -68,11 +67,8 @@ void MdiForm::addDiscrTable(int adress)
 
     labelshasword[adress]=labelhasword;
     QString name;
-    bool hasWord=0;
     if(model->getParametr(adress)!=0){
         name=model->getParametr(adress)->Name()+" (0"+QString::number(adress,8)+")";
-        if(model->getParametr(adress)->HasValue())
-            hasWord=1;
     }
     label->setText(name);
     layout_labels->addWidget(label);

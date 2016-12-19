@@ -8,6 +8,8 @@
 #include <QThread>
 #include <QMap>
 #include <QTimer>
+#include <QDateTime>
+
 class ArincReader: public QThread, public ArincModelInterface
 {
     Q_OBJECT
@@ -21,8 +23,8 @@ private:
     QMap<int, ArincParametr*>::iterator iter;
     QVector<ArincParametrObserver*> observers;
     int size;
-    int time_step;
-
+    double time_step_to_arinc_map;
+    void updateArincMap();
     // ArincModelInterface interface
     void stopArinc();
     void startArinc(int time_milliseconds=1000);

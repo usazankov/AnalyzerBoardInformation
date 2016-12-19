@@ -5,32 +5,25 @@ int ArincReader::count_model=0;
 ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc)
 {
     this->arinc=arinc;
-    time_step=1000;
+    time_step_to_arinc_map=0.1;
 
 }
 
 void ArincReader::update()
 {
-    if(arinc!=0){
-    int adress;
-    static int count;
-        for(int i=0;i<arinc->sizeOfBuffer();++i){
-            adress=(arinc->readBuffer()[i]) & 0xff;
-            if(adress!=0){
-                if(!arinc_map.contains(adress)){
-                    ++count;
-                    ArincParametr *word=new ArincParametr(arinc->readBuffer()[i]);
-                    word->setHasValue(true);
-                    arinc_map[adress]=word;
-                }else if(arinc_map.contains(adress)){
-                    arinc_map[adress]->setWord(arinc->readBuffer()[i]);
-                    arinc_map[adress]->setHasValue(true);
-                }
-                adress=0;
-            }
+
+    if(arinc!=Q_NULLPTR){
+        //double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+        double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+        static double lastKeyToArincMap = 0;
+        if(key-lastKeyToArincMap>time_step_to_arinc_map){
+            cout<<"KEY!"<<endl;
+            updateArincMap();
+            notifyObservers();
+            lastKeyToArincMap=key;
         }
-        notifyObservers();
     }
+
 }
 
 bool ArincReader::hasArincParametr(int adress)
@@ -125,7 +118,7 @@ void ArincReader::addArincParametr(ArincParametr *arincword)
 void ArincReader::startArinc(int time_milliseconds)
 {
     if(!this->isRunning()){
-        time_step=time_milliseconds;
+        time_step_to_arinc_map=time_milliseconds/1000.0;
         this->start();
     }
 }
@@ -142,7 +135,7 @@ void ArincReader::run()
     QTimer timer;
     connect(&timer,SIGNAL(timeout()),this,SLOT(update()));
     connect(this,SIGNAL(stopTimer()),&timer,SLOT(stop()));
-    timer.start(time_step);
+    timer.start(0);
     exec();
 }
 
@@ -154,3 +147,23 @@ ArincReader::~ArincReader()
    // std::cout<<this->isRunning()<<std::endl;
 
 }
+
+void ArincReader::updateArincMap()
+{
+    int adress;
+    for(int i=0;i<arinc->sizeOfBuffer();++i){
+        adress=(arinc->readBuffer()[i]) & 0xff;
+        if(adress!=0){
+            if(!arinc_map.contains(adress)){
+                ArincParametr *word=new ArincParametr(arinc->readBuffer()[i]);
+                word->setHasValue(true);
+                arinc_map[adress]=word;
+            }else if(arinc_map.contains(adress)){
+                arinc_map[adress]->setWord(arinc->readBuffer()[i]);
+                arinc_map[adress]->setHasValue(true);
+            }
+            adress=0;
+        }
+    }
+}
+
