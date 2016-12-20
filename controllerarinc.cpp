@@ -8,19 +8,17 @@ ControllerArinc::ControllerArinc(MdiForm *form, ArincModelInterface *model)
 
 ControllerArinc::~ControllerArinc()
 {
-
+    cout<<"deleted Controller"<<endl;
 }
 
-void ControllerArinc::Start()
+void ControllerArinc::Start(int time_milliseconds)
 {
-    model->startArinc();
+    model->startArinc(time_milliseconds);
 }
 
 void ControllerArinc::Stop()
 {
     model->stopArinc();
-    cout<<"Поток работает:"<<model->isRunningArinc()<<endl;
-
 }
 
 void ControllerArinc::addObserveredArincWord(int adress)
@@ -109,6 +107,11 @@ void ControllerArinc::setStateContanier(StateContanier *cont, int adress)
 void ControllerArinc::clearArincParametrs()
 {
     model->clearParametrs();
+}
+
+void ControllerArinc::update()
+{
+    model->notifyObservers();
 }
 
 

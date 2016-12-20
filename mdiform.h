@@ -102,6 +102,7 @@ public:
     void setModel(ArincModelInterface *m);
     void addDiscrTable(int adress);
     void deleteDiscrTable(int adress);
+    int index()const;
     ~MdiForm();
 private:
     Ui::MdiForm *ui;
@@ -113,7 +114,7 @@ private:
     QMap<int, QHBoxLayout*> labels_layout;
     QMap<int, QLabel*> labels;
     QMap<int, QLabelHasWord*> labelshasword;
-    int index;
+    int i;//Индекс окна
 public slots:
     void resizeTableToContent();
 private slots:

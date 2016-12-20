@@ -6,6 +6,7 @@ MdiForm::MdiForm(QWidget *parent) :
     ui(new Ui::MdiForm)
 {
     ui->setupUi(this);
+    model=Q_NULLPTR;
 }
 
 MdiForm::MdiForm(QString nameTitle,int index, QWidget *parent):QWidget(parent), ui(new Ui::MdiForm)
@@ -13,7 +14,7 @@ MdiForm::MdiForm(QString nameTitle,int index, QWidget *parent):QWidget(parent), 
     ui->setupUi(this);
     this->setWindowTitle(nameTitle);
     table=new ModelTable(0,0);
-    this->index=index;
+    this->i=index;
     ui->tableView->setModel(table);
     ui->splitter->setStretchFactor(0,100);
     ui->splitter->setStretchFactor(1,53);
@@ -100,9 +101,14 @@ void MdiForm::deleteDiscrTable(int adress)
 
 }
 
+int MdiForm::index() const
+{
+    return i;
+}
+
 MdiForm::~MdiForm()
 {
-    emit MdiFormDeleted(index);
+    emit MdiFormDeleted(i);
     foreach(ModelDiscrTable *tmod,discr_models)
         delete tmod;
     foreach (QTableView *table, discr_tables) {
@@ -228,34 +234,35 @@ void ModelTable::update(const QMap<int, ArincParametr *> &map)
     int count=0;
     foreach (int adress, map.keys()) {
         names_header[count]=QString::number(count+1);
+        QModelIndex index;
         //Имя параметра
         if(visible_columns.contains(Ui::TABLE_NAME)){
-            QModelIndex index=this->index(count,visible_columns.indexOf(Ui::TABLE_NAME));
+            index=this->index(count,visible_columns.indexOf(Ui::TABLE_NAME));
             dat[index]=map.value(adress)->FormatValue(Parametr::Format::NameParametr);
         }
         //Значение параметра
         if(visible_columns.contains(Ui::TABLE_VALUE)){
-            QModelIndex index=this->index(count,visible_columns.indexOf(Ui::TABLE_VALUE));
+            index=this->index(count,visible_columns.indexOf(Ui::TABLE_VALUE));
             dat[index]=map.value(adress)->FormatValue(Parametr::Format::ValueParametr);
         }
         //Адресс параметра
         if(visible_columns.contains(Ui::TABLE_ADRESS)){
-            QModelIndex index=this->index(count,visible_columns.indexOf(Ui::TABLE_ADRESS));
+            index=this->index(count,visible_columns.indexOf(Ui::TABLE_ADRESS));
             dat[index]=map.value(adress)->FormatValue(Parametr::Format::Adress);
         }
         //Матрица состояния
         if(visible_columns.contains(Ui::TABLE_MS)){
-            QModelIndex index=this->index(count,visible_columns.indexOf(Ui::TABLE_MS));
+            index=this->index(count,visible_columns.indexOf(Ui::TABLE_MS));
             dat[index]=map.value(adress)->FormatValue(Parametr::Format::MatrixStateParametr);
         }
         //Размерность
         if(visible_columns.contains(Ui::TABLE_DIMENSION)){
-            QModelIndex index=this->index(count,visible_columns.indexOf(Ui::TABLE_DIMENSION));
+            index=this->index(count,visible_columns.indexOf(Ui::TABLE_DIMENSION));
             dat[index]=map.value(adress)->FormatValue(Parametr::Format::DimensionParametr);
         }
         //Нераспакованное слово
         if(visible_columns.contains(Ui::TABLE_UNPACK)){
-            QModelIndex index=this->index(count,visible_columns.indexOf(Ui::TABLE_UNPACK));
+            index=this->index(count,visible_columns.indexOf(Ui::TABLE_UNPACK));
             dat[index]=map.value(adress)->FormatValue(Parametr::Format::UnpackValue);
         }
         ++count;

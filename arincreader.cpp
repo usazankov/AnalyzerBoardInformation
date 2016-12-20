@@ -2,28 +2,32 @@
 
 int ArincReader::count_model=0;
 
-ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc)
+ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc, QObject *obj):QObject(obj)
 {
     this->arinc=arinc;
-    time_step_to_arinc_map=0.1;
-
+    time_step_to_arinc_map=0.2;
+    timer=new QTimer(this);
+    qRegisterMetaType<QVector<int>>();
+    qRegisterMetaType<Qt::Orientation>();
+    connect(timer,SIGNAL(timeout()),this,SLOT(update()));
+    connect(this,SIGNAL(stopTimer()),timer,SLOT(stop()));
+    connect(this,SIGNAL(start_Timer(int)),timer,SLOT(start(int)));
 }
 
 void ArincReader::update()
 {
-
-    if(arinc!=Q_NULLPTR){
-        //double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
-        double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
-        static double lastKeyToArincMap = 0;
-        if(key-lastKeyToArincMap>time_step_to_arinc_map){
-            cout<<"KEY!"<<endl;
-            updateArincMap();
-            notifyObservers();
-            lastKeyToArincMap=key;
+    if(running){
+        if(arinc!=Q_NULLPTR){
+            double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+            static double lastKeyToArincMap = 0;
+            if(key-lastKeyToArincMap>time_step_to_arinc_map){
+                cout<<key-lastKeyToArincMap<<endl;
+                updateArincMap();
+                notifyObservers();
+                lastKeyToArincMap=key;
+            }
         }
     }
-
 }
 
 bool ArincReader::hasArincParametr(int adress)
@@ -34,7 +38,7 @@ bool ArincReader::hasArincParametr(int adress)
 
 bool ArincReader::isRunningArinc()
 {
-    return this->isRunning();
+    return timer->isActive();
 }
 
 void ArincReader::clearParametrs()
@@ -117,35 +121,23 @@ void ArincReader::addArincParametr(ArincParametr *arincword)
 
 void ArincReader::startArinc(int time_milliseconds)
 {
-    if(!this->isRunning()){
-        time_step_to_arinc_map=time_milliseconds/1000.0;
-        this->start();
-    }
+    running=1;
+    emit start_Timer(time_milliseconds);
 }
 
 void ArincReader::stopArinc()
 {
+    running=0;
     emit stopTimer();
-    this->quit();
-    this->wait();
-}
-
-void ArincReader::run()
-{
-    QTimer timer;
-    connect(&timer,SIGNAL(timeout()),this,SLOT(update()));
-    connect(this,SIGNAL(stopTimer()),&timer,SLOT(stop()));
-    timer.start(0);
-    exec();
 }
 
 ArincReader::~ArincReader()
 {
-    stopArinc();
+    cout<<"Timer isRuning:"<<timer->isActive()<<endl;
     for(iter=arinc_map.begin();iter!=arinc_map.end();++iter)
         delete iter.value();
-   // std::cout<<this->isRunning()<<std::endl;
-
+    timer->deleteLater();
+    cout<<"deleted ArincReader"<<endl;
 }
 
 void ArincReader::updateArincMap()

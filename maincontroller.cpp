@@ -11,18 +11,18 @@ MainController::MainController(MainView *view, QObject *parent) : QObject(parent
 
 MainController::~MainController()
 {
+    cout<<"cout dev="<<devices.count()<<endl;
+    foreach (Device *dev, devices) {
+        if (dev!=Q_NULLPTR){
+            delDevice(dev->index());
+        }
+        cout<<"deleted dev"<<endl;
+    }
     foreach (ArincBoardInterface *board, pciBoards) {
         if (board!=Q_NULLPTR){
-
             delete board;
         }
         cout<<"deleted board"<<endl;
-    }
-    cout<<"cout dev="<<devices.count()<<endl;
-    foreach (Device *dev, devices) {
-        if (dev!=Q_NULLPTR)
-            delete dev;
-        cout<<"deleted dev"<<endl;
     }
     delete formConfDev;
 }
@@ -31,7 +31,8 @@ void MainController::connectActionsToSlots()
 {
     connect(view->action_add_device,SIGNAL(triggered()),this,SLOT(addDevice()));
     connect(view->action_confparams_device,SIGNAL(triggered()),this,SLOT(confParamsDevice()));
-
+    connect(view->action_start,SIGNAL(triggered()),this,SLOT(startDevice()));
+    connect(view->action_stop,SIGNAL(triggered()),this,SLOT(stopDevice()));
 }
 
 int MainController::generateIndex()
@@ -87,13 +88,17 @@ void MainController::addDevice()
             MdiForm *mdi=view->createMdiChild(form->nameChannel(),index);
             connect(mdi, SIGNAL(MdiFormDeleted(int)), this, SLOT(delDevice(int)));
             Device* dev = new Device(index,channel,mdi);
-            devices[index]=dev;
+            devices[index]=dev; 
+            QThread *thread = new QThread;
+            threads[index]=thread;
+            dev->moveToThread(thread);
+            connect(thread,SIGNAL(started()),dev,SLOT(startDev()));
+            connect(thread,SIGNAL(finished()),dev,SLOT(stopDev()));
             cout<<"Created dev index="<<index<<endl;
             ++countDevices;
         }
     }
     delete form;
-
 }
 
 void MainController::delDevice(int index)
@@ -101,8 +106,11 @@ void MainController::delDevice(int index)
     int channel=devices[index]->numberChannel();
     QString nameBoard=devices[index]->nameBoard();
     int indexBoard;
+    threads[index]->quit();
+    threads[index]->wait();
     delete devices[index];
     devices.remove(index);
+    delete threads[index];
     foreach (ArincBoardInterface *item, pciBoards){
         if(item->boardName()==nameBoard){
             indexBoard=pciBoards.key(item);
@@ -137,5 +145,20 @@ void MainController::confParamsDevice()
             cout<<"APPLYED! index="<<dev->index()<<endl;
         }
     }
+}
 
+void MainController::startDevice()
+{
+    foreach (QThread *t, threads) {
+        if(!t->isRunning())
+            t->start();
+    }
+}
+
+void MainController::stopDevice()
+{
+    foreach (QThread *t, threads) {
+        if(!t->isFinished())
+            t->quit();
+    }
 }

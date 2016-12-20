@@ -9,13 +9,11 @@
 #include <QMap>
 #include <QTimer>
 #include <QDateTime>
-
-class ArincReader: public QThread, public ArincModelInterface
+class ArincReader:public QObject, public ArincModelInterface
 {
     Q_OBJECT
 public:
-    ArincReader(ReadingBuffer<unsigned int*> *arinc);
-    void run();
+    ArincReader(ReadingBuffer<unsigned int*> *arinc,QObject *obj=0);
     ~ArincReader();
 private:
     ReadingBuffer<unsigned int*> *arinc;
@@ -23,26 +21,26 @@ private:
     QMap<int, ArincParametr*>::iterator iter;
     QVector<ArincParametrObserver*> observers;
     int size;
+    bool running;
     double time_step_to_arinc_map;
     void updateArincMap();
     // ArincModelInterface interface
     void stopArinc();
-    void startArinc(int time_milliseconds=1000);
+    void startArinc(int time_milliseconds);
     void setTypeParametr(int adress, Parametr::TypeParametr type);
     ArincParametr *getParametr(int adress);
     Parametr::TypeParametr TypeParametr(int adress);
     void addArincParametr(ArincParametr *arincword);
-
     void registerObserver(ArincParametrObserver *o);
     void removeObserver(ArincParametrObserver *o);
     void notifyObservers();
     static int count_model;
-signals:
-    void stopTimer();
+    QTimer *timer;
 private slots:
     void update();
-
-
+signals:
+    void stopTimer();
+    void start_Timer(int);
     // ArincModelInterface interface
 public:
     bool hasArincParametr(int adress);
@@ -54,6 +52,7 @@ public:
     // ArincModelInterface interface
 public:
     void clearParametrs();
+
 };
 
 #endif // ARINCREADER_H

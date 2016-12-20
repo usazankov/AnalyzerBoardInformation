@@ -6,7 +6,7 @@
 
 class ControllerInterface{
 public:
-    virtual void Start()=0;
+    virtual void Start(int time_milliseconds=0)=0;
     virtual void Stop()=0;
     virtual void addObserveredArincWord(int adress)=0;
     virtual void setNameArincParametr(const QString &name,int adress)=0;
@@ -19,6 +19,7 @@ public:
     virtual void deleteAllDiscrModel()=0;
     virtual QString TitleForm()const=0;
     virtual void setStateContanier(StateContanier *cont,int adress)=0;
+    virtual void update()=0;
     virtual ~ControllerInterface(){}
 };
 #endif // CONTROLLERINTERFACE_H

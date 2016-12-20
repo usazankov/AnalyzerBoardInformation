@@ -108,8 +108,10 @@ QString ArincBoardlPCI429::getDescriptionBoard()
 
 ArincBoardlPCI429::~ArincBoardlPCI429()
 {
-    foreach (ReadingBuffer<unsigned int*>* item, numbers_channel) {
-        delete item;
+    if(!numbers_channel.empty()){
+        foreach (ReadingBuffer<unsigned int*>* item, numbers_channel) {
+            delete item;
+        }
     }
     stopBoard();
     closeBoard();
@@ -120,6 +122,13 @@ void ArincBoardlPCI429::deleteChannel(int number_channel)
     delete numbers_channel[number_channel];
     numbers_channel.remove(number_channel);
     cout<<"PCICHANNEL429 Deleted"<<" channels="<<numbers_channel.count()<<endl;
+}
+
+void ArincBoardlPCI429::deleteAllChannel()
+{
+    foreach (ReadingBuffer<unsigned int *> *item, numbers_channel) {
+        delete item;
+    }
 }
 
 ReadingBuffer<unsigned int *> *ArincBoardlPCI429::createChannel(int channel,int number_bank)

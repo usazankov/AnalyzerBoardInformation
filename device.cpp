@@ -3,34 +3,14 @@
 Device::Device(int index, ReadingBuffer<unsigned int *> *buf, MdiForm *form)
 {
     this->i=index;
-    reader=new ArincReader(buf);
-    form->setModel(reader);
-    controller=new ControllerArinc(form,reader);
+    pciChannel=buf;
+    this->form=form;
     number_channel=buf->index();
     name_board=buf->name();
-    /*controller->addObserveredArincWord(0307);
-    controller->setNameArincParametr("Параметр1",0307);
-    controller->addObserveredArincWord(0300);
-    controller->addObserveredArincWord(0311);
-    controller->setNameArincParametr("Параметр2",0300);
-    controller->setDimensionArincParametr("Км.ч",0300);
-    controller->addObserveredArincWord(0310);
-    StateContanier *states=new StateContanier();
-    states->insertState(new State(5,"5-Состояние:","0 - Нет","1 - Да"));
-    states->insertState(new State(6,"6-Состояние:","0 - Нет","1 - Да"));
-    states->insertState(new State(7,"7-Состояние:","0 - Нет","1 - Да"));
-    states->insertState(new State(8,"8-Состояние:","0 - Нет","1 - Да"));
-    states->insertState(new State(9,"9-Состояние:","0 - Нет","1 - Да"));
-    controller->setTypeParametr(Parametr::ARINC_DISCR,0300);
-    controller->setStateContanier(states,0300);
-    controller->setTypeParametr(Parametr::ARINC_DISCR,0307);
-    controller->setStateContanier(states,0307);
-    controller->setTypeParametr(Parametr::ARINC_DISCR,0310);
-    controller->setStateContanier(states,0310);
-    controller->setTypeParametr(Parametr::ARINC_DEC,0311);
-    controller->setUnpackConst(90,0311);
-    controller->setDimensionArincParametr("км.ч",0311);*/
-    controller->Start();
+    reader=new ArincReader(pciChannel,this);
+    form->setModel(reader);
+    controller=new ControllerArinc(form,reader);
+    //controller->Start(1000);
 }
 
 int Device::index() const
@@ -40,7 +20,7 @@ int Device::index() const
 
 QString Device::title() const
 {
-    return controller->TitleForm();
+    return form->windowTitle();
 }
 
 void Device::applyConf(const QList<ConfParametr *> &list)
@@ -77,6 +57,7 @@ void Device::applyConf(const QList<ConfParametr *> &list)
             break;
         }
     }
+    controller->update();
 }
 
 int Device::numberChannel()
@@ -89,9 +70,29 @@ QString Device::nameBoard()
     return name_board;
 }
 
-Device::~Device()
+bool Device::isRunningDev()
+{
+    return reader->isRunningArinc();
+}
+
+bool Device::isWasRunThread() const
+{
+    return wasRun;
+}
+
+void Device::stopDev()
 {
     controller->Stop();
+}
+
+void Device::startDev()
+{
+    controller->Start(1);
+}
+
+Device::~Device()
+{
     delete reader;
     delete controller;
 }
+

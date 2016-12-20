@@ -11,7 +11,6 @@ class ControllerArinc: public ControllerInterface
 
 public:
     explicit ControllerArinc(MdiForm *form, ArincModelInterface *model);
-
     ~ControllerArinc();
     // ControllerInterface interface
 private:
@@ -20,7 +19,7 @@ private:
     MdiForm *form;
     QList<int> discrs_models;
 public:
-    void Start();
+    void Start(int time_milliseconds);
     void Stop();
     void addObserveredArincWord(int adress);
     void addDiscrModel(int adress);
@@ -38,6 +37,10 @@ public:
     void setStateContanier(StateContanier *cont, int adress);
     void clearArincParametrs();
 
+
+    // ControllerInterface interface
+public:
+    void update();
 };
 
 #endif // CONTROLLERARINC_H

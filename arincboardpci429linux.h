@@ -45,6 +45,10 @@ private:
     // ArincBoardInterface interface
 public:
     void deleteChannel(int number_channel);
+
+    // ArincBoardInterface interface
+public:
+    void deleteAllChannel();
 };
 
 class ArincChannelPCI429 : public ReadingBuffer<unsigned int*>

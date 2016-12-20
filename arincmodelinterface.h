@@ -1,9 +1,10 @@
 #ifndef ARINCMODELINTERFACE_H
 #define ARINCMODELINTERFACE_H
 #include "arincparametrobserver.h"
+#include <QObject>
 class ArincModelInterface{
 public:
-    virtual void startArinc(int time_milliseconds=1000)=0;
+    virtual void startArinc(int time_milliseconds)=0;
     virtual void stopArinc()=0;
     virtual void setTypeParametr(int adress, Parametr::TypeParametr type)=0;
     virtual ArincParametr* getParametr(int adress)=0;

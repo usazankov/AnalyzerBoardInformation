@@ -36,6 +36,10 @@ private:
     int MAX_NUMBER_CHANNEL;
     int MIN_NUMBER_CHANNEL;
 
+
+    // ArincBoardInterface interface
+public:
+    void deleteAllChannel();
 };
 
 class ArincChannelMPC429: public ReadingBuffer<unsigned int*>

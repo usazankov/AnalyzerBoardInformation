@@ -145,10 +145,10 @@ int StateContanier::getSize()const
 StateContanier &StateContanier::operator =(const StateContanier &cont)
 {
     if(!PtrsState.isEmpty()){
-    while(!PtrsState.empty()){
-        delete PtrsState.back();
-        PtrsState.pop_back();
-    }
+        while(!PtrsState.empty()){
+            delete PtrsState.back();
+            PtrsState.pop_back();
+        }
     }
     foreach (State *s, cont.PtrsState){
         State *state=new State(*s);
@@ -159,5 +159,10 @@ StateContanier &StateContanier::operator =(const StateContanier &cont)
 
 StateContanier::~StateContanier()
 {
-
+    if(!PtrsState.isEmpty()){
+        while(!PtrsState.empty()){
+            delete PtrsState.back();
+            PtrsState.pop_back();
+        }
+    }
 }

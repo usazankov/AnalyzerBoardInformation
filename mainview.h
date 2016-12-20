@@ -18,11 +18,14 @@ class MainView : public QMainWindow
     Q_OBJECT
 public:
     explicit MainView(QWidget *parent = 0);
-    void connectActionsToSlots();
+    MdiForm *activeMdiChild();
+    QMdiSubWindow *findMdiChild(const QString &fileName);
     QAction *action_add_device;
     QAction *action_del_device;
     QAction *action_config_device;
     QAction *action_confparams_device;
+    QAction *action_start;
+    QAction *action_stop;
     QAction *action_open_file;
     QAction *action_save_file;
     QAction *action_exit;
@@ -34,8 +37,7 @@ private:
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuDevice;
-    MdiForm *activeMdiChild();
-    QMdiSubWindow *findMdiChild(const QString &fileName);
+
     void setStyle();
     void createMenu();
     void createToolBars();

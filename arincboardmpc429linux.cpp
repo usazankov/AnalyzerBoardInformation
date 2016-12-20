@@ -33,11 +33,20 @@ bool ArincBoardMPC429::containsChannel(int channel)
 
 ArincBoardMPC429::~ArincBoardMPC429()
 {
-    foreach (ReadingBuffer<unsigned int*>* item, numbers_channel) {
-        delete item;
+    if(!numbers_channel.empty()){
+        foreach (ReadingBuffer<unsigned int*>* item, numbers_channel) {
+            delete item;
+        }
     }
     stopBoard();
     closeBoard();
+}
+
+void ArincBoardMPC429::deleteAllChannel()
+{
+    foreach (ReadingBuffer<unsigned int *> *item, numbers_channel) {
+        delete item;
+    }
 }
 
 void ArincBoardMPC429::deleteChannel(int channel)

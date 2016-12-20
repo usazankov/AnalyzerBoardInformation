@@ -20,10 +20,6 @@ MainView::MainView(QWidget *parent) :
     createMenu();
 }
 
-void MainView::connectActionsToSlots()
-{
-
-}
 
 MainView::~MainView()
 {
@@ -38,6 +34,8 @@ void MainView::createToolBars()
     fileToolBar->setIconSize(QSize(24,24));
 
     deviceToolBar=this->addToolBar(tr("Device"));
+    deviceToolBar->addAction(action_start);
+    deviceToolBar->addAction(action_stop);
     deviceToolBar->addAction(action_add_device);
     deviceToolBar->addAction(action_del_device);
     deviceToolBar->addAction(action_confparams_device);
@@ -46,6 +44,22 @@ void MainView::createToolBars()
 
 void MainView::createActions()
 {
+    action_start = new QAction(this);
+    action_start->setObjectName("action_start");
+    QIcon icon6;
+    icon6.addFile(QStringLiteral(":/images/ok.png"), QSize(), QIcon::Normal, QIcon::Off);
+    action_start->setIcon(icon6);
+    action_start->setText("&Запуск");
+    action_start->setIconVisibleInMenu(false);
+
+    action_stop = new QAction(this);
+    action_stop->setObjectName("action_stop");
+    QIcon icon7;
+    icon7.addFile(QStringLiteral(":/images/cancel.png"), QSize(), QIcon::Normal, QIcon::Off);
+    action_stop->setIcon(icon7);
+    action_stop->setText("&Стоп");
+    action_stop->setIconVisibleInMenu(false);
+
     action_add_device = new QAction(this);
     action_add_device->setObjectName(QStringLiteral("action_add_device"));
     QIcon icon;
@@ -131,6 +145,8 @@ void MainView::createMenu()
     menuFile->addAction(action_save_file);
     menuFile->addSeparator();
     menuFile->addAction(action_exit);
+    menuDevice->addAction(action_start);
+    menuDevice->addAction(action_stop);
     menuDevice->addAction(action_add_device);
     menuDevice->addAction(action_del_device);
     menuDevice->addAction(action_confparams_device);

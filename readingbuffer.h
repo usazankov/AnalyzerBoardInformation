@@ -25,6 +25,7 @@ public:
     virtual bool BoardIsValid()=0;
     virtual ReadingBuffer<unsigned int*>* createChannel(int number_channel,int number_bank)=0;
     virtual void deleteChannel(int number_channel)=0;
+    virtual void deleteAllChannel()=0;
     virtual bool containsChannel(int channel)=0;
     virtual QString getStatusBoard()=0;
     virtual QString getDescriptionBoard()=0;
