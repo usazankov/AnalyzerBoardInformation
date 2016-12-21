@@ -32,7 +32,8 @@ private:
     int countBoards;
     void connectActionsToSlots();
     int generateIndex();
-
+    bool ThreadsisRunning();
+    void checkActions();
 public slots:
     void addDevice();
     void delDevice(int index);

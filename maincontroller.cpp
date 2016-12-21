@@ -7,6 +7,7 @@ MainController::MainController(MainView *view, QObject *parent) : QObject(parent
     countBoards=0;
     formConfDev=Q_NULLPTR;
     connectActionsToSlots();
+    checkActions();
 }
 
 MainController::~MainController()
@@ -46,12 +47,41 @@ int MainController::generateIndex()
     }
 }
 
+bool MainController::ThreadsisRunning()
+{
+    bool threadIsRunning=0;
+    foreach (QThread *t, threads) {
+        if(t->isRunning())
+            threadIsRunning=1;
+    }
+    return threadIsRunning;
+}
+
+void MainController::checkActions()
+{
+    if(devices.isEmpty()){
+        view->action_del_device->setEnabled(false);
+        view->action_start->setEnabled(false);
+        view->action_stop->setEnabled(false);
+        view->action_save_file->setEnabled(false);
+    }else{
+        view->action_start->setEnabled(true);
+        view->action_save_file->setEnabled(true);
+        view->action_del_device->setEnabled(true);
+        if(ThreadsisRunning()){
+            view->action_stop->setEnabled(true);
+            view->action_start->setEnabled(false);
+        }else{
+            view->action_start->setEnabled(true);
+            view->action_stop->setEnabled(false);
+        }
+    }
+}
+
 void MainController::addDevice()
 {
-    cout<<"Добавлено устройство"<<endl;
     int index=generateIndex();
     FormAddDevice *form = new FormAddDevice(view);
-
     if(form->exec()==FormAddDevice::Accepted){
         QString nameDev=form->nameDevice();
         int indexDev;
@@ -90,8 +120,10 @@ void MainController::addDevice()
             Device* dev = new Device(index,channel,mdi);
             devices[index]=dev; 
             QThread *thread = new QThread;
-            threads[index]=thread;
             dev->moveToThread(thread);
+            if(ThreadsisRunning())
+                thread->start();
+            threads[index]=thread;
             connect(thread,SIGNAL(started()),dev,SLOT(startDev()));
             connect(thread,SIGNAL(finished()),dev,SLOT(stopDev()));
             cout<<"Created dev index="<<index<<endl;
@@ -99,6 +131,7 @@ void MainController::addDevice()
         }
     }
     delete form;
+    checkActions();
 }
 
 void MainController::delDevice(int index)
@@ -111,6 +144,7 @@ void MainController::delDevice(int index)
     delete devices[index];
     devices.remove(index);
     delete threads[index];
+    threads.remove(index);
     foreach (ArincBoardInterface *item, pciBoards){
         if(item->boardName()==nameBoard){
             indexBoard=pciBoards.key(item);
@@ -121,6 +155,7 @@ void MainController::delDevice(int index)
     if(formConfDev!=Q_NULLPTR)
         formConfDev->deleteChannel(index);
     --countDevices;
+    checkActions();
 }
 
 void MainController::confParamsDevice()
@@ -149,10 +184,10 @@ void MainController::confParamsDevice()
 
 void MainController::startDevice()
 {
-    foreach (QThread *t, threads) {
+    foreach (QThread *t, threads)
         if(!t->isRunning())
             t->start();
-    }
+    checkActions();
 }
 
 void MainController::stopDevice()
@@ -161,4 +196,5 @@ void MainController::stopDevice()
         if(!t->isFinished())
             t->quit();
     }
+    checkActions();
 }
