@@ -31,6 +31,7 @@ void ControllerArinc::addDiscrModel(int adress)
 {
     if(!discrs_models.contains(adress)){
         form->addDiscrTable(adress);
+        form->setVisibleDiscrTables(true);
         discrs_models.push_back(adress);
     }
 }
@@ -39,6 +40,8 @@ void ControllerArinc::deleteDiscrModel(int adress)
 {
     form->deleteDiscrTable(adress);
     discrs_models.removeOne(adress);
+    if(discrs_models.empty())
+        form->setVisibleDiscrTables(false);
 }
 
 void ControllerArinc::setTitleForm(const QString &name)

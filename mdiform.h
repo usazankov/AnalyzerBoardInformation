@@ -102,6 +102,7 @@ public:
     void setModel(ArincModelInterface *m);
     void addDiscrTable(int adress);
     void deleteDiscrTable(int adress);
+    void setVisibleDiscrTables(bool visible);
     int index()const;
     ~MdiForm();
 private:

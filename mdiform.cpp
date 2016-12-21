@@ -16,8 +16,7 @@ MdiForm::MdiForm(QString nameTitle,int index, QWidget *parent):QWidget(parent), 
     table=new ModelTable(0,0);
     this->i=index;
     ui->tableView->setModel(table);
-    ui->splitter->setStretchFactor(0,100);
-    ui->splitter->setStretchFactor(1,53);
+    setVisibleDiscrTables(false);
     connect(table,SIGNAL(changeContent()),this,SLOT(resizeTableToContent()));
     ui->tableView->horizontalHeader()->setMinimumSectionSize(100);
 
@@ -33,16 +32,16 @@ void MdiForm::addDiscrTable(int adress)
 {
     ModelDiscrTable *mod=new ModelDiscrTable(adress);
     discr_models[adress]=mod;
-    QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
     sizePolicy1.setHorizontalStretch(0);
     sizePolicy1.setVerticalStretch(0);
     QTableView *view = new QTableView(ui->scrollAreaWidgetContents_2);
-    view->setMinimumWidth(200);
+    view->setMinimumWidth(250);
     view->verticalHeader()->setMinimumSectionSize(18);
     view->verticalHeader()->setDefaultSectionSize(23);
     view->horizontalHeader()->setMinimumSectionSize(100);
     view->horizontalHeader()->setDefaultSectionSize(150);
-
+    view->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     view->setObjectName(QStringLiteral("tableView"));
     //sizePolicy1.setHeightForWidth(view->sizePolicy().hasHeightForWidth());
     view->setSizePolicy(sizePolicy1);
@@ -77,7 +76,7 @@ void MdiForm::addDiscrTable(int adress)
     layout->addLayout(layout_labels);
     layout->addWidget(view);
     layout->setSpacing(6);
-    ui->verticalLayout_2->addLayout(layout);
+    ui->verticalLayout_2->insertLayout(ui->verticalLayout_2->count()-1,layout);
     model->registerObserver(labelhasword);
     model->registerObserver(mod);
 }
@@ -124,6 +123,18 @@ void MdiForm::resizeTableToContent()
 {
     ui->tableView->resizeColumnsToContents();
     ui->tableView->resizeRowsToContents();
+}
+void MdiForm::setVisibleDiscrTables(bool visible)
+{
+    if(!visible){
+        QList<int> list;
+        list<<100<<0;
+        ui->splitter->setSizes(list);
+    }else if(visible){
+        QList<int> list;
+        list<<ui->tableView->width()/2<<ui->tableView->width()/4;
+        ui->splitter->setSizes(list);
+    }
 }
 
 void ModelTable::setRowCount(int row)
