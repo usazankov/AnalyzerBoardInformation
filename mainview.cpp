@@ -18,6 +18,7 @@ MainView::MainView(QWidget *parent) :
     createActions();
     createToolBars();
     createMenu();
+    ui->mdiArea->closeActiveSubWindow();
 }
 
 
@@ -34,12 +35,15 @@ void MainView::createToolBars()
     fileToolBar->setIconSize(QSize(24,24));
 
     deviceToolBar=this->addToolBar(tr("Device"));
-    deviceToolBar->addAction(action_start);
-    deviceToolBar->addAction(action_stop);
     deviceToolBar->addAction(action_add_device);
     deviceToolBar->addAction(action_del_device);
     deviceToolBar->addAction(action_confparams_device);
     deviceToolBar->setIconSize(QSize(24,24));
+
+    startingToolBar=this->addToolBar(tr("Starting"));
+    startingToolBar->addAction(action_start);
+    startingToolBar->addAction(action_stop);
+    startingToolBar->setIconSize(QSize(24,24));
 }
 
 void MainView::createActions()
@@ -117,6 +121,11 @@ QMdiSubWindow *MainView::findMdiChild(const QString &fileName)
 
 }
 
+void MainView::closeActiveMdiForm()
+{
+    ui->mdiArea->closeActiveSubWindow();
+}
+
 
 
 void MainView::createMenu()
@@ -145,11 +154,12 @@ void MainView::createMenu()
     menuFile->addAction(action_save_file);
     menuFile->addSeparator();
     menuFile->addAction(action_exit);
-    menuDevice->addAction(action_start);
-    menuDevice->addAction(action_stop);
     menuDevice->addAction(action_add_device);
     menuDevice->addAction(action_del_device);
     menuDevice->addAction(action_confparams_device);
+    menuDevice->addSeparator();
+    menuDevice->addAction(action_start);
+    menuDevice->addAction(action_stop);
 }
 
 

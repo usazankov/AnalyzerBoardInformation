@@ -7,7 +7,6 @@ ModelConfParams::ModelConfParams(int rows, int columns,QObject *parent):QAbstrac
     if(rows!=0){
         dat.append(new ConfParametr());
     }
-
 }
 
 void ModelConfParams::insertParam()

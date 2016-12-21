@@ -31,6 +31,7 @@ MainController::~MainController()
 void MainController::connectActionsToSlots()
 {
     connect(view->action_add_device,SIGNAL(triggered()),this,SLOT(addDevice()));
+    connect(view->action_del_device,SIGNAL(triggered()),this,SLOT(delDevice()));
     connect(view->action_confparams_device,SIGNAL(triggered()),this,SLOT(confParamsDevice()));
     connect(view->action_start,SIGNAL(triggered()),this,SLOT(startDevice()));
     connect(view->action_stop,SIGNAL(triggered()),this,SLOT(stopDevice()));
@@ -65,16 +66,10 @@ void MainController::checkActions()
         view->action_stop->setEnabled(false);
         view->action_save_file->setEnabled(false);
     }else{
-        view->action_start->setEnabled(true);
+        if(!ThreadsisRunning())
+            view->action_start->setEnabled(true);
         view->action_save_file->setEnabled(true);
         view->action_del_device->setEnabled(true);
-        if(ThreadsisRunning()){
-            view->action_stop->setEnabled(true);
-            view->action_start->setEnabled(false);
-        }else{
-            view->action_start->setEnabled(true);
-            view->action_stop->setEnabled(false);
-        }
     }
 }
 
@@ -158,6 +153,11 @@ void MainController::delDevice(int index)
     checkActions();
 }
 
+void MainController::delDevice()
+{
+    view->closeActiveMdiForm();
+}
+
 void MainController::confParamsDevice()
 {
     if(formConfDev==Q_NULLPTR){
@@ -187,7 +187,8 @@ void MainController::startDevice()
     foreach (QThread *t, threads)
         if(!t->isRunning())
             t->start();
-    checkActions();
+    view->action_stop->setEnabled(true);
+    view->action_start->setEnabled(false);
 }
 
 void MainController::stopDevice()
@@ -196,5 +197,6 @@ void MainController::stopDevice()
         if(!t->isFinished())
             t->quit();
     }
-    checkActions();
+    view->action_start->setEnabled(true);
+    view->action_stop->setEnabled(false);
 }

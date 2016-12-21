@@ -20,6 +20,7 @@ public:
     explicit MainView(QWidget *parent = 0);
     MdiForm *activeMdiChild();
     QMdiSubWindow *findMdiChild(const QString &fileName);
+    void closeActiveMdiForm();
     QAction *action_add_device;
     QAction *action_del_device;
     QAction *action_config_device;
@@ -34,6 +35,7 @@ private:
     Ui::MainView *ui;
     QToolBar *fileToolBar;
     QToolBar *deviceToolBar;
+    QToolBar *startingToolBar;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuDevice;

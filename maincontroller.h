@@ -37,6 +37,7 @@ private:
 public slots:
     void addDevice();
     void delDevice(int index);
+    void delDevice();
     void confParamsDevice();
     void startDevice();
     void stopDevice();
