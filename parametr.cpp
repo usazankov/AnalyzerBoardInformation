@@ -22,7 +22,7 @@ Parametr::Parametr(QString Name,QString Dimension)
 
 QString Parametr::Name()const
 {
-    if(name=="")return "Параметр";
+    if(name=="")return "Неизвестный параметр";
     return name;
 }
 
@@ -63,9 +63,19 @@ void Parametr::setHasValue(bool flag)
     hasValue=flag;
 }
 
+void Parametr::setRegistered(bool flag)
+{
+    registered_flag=flag;
+}
+
 bool Parametr::HasValue() const
 {
     return hasValue;
+}
+
+bool Parametr::registered() const
+{
+    return registered_flag;
 }
 
 

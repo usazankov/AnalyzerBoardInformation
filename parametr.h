@@ -17,6 +17,7 @@ private:
     QString name;//Имя параметра
     QString dimension;//Размерность параметра
     bool hasValue;
+    bool registered_flag;
 public:
     enum TypeParametr{NoType=0,ARINC_DEC=1,ARINC_DISCR=2,ARINC_DEC_DISCR=3,ARINC_PARAM=4};
     enum Format{NoFormat=0,NameParametr=1,DimensionParametr=2,ValueParametr=4,
@@ -32,7 +33,9 @@ public:
     void setDimension(QString dim);
     void setDataBehavior(DataBehavior *db);
     void setHasValue(bool flag);
+    void setRegistered(bool flag);
     bool HasValue()const;
+    bool registered()const;
     DataBehavior* getDataBehavior();
     virtual QStringList FormatAllValues()const;//Форматированный вывод данных
     virtual QString FormatValue(Format f)const;
