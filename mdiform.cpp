@@ -13,13 +13,20 @@ MdiForm::MdiForm(QString nameTitle,int index, QWidget *parent):QWidget(parent), 
 {
     ui->setupUi(this);
     this->setWindowTitle(nameTitle);
-    table=new ModelTable(0,0);
+    table=new ModelTable(1);
     this->i=index;
     ui->tableView->setModel(table);
     setVisibleDiscrTables(false);
     connect(table,SIGNAL(changeContent()),this,SLOT(resizeTableToContent()));
+    createActions();
+    connectActionsToSlots();
     ui->tableView->horizontalHeader()->setMinimumSectionSize(100);
-
+    ui->tableView->horizontalHeader()->addAction(actionVisibleValue);
+    ui->tableView->horizontalHeader()->addAction(actionVisibleDimension);
+    ui->tableView->horizontalHeader()->addAction(actionVisibleMS);
+    ui->tableView->horizontalHeader()->addAction(actionVisibleAdress);
+    ui->tableView->horizontalHeader()->addAction(actionVisibleUnpack);
+    ui->tableView->horizontalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
 }
 
 void MdiForm::setModel(ArincModelInterface *m)
@@ -137,6 +144,38 @@ void MdiForm::setVisibleDiscrTables(bool visible)
     }
 }
 
+void MdiForm::createActions()
+{
+    actionVisibleValue=new QAction(QObject::tr("Значение"),ui->tableView->horizontalHeader());
+    actionVisibleValue->setCheckable(true);
+    actionVisibleValue->setChecked(true);
+
+    actionVisibleDimension=new QAction(QObject::tr("Размерность"),ui->tableView->horizontalHeader());
+    actionVisibleDimension->setCheckable(true);
+    actionVisibleDimension->setChecked(true);
+
+    actionVisibleMS=new QAction(QObject::tr("Матрица состояния"),ui->tableView->horizontalHeader());
+    actionVisibleMS->setCheckable(true);
+    actionVisibleMS->setChecked(true);
+
+    actionVisibleAdress=new QAction(QObject::tr("Адрес"),ui->tableView->horizontalHeader());
+    actionVisibleAdress->setCheckable(true);
+    actionVisibleAdress->setChecked(true);
+
+    actionVisibleUnpack=new QAction(QObject::tr("Все слово"),ui->tableView->horizontalHeader());
+    actionVisibleUnpack->setCheckable(true);
+    actionVisibleUnpack->setChecked(true);
+}
+
+void MdiForm::connectActionsToSlots()
+{
+    connect(actionVisibleAdress,SIGNAL(triggered(bool)),this,SLOT(setVisibleAdress(bool)));
+    connect(actionVisibleDimension,SIGNAL(triggered(bool)),this,SLOT(setVisibleDimension(bool)));
+    connect(actionVisibleValue,SIGNAL(triggered(bool)),this,SLOT(setVisibleValue(bool)));
+    connect(actionVisibleMS,SIGNAL(triggered(bool)),this,SLOT(setVisibleMS(bool)));
+    connect(actionVisibleUnpack,SIGNAL(triggered(bool)),this,SLOT(setVisibleUnpack(bool)));
+}
+
 void ModelTable::setRowCount(int row)
 {
     rows=row;
@@ -239,10 +278,10 @@ void ModelTable::update(const QMap<int, ArincParametr *> &map)
 {
     if(rows!=map.count()){
         setRowCount(map.count());
-        setColumnCount(Ui::COLUMNS_MAIN_TABLE);
 
     }
     int count=0;
+    cout<<"map.count="<<map.count()<<endl;
     foreach (int adress, map.keys()) {
         names_header[count]=QString::number(count+1);
         QModelIndex index;
@@ -290,19 +329,29 @@ void ModelTable::setVisibleHeader(bool visible, Parametr::Format f)
     int count=visible_columns.count();
     switch(f){
     case Parametr::Format::DimensionParametr:
-        if(!visible)visible_columns.remove(visible_columns.indexOf(Ui::TABLE_DIMENSION));
+        if(!visible)visible_columns.removeAt(visible_columns.indexOf(Ui::TABLE_DIMENSION));
+        else if(!visible_columns.contains(Ui::TABLE_DIMENSION))
+            visible_columns.insert(2,Ui::TABLE_DIMENSION);
         break;
     case Parametr::Format::Adress:
-        if(!visible)visible_columns.remove(visible_columns.indexOf(Ui::TABLE_ADRESS));
+        if(!visible)visible_columns.removeAt(visible_columns.indexOf(Ui::TABLE_ADRESS));
+        else if(!visible_columns.contains(Ui::TABLE_ADRESS))
+            visible_columns.insert(4,Ui::TABLE_ADRESS);
         break;
     case Parametr::Format::UnpackValue:
-        if(!visible)visible_columns.remove(visible_columns.indexOf(Ui::TABLE_UNPACK));
+        if(!visible)visible_columns.removeAt(visible_columns.indexOf(Ui::TABLE_UNPACK));
+        else if(!visible_columns.contains(Ui::TABLE_UNPACK))
+            visible_columns.insert(5,Ui::TABLE_UNPACK);
         break;
     case Parametr::Format::MatrixStateParametr:
-        if(!visible)visible_columns.remove(visible_columns.indexOf(Ui::TABLE_MS));
+        if(!visible)visible_columns.removeAt(visible_columns.indexOf(Ui::TABLE_MS));
+        else if(!visible_columns.contains(Ui::TABLE_MS))
+            visible_columns.insert(3,Ui::TABLE_MS);
         break;
     case Parametr::Format::ValueParametr:
-        if(!visible)visible_columns.remove(visible_columns.indexOf(Ui::TABLE_VALUE));
+        if(!visible)visible_columns.removeAt(visible_columns.indexOf(Ui::TABLE_VALUE));
+        else if(!visible_columns.contains(Ui::TABLE_VALUE))
+            visible_columns.insert(1,Ui::TABLE_VALUE);
         break;
     default:
         break;
@@ -440,6 +489,31 @@ void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map)
 void MdiForm::on_splitter_splitterMoved(int pos, int index)
 {
 
+}
+
+void MdiForm::setVisibleAdress(bool f)
+{
+    table->setVisibleHeader(f,Parametr::Adress);
+}
+
+void MdiForm::setVisibleDimension(bool f)
+{
+    table->setVisibleHeader(f,Parametr::DimensionParametr);
+}
+
+void MdiForm::setVisibleValue(bool f)
+{
+    table->setVisibleHeader(f,Parametr::ValueParametr);
+}
+
+void MdiForm::setVisibleMS(bool f)
+{
+    table->setVisibleHeader(f,Parametr::MatrixStateParametr);
+}
+
+void MdiForm::setVisibleUnpack(bool f)
+{
+    table->setVisibleHeader(f,Parametr::UnpackValue);
 }
 
 QLabelHasWord::QLabelHasWord(int adress, QWidget *parent):QLabel(parent)

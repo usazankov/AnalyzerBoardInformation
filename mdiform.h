@@ -35,7 +35,7 @@ private:
     int columns;
     QHash<QModelIndex, QVariant> dat;
     QHash<int, QString> names_header;
-    QVector<QString> visible_columns;
+    QList<QString> visible_columns;
     QMap<int, ArincParametr*>::const_iterator iter;
     void setRowCount(int row);
     void setColumnCount(int column);
@@ -43,7 +43,7 @@ private:
     int maxRowCount;
     //QAbstractItemModel interface
 public:
-    explicit ModelTable(int row,int column, QObject *parent = 0);
+    explicit ModelTable(int row=0,int column=6, QObject *parent = 0);
     explicit ModelTable(const ModelTable &table, QObject *parent=0);
     int rowCount(const QModelIndex &) const;
     int columnCount(const QModelIndex &) const;
@@ -109,6 +109,11 @@ private:
     Ui::MdiForm *ui;
     ArincModelInterface *model;
     ModelTable *table;
+    QAction* actionVisibleAdress;
+    QAction* actionVisibleDimension;
+    QAction* actionVisibleValue;
+    QAction* actionVisibleUnpack;
+    QAction* actionVisibleMS;
     QMap<int, ModelDiscrTable*> discr_models;
     QMap<int, QTableView*> discr_tables;
     QMap<int, QVBoxLayout*> box_layout;
@@ -116,10 +121,17 @@ private:
     QMap<int, QLabel*> labels;
     QMap<int, QLabelHasWord*> labelshasword;
     int i;//Индекс окна
+    void createActions();
+    void connectActionsToSlots();
 public slots:
     void resizeTableToContent();
 private slots:
     void on_splitter_splitterMoved(int pos, int index);
+    void setVisibleAdress(bool f);
+    void setVisibleDimension(bool f);
+    void setVisibleValue(bool f);
+    void setVisibleMS(bool f);
+    void setVisibleUnpack(bool f);
 signals:
     void MdiFormDeleted(int index);
 };
