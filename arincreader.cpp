@@ -24,6 +24,7 @@ void ArincReader::update()
                 cout<<key-lastKeyToArincMap<<endl;
                 updateArincMap();
                 notifyObservers();
+                setWordsToZero();
                 lastKeyToArincMap=key;
             }
         }
@@ -122,12 +123,17 @@ void ArincReader::addArincParametr(ArincParametr *arincword)
 void ArincReader::startArinc(int time_milliseconds)
 {
     running=1;
+    arinc->Start();
     emit start_Timer(time_milliseconds);
 }
 
 void ArincReader::stopArinc()
 {
     running=0;
+    updateArincMap();
+    deleteUnregisteredWords();
+    notifyObservers();
+    arinc->Stop();
     emit stopTimer();
 }
 
@@ -155,6 +161,26 @@ void ArincReader::updateArincMap()
                 arinc_map[adress]->setHasValue(true);
             }
             adress=0;
+        }
+    }
+}
+
+void ArincReader::setWordsToZero()
+{
+    foreach (ArincParametr *word, arinc_map) {
+        if(word->HasValue())
+            word->setWord(0);
+            word->setHasValue(false);
+    }
+}
+
+void ArincReader::deleteUnregisteredWords()
+{
+    foreach (ArincParametr *word, arinc_map) {
+        if(!word->registered()){
+            arinc_map.remove(word->Adress());
+            delete word;
+            cout<<"count="<<arinc_map.count()<<endl;
         }
     }
 }

@@ -24,6 +24,8 @@ private:
     bool running;
     double time_step_to_arinc_map;
     void updateArincMap();
+    void setWordsToZero();
+    void deleteUnregisteredWords();
     // ArincModelInterface interface
     void stopArinc();
     void startArinc(int time_milliseconds);
