@@ -66,6 +66,7 @@ FORMS    += \
     formdiscrparam.ui
 
 RESOURCES += \
-    rsc.qrc
+    rsc.qrc \
+    style.qrc
 
 DISTFILES +=

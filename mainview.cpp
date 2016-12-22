@@ -8,13 +8,10 @@ MainView::MainView(QWidget *parent) :
     ui->setupUi(this);
     ui->mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    ui->mdiArea->setViewMode(QMdiArea::TabbedView);
+    ui->mdiArea->setViewMode(QMdiArea::SubWindowView);
     //ui->mdiArea->setTabsClosable(true);
     ui->mdiArea->setTabsMovable(true);
     ui->mdiArea->setDocumentMode(true);
-    QPalette palette;
-    palette.setColor(QPalette::Light, QColor(70,70,70));
-    ui->mdiArea->setPalette(palette);
     createActions();
     createToolBars();
     createMenu();
@@ -134,19 +131,13 @@ void MainView::createMenu()
     menuBar->setObjectName(QStringLiteral("menuBar"));
     menuBar->setGeometry(QRect(0, 0, 760, 19));
 
-    QPalette palette;
-    palette.setColor(QPalette::Window, QColor(53,53,53));
-    palette.setColor(QPalette::Base, QColor(53,53,53));
-    menuBar->setPalette(palette);
     menuFile = new QMenu(menuBar);
     menuFile->setObjectName(QStringLiteral("menuFile"));
     menuFile->setTitle("&Файл");
-    menuFile->setPalette(palette);
 
     menuDevice = new QMenu(menuBar);
     menuDevice->setObjectName(QStringLiteral("menuDevice"));
     menuDevice->setTitle("&Устройство");
-    menuDevice->setPalette(palette);
     this->setMenuBar(menuBar);
     menuBar->addAction(menuFile->menuAction());
     menuBar->addAction(menuDevice->menuAction());
@@ -174,7 +165,28 @@ void MainView::setActiveSubWindow(QWidget *window)
 MdiForm *MainView::createMdiChild(QString nameTitle,int index)
 {
     MdiForm *child = new MdiForm(nameTitle,index);
-    ui->mdiArea->addSubWindow(child);
+
+    QMdiSubWindow *mdi=ui->mdiArea->addSubWindow(child);
+    /*QFont f("System");
+    f.setPixelSize(12);
+    f.setBold(false);
+    QPalette palette;
+    palette.setColor(QPalette::Window, QColor(255,255,255));
+        palette.setColor(QPalette::WindowText, QColor(200,200,200));
+        palette.setColor(QPalette::Base, QColor(255,255,255));
+        palette.setColor(QPalette::AlternateBase, QColor(255,255,255));
+        palette.setColor(QPalette::ToolTipBase, Qt::white);
+        palette.setColor(QPalette::ToolTipText, QColor(255,255,255));
+        palette.setColor(QPalette::Text, QColor(200,200,200));
+        palette.setColor(QPalette::Text, QColor(130,130,130));
+        palette.setColor(QPalette::Light,QColor(255,255,255));
+        palette.setColor(QPalette::Button, QColor(255,255,255));
+        palette.setColor(QPalette::ButtonText, QColor(200,200,200));
+        palette.setColor(QPalette::BrightText, Qt::red);
+        palette.setColor(QPalette::Highlight,QColor(255,255,255));
+    ui->mdiArea->setPalette(palette);
+    mdi->setPalette(palette);
+    mdi->setFont(f);*/
     child->showMaximized();
 
     return child;
