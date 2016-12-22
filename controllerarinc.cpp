@@ -114,7 +114,14 @@ void ControllerArinc::clearArincParametrs()
 
 void ControllerArinc::update()
 {
-    model->notifyObservers();
+    if(!model->isRunningArinc()){
+        model->notifyObservers();
+    }
+}
+
+void ControllerArinc::setRegisteredParametr(bool flag, int adress)
+{
+    model->getParametr(adress)->setRegistered(flag);
 }
 
 

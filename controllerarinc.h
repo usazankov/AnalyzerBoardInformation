@@ -41,6 +41,10 @@ public:
     // ControllerInterface interface
 public:
     void update();
+
+    // ControllerInterface interface
+public:
+    void setRegisteredParametr(bool flag, int adress);
 };
 
 #endif // CONTROLLERARINC_H
