@@ -67,6 +67,7 @@ public:
 private:
     ArincBoardlPCI429 *board;
     QString nameArincBoard;
+    bool started;
     int nc;
     int nb;
     static const int SIZE_BUF = 3;

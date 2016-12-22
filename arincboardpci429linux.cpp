@@ -169,24 +169,36 @@ ArincChannelPCI429::ArincChannelPCI429(ArincBoardInterface *board, int number_ch
 unsigned int *ArincChannelPCI429::readBuffer()
 {
     int unsigned tword;
+    if(started)
     for (int i=0;i<SIZE_BUF;i++){
         //READ_PRM_SS(hARINC, Data, nc, nb, i, tword);
         tword=i+199;
         buf[i]=tword;
     }
+    /*else{
+        for (int i=0;i<SIZE_BUF;i++){
+            //READ_PRM_SS(hARINC, Data, nc, nb, i, tword);
+            tword=0;
+            buf[i]=tword;
+        }
+    }*/
     return buf;
 }
 
 void ArincChannelPCI429::Start()
 {
-    SET_SI_TAB_Z(board->Data,nc,1,board->k);
+    /*SET_SI_TAB_Z(board->Data,nc,1,board->k);
     SET_SI_TAB(board->hARINC,board->Data,nc,1);
-    PUSK_SI(board->hARINC,board->Data,nc,nb,1,0);
+    PUSK_SI(board->hARINC,board->Data,nc,nb,1,0);*/
+    cout<<"ARINC STARTED"<<endl;
+    started=true;
 }
 
 void ArincChannelPCI429::Stop()
 {
-    STOP_SI(board->hARINC, board->Data, nc);
+    //STOP_SI(board->hARINC, board->Data, nc);
+    cout<<"ARINC STOPED"<<endl;
+    started=false;
 }
 
 int ArincChannelPCI429::sizeOfBuffer() const

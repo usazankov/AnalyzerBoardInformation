@@ -10,7 +10,6 @@ Device::Device(int index, ReadingBuffer<unsigned int *> *buf, MdiForm *form)
     reader=new ArincReader(pciChannel,this);
     form->setModel(reader);
     controller=new ControllerArinc(form,reader);
-    //controller->Start(1000);
 }
 
 int Device::index() const
@@ -31,6 +30,7 @@ void Device::applyConf(const QList<ConfParametr *> &list)
         controller->addObserveredArincWord(item->adress);
         controller->setNameArincParametr(item->name,item->adress);
         controller->setDimensionArincParametr(item->dimension,item->adress);
+        controller->setRegisteredParametr(true,item->adress);
         switch(item->type){
         case params::DEC:{
             ConfDecParametr *p=dynamic_cast<ConfDecParametr*>(item);
@@ -73,11 +73,6 @@ QString Device::nameBoard()
 bool Device::isRunningDev()
 {
     return reader->isRunningArinc();
-}
-
-bool Device::isWasRunThread() const
-{
-    return wasRun;
 }
 
 void Device::stopDev()

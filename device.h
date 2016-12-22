@@ -17,8 +17,6 @@ public:
     int numberChannel();
     QString nameBoard();
     bool isRunningDev();
-    bool isWasRunThread()const;
-
 
     virtual ~Device();
 private:
