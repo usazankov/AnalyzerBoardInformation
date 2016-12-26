@@ -8,16 +8,11 @@ MainView::MainView(QWidget *parent) :
     ui->setupUi(this);
     ui->mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    ui->mdiArea->setViewMode(QMdiArea::SubWindowView);
-    //ui->mdiArea->setTabsClosable(true);
-    ui->mdiArea->setTabsMovable(true);
-    ui->mdiArea->setDocumentMode(true);
     createActions();
     createToolBars();
     createMenu();
     ui->mdiArea->closeActiveSubWindow();
 }
-
 
 MainView::~MainView()
 {
@@ -26,18 +21,18 @@ MainView::~MainView()
 
 void MainView::createToolBars()
 {
-    fileToolBar=this->addToolBar(tr("File"));
+    fileToolBar=this->addToolBar(tr("Файл"));
     fileToolBar->addAction(action_open_file);
     fileToolBar->addAction(action_save_file);
     fileToolBar->setIconSize(QSize(24,24));
 
-    deviceToolBar=this->addToolBar(tr("Device"));
+    deviceToolBar=this->addToolBar(tr("Устройство"));
     deviceToolBar->addAction(action_add_device);
     deviceToolBar->addAction(action_del_device);
     deviceToolBar->addAction(action_confparams_device);
     deviceToolBar->setIconSize(QSize(24,24));
 
-    startingToolBar=this->addToolBar(tr("Starting"));
+    startingToolBar=this->addToolBar(tr("Запуск/Остановка"));
     startingToolBar->addAction(action_start);
     startingToolBar->addAction(action_stop);
     startingToolBar->setIconSize(QSize(24,24));
@@ -167,28 +162,7 @@ MdiForm *MainView::createMdiChild(QString nameTitle,int index)
     MdiForm *child = new MdiForm(nameTitle,index);
 
     QMdiSubWindow *mdi=ui->mdiArea->addSubWindow(child);
-    /*QFont f("System");
-    f.setPixelSize(12);
-    f.setBold(false);
-    QPalette palette;
-    palette.setColor(QPalette::Window, QColor(255,255,255));
-        palette.setColor(QPalette::WindowText, QColor(200,200,200));
-        palette.setColor(QPalette::Base, QColor(255,255,255));
-        palette.setColor(QPalette::AlternateBase, QColor(255,255,255));
-        palette.setColor(QPalette::ToolTipBase, Qt::white);
-        palette.setColor(QPalette::ToolTipText, QColor(255,255,255));
-        palette.setColor(QPalette::Text, QColor(200,200,200));
-        palette.setColor(QPalette::Text, QColor(130,130,130));
-        palette.setColor(QPalette::Light,QColor(255,255,255));
-        palette.setColor(QPalette::Button, QColor(255,255,255));
-        palette.setColor(QPalette::ButtonText, QColor(200,200,200));
-        palette.setColor(QPalette::BrightText, Qt::red);
-        palette.setColor(QPalette::Highlight,QColor(255,255,255));
-    ui->mdiArea->setPalette(palette);
-    mdi->setPalette(palette);
-    mdi->setFont(f);*/
     child->showMaximized();
-
     return child;
 }
 

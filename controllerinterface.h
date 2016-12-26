@@ -18,6 +18,7 @@ public:
     virtual void addDiscrModel(int adress)=0;
     virtual void deleteDiscrModel(int adress)=0;
     virtual void deleteAllDiscrModel()=0;
+    virtual void buildDiscrsModel()=0;
     virtual QString TitleForm()const=0;
     virtual void setStateContanier(StateContanier *cont,int adress)=0;
     virtual void update()=0;

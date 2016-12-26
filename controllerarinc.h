@@ -45,6 +45,10 @@ public:
     // ControllerInterface interface
 public:
     void setRegisteredParametr(bool flag, int adress);
+
+    // ControllerInterface interface
+public:
+    void buildDiscrsModel();
 };
 
 #endif // CONTROLLERARINC_H

@@ -11,14 +11,16 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     setStyle();
+
     MainView w;
     MainController c(&w);
     w.show();
+
     return a.exec();
 }
 static void setStyle()
 {
-    QApplication::setStyle(QStyleFactory::create("Fusion"));
+    //QApplication::setStyle(QStyleFactory::create("Fusion"));
     QFile f(":qdarkstyle/style.qss");
     if (!f.exists())
     {

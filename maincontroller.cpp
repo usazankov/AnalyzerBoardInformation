@@ -116,8 +116,10 @@ void MainController::addDevice()
             devices[index]=dev; 
             QThread *thread = new QThread;
             dev->moveToThread(thread);
-            if(ThreadsisRunning())
+
+            if(ThreadsisRunning()){
                 thread->start();
+            }
             threads[index]=thread;
             connect(thread,SIGNAL(started()),dev,SLOT(startDev()));
             connect(thread,SIGNAL(finished()),dev,SLOT(stopDev()));

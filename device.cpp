@@ -24,6 +24,7 @@ QString Device::title() const
 
 void Device::applyConf(const QList<ConfParametr *> &list)
 {
+    cout<<"CONF BEGIN!"<<endl;
     controller->clearArincParametrs();
     controller->deleteAllDiscrModel();
     foreach (ConfParametr* item, list){
@@ -57,7 +58,9 @@ void Device::applyConf(const QList<ConfParametr *> &list)
             break;
         }
     }
+    controller->buildDiscrsModel();
     controller->update();
+    cout<<"CONF APLYED!"<<endl;
 }
 
 int Device::numberChannel()

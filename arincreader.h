@@ -9,17 +9,21 @@
 #include <QMap>
 #include <QTimer>
 #include <QDateTime>
+#include <QMutex>
 class ArincReader:public QObject, public ArincModelInterface
 {
     Q_OBJECT
 public:
     ArincReader(ReadingBuffer<unsigned int*> *arinc,QObject *obj=0);
+    void lockMutex();
+    void unlockMutex();
     ~ArincReader();
 private:
     ReadingBuffer<unsigned int*> *arinc;
     QMap<int, ArincParametr*> arinc_map;
     QMap<int, ArincParametr*>::iterator iter;
     QVector<ArincParametrObserver*> observers;
+    QMutex	mutex;
     int size;
     bool running;
     double time_step_to_arinc_map;

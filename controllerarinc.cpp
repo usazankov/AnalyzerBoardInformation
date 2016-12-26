@@ -30,18 +30,14 @@ void ControllerArinc::addObserveredArincWord(int adress)
 void ControllerArinc::addDiscrModel(int adress)
 {
     if(!discrs_models.contains(adress)){
-        form->addDiscrTable(adress);
-        form->setVisibleDiscrTables(true);
         discrs_models.push_back(adress);
     }
 }
 
 void ControllerArinc::deleteDiscrModel(int adress)
 {
-    form->deleteDiscrTable(adress);
     discrs_models.removeOne(adress);
-    if(discrs_models.empty())
-        form->setVisibleDiscrTables(false);
+    form->deleteDiscrTable(adress);
 }
 
 void ControllerArinc::setTitleForm(const QString &name)
@@ -122,6 +118,19 @@ void ControllerArinc::update()
 void ControllerArinc::setRegisteredParametr(bool flag, int adress)
 {
     model->getParametr(adress)->setRegistered(flag);
+}
+
+void ControllerArinc::buildDiscrsModel()
+{
+    foreach (int adress, discrs_models) {
+        if(!form->containsDiscrModel(adress)){
+            form->addDiscrTable(adress);
+        }
+    }
+    if(discrs_models.empty())
+        form->setVisibleDiscrTables(false);
+    else
+        form->setVisibleDiscrTables(true);
 }
 
 

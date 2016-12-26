@@ -14,18 +14,34 @@ ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc, QObject *obj):QObj
     connect(this,SIGNAL(start_Timer(int)),timer,SLOT(start(int)));
 }
 
+void ArincReader::lockMutex()
+{
+    mutex.lock();
+}
+
+void ArincReader::unlockMutex()
+{
+    mutex.unlock();
+}
+
 void ArincReader::update()
 {
     if(running){
+        cout<<"BEGIN Cycle"<<endl;
         if(arinc!=Q_NULLPTR){
+            cout<<"arin!=Q_NULLPTR"<<endl;
             double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+            cout<<"CurrentDateTime End"<<endl;
             static double lastKeyToArincMap = 0;
+            cout<<"lastKeyToArincMap"<<endl;
             if(key-lastKeyToArincMap>time_step_to_arinc_map){
-                cout<<key-lastKeyToArincMap<<endl;
+                cout<<"IF"<<endl;
                 updateArincMap();
                 notifyObservers();
                 setWordsToZero();
                 lastKeyToArincMap=key;
+                //cout<<"lastKeyArincMap="<<lastKeyToArincMap<<endl;
+                cout<<"END Cycle"<<endl;
             }
         }
     }
@@ -33,8 +49,22 @@ void ArincReader::update()
 
 bool ArincReader::hasArincParametr(int adress)
 {
-    if(arinc_map.contains(adress))return true;
-    else return false;
+    mutex.lock();
+    cout<<"LOCKED!"<<endl;
+    cout<<"hasArincParametr begin"<<endl;
+    if(arinc_map.contains(adress)){
+        cout<<"hasArincParametr end"<<endl;
+        mutex.unlock();
+        cout<<"UNLOCKED!"<<endl<<endl;
+        return true;
+    }
+    else{
+        cout<<"hasArincParametr end"<<endl;
+        mutex.unlock();
+        cout<<"UNLOCKED!"<<endl<<endl;
+        return false;
+    }
+
 }
 
 bool ArincReader::isRunningArinc()
@@ -44,14 +74,24 @@ bool ArincReader::isRunningArinc()
 
 void ArincReader::clearParametrs()
 {
+    mutex.lock();
+    cout<<"LOCKED!"<<endl;
+    cout<<"clearParametrs begin"<<endl;
     foreach (ArincParametr* p, arinc_map) {
+        cout<<"Cleared "<<p->Adress()<<endl;
         delete p;
     }
     arinc_map.clear();
+    cout<<"clearParametrs end"<<endl;
+    mutex.unlock();
+    cout<<"UNLOCKED!"<<endl<<endl;
 }
 
 void ArincReader::setTypeParametr(int adress, Parametr::TypeParametr type)
 {
+    mutex.lock();
+    cout<<"LOCKED!"<<endl;
+    cout<<"setTypeParametr begin"<<endl;
     if(arinc_map.contains(adress))
     if(arinc_map[adress]->Type()!=type){
         int word = arinc_map[adress]->UnpackWord();
@@ -75,48 +115,91 @@ void ArincReader::setTypeParametr(int adress, Parametr::TypeParametr type)
                 break;
         }
     }
+    cout<<"setTypeParametr end"<<endl;
+    mutex.unlock();
+    cout<<"UNLOCKED!"<<endl<<endl;
 }
 
 ArincParametr *ArincReader::getParametr(int adress)
 {
-    if(arinc_map.contains(adress))
+    mutex.lock();
+    cout<<"LOCKED!"<<endl;
+    cout<<"getParametr begin"<<endl;
+    if(arinc_map.contains(adress)){
+        cout<<"getParametr end"<<endl;
+        mutex.unlock();
+        cout<<"UNLOCKED!"<<endl<<endl;
         return arinc_map[adress];
-    else return Q_NULLPTR;
+    }
+    else{
+        cout<<"getParametr end"<<endl;
+        mutex.unlock();
+        cout<<"UNLOCKED!"<<endl<<endl;
+        return Q_NULLPTR;
+    }
 }
 
 void ArincReader::registerObserver(ArincParametrObserver *o)
 {
+    mutex.lock();
+    cout<<"LOCKED!"<<endl;
+    cout<<"registerObserver begin"<<endl;
     if(!observers.contains(o))
         observers.push_back(o);
+    cout<<"registerObserver end"<<endl;
+    mutex.unlock();
+    cout<<"UNLOCKED!"<<endl<<endl;
 }
 
 void ArincReader::removeObserver(ArincParametrObserver *o)
 {
+    mutex.lock();
+    cout<<"LOCKED!"<<endl;
+    cout<<"removeObserver begin"<<endl;
     int index=observers.indexOf(o);
-    if(index>=0)
+    if(index>=0){
         observers.remove(index);
+    }
+    cout<<"addArincParametr end"<<endl;
+    mutex.unlock();
+    cout<<"UNLOCKED!"<<endl<<endl;
 }
 
 void ArincReader::notifyObservers()
-{
+{   mutex.lock();
+    cout<<"notifyObservers begin"<<endl;
     for(int i=0;i<observers.size();i++){
         observers[i]->update(arinc_map);
     }
+    mutex.unlock();
+    cout<<"notifyObservers end"<<endl;
 }
 
 Parametr::TypeParametr ArincReader::TypeParametr(int adress)
 {
+    mutex.lock();
+    cout<<"LOCKED!"<<endl;
+    cout<<"TypeParametr begin"<<endl;
     if(arinc_map.contains(adress))
         return arinc_map[adress]->Type();
     else return Parametr::NoType;
+    cout<<"addArincParametr end"<<endl;
+    mutex.unlock();
+    cout<<"UNLOCKED!"<<endl<<endl;
 }
 
 void ArincReader::addArincParametr(ArincParametr *arincword)
 {
+    mutex.lock();
+    cout<<"LOCKED!"<<endl;
+    cout<<"addArincParametr begin"<<endl;
     int adress=arincword->Adress();
     if(!arinc_map.contains(adress)){
         arinc_map[adress]=arincword;
     }
+    cout<<"addArincParametr end"<<endl;
+    mutex.unlock();
+    cout<<"UNLOCKED!"<<endl<<endl;
 }
 
 
@@ -130,24 +213,28 @@ void ArincReader::startArinc(int time_milliseconds)
 void ArincReader::stopArinc()
 {
     running=0;
+    arinc->Stop();
+    emit stopTimer();
     updateArincMap();
     deleteUnregisteredWords();
     notifyObservers();
-    arinc->Stop();
-    emit stopTimer();
 }
 
 ArincReader::~ArincReader()
 {
-    cout<<"Timer isRuning:"<<timer->isActive()<<endl;
-    for(iter=arinc_map.begin();iter!=arinc_map.end();++iter)
-        delete iter.value();
+    foreach (ArincParametr* p, arinc_map) {
+        arinc_map.remove(p->Adress());
+        delete p;
+    }
     timer->deleteLater();
-    cout<<"deleted ArincReader"<<endl;
 }
 
 void ArincReader::updateArincMap()
 {
+    cout<<"PreMutex!"<<endl;
+    mutex.lock();
+    cout<<"LOCKED!"<<endl;
+    cout<<"updateArincMap begin"<<endl;
     int adress;
     for(int i=0;i<arinc->sizeOfBuffer();++i){
         adress=(arinc->readBuffer()[i]) & 0xff;
@@ -163,15 +250,21 @@ void ArincReader::updateArincMap()
             adress=0;
         }
     }
+    cout<<"updateArincMap end"<<endl;
+    mutex.unlock();
+    cout<<"UNLOCKED!"<<endl<<endl;
+
 }
 
 void ArincReader::setWordsToZero()
 {
+    cout<<"setWordsToZero begin"<<endl;
     foreach (ArincParametr *word, arinc_map) {
         if(word->HasValue())
             word->setWord(0);
             word->setHasValue(false);
     }
+    cout<<"setWordsToZero end"<<endl;
 }
 
 void ArincReader::deleteUnregisteredWords()
@@ -180,7 +273,6 @@ void ArincReader::deleteUnregisteredWords()
         if(!word->registered()){
             arinc_map.remove(word->Adress());
             delete word;
-            cout<<"count="<<arinc_map.count()<<endl;
         }
     }
 }

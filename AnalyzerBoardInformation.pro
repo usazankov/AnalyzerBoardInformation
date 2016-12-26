@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     modelconfparams.cpp \
     formdecparam.cpp \
     formdiscrparam.cpp \
-    device.cpp
+    device.cpp \
+    mdiformdiscr.cpp
 
 HEADERS  += \
     arincparametr.h \
@@ -55,7 +56,8 @@ HEADERS  += \
     modelconfparams.h \
     formdecparam.h \
     formdiscrparam.h \
-    device.h
+    device.h \
+    mdiformdiscr.h
 
 FORMS    += \
     mainview.ui \
@@ -63,7 +65,8 @@ FORMS    += \
     formadddevice.ui \
     formconfparamsdevice.ui \
     formdecparam.ui \
-    formdiscrparam.ui
+    formdiscrparam.ui \
+    mdiformdiscr.ui
 
 RESOURCES += \
     rsc.qrc \
