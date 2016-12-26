@@ -37,74 +37,63 @@ void MdiForm::setModel(ArincModelInterface *m)
 
 void MdiForm::addDiscrTable(int adress)
 {
-    ModelDiscrTable *mod=new ModelDiscrTable(adress);
-    discr_models[adress]=mod;
-    QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    sizePolicy1.setHorizontalStretch(0);
-    sizePolicy1.setVerticalStretch(0);
-    QTableView *view = new QTableView(ui->scrollAreaWidgetContents_2);
-    view->setMinimumWidth(250);
-    view->verticalHeader()->setMinimumSectionSize(18);
-    view->verticalHeader()->setDefaultSectionSize(23);
-    view->horizontalHeader()->setMinimumSectionSize(100);
-    view->horizontalHeader()->setDefaultSectionSize(150);
-    view->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    view->setObjectName(QStringLiteral("tableView"));
-    //sizePolicy1.setHeightForWidth(view->sizePolicy().hasHeightForWidth());
-    view->setSizePolicy(sizePolicy1);
-
-    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    view->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    view->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-    view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-    //view->setMinimumWidth(500);
-    view->setModel(mod);
-    discr_tables[adress]=view;
-    QVBoxLayout *layout = new QVBoxLayout();
-    box_layout[adress]=layout;
-    QHBoxLayout *layout_labels = new QHBoxLayout();
-    labels_layout[adress]=layout_labels;
-    QLabel *label=new QLabel(ui->scrollAreaWidgetContents_2);
-    QLabelHasWord *labelhasword=new QLabelHasWord(adress, ui->scrollAreaWidgetContents_2);
-    labelhasword->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    labels[adress]=label;
-    label->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Fixed);
-    label->setMinimumWidth(10);
-
-    labelshasword[adress]=labelhasword;
+    MdiFormDiscr* discr = new MdiFormDiscr(ui->scrollAreaWidgetContents_2);
+    ModelDiscrTable *mod = new ModelDiscrTable(adress);
     QString name;
     if(model->getParametr(adress)!=0){
         name=model->getParametr(adress)->Name()+" (0"+QString::number(adress,8)+")";
     }
-    label->setText(name);
-    layout_labels->addWidget(label);
-    layout_labels->addWidget(labelhasword);
-    layout->addLayout(layout_labels);
-    layout->addWidget(view);
-    layout->setSpacing(6);
-    ui->verticalLayout_2->insertLayout(ui->verticalLayout_2->count()-1,layout);
-    model->registerObserver(labelhasword);
+    discr->setModel(mod,name);
+    discr_models[adress]=mod;
+    forms.append(discr);
+    ui->verticalLayout_2->insertWidget(ui->verticalLayout_2->count()-1,discr);
     model->registerObserver(mod);
+    model->registerObserver(discr->LabelHasWord());
+}
+
+void MdiForm::setDiscrTable(int index,int adress)
+{
+    ModelDiscrTable *mod = new ModelDiscrTable(adress);
+    QString name;
+    if(model->getParametr(adress)!=0){
+        name=model->getParametr(adress)->Name()+" (0"+QString::number(adress,8)+")";
+    }
+    model->removeObserver(discr_models[forms.at(index)->adress()]);
+    delete discr_models[forms.at(index)->adress()];
+    discr_models.remove(forms.at(index)->adress());
+    forms.at(index)->setModel(mod,name);
+    discr_models[adress]=mod;
+    model->registerObserver(mod);
+    forms.at(index)->LabelHasWord()->setAdress(adress);
+}
+
+bool MdiForm::containsDiscrModel(int adress)
+{
+    return discr_models.contains(adress);
+}
+
+int MdiForm::countDiscrTables() const
+{
+    return forms.count();
+}
+
+int MdiForm::countDiscrModels() const
+{
+    return discr_models.count();
 }
 
 void MdiForm::deleteDiscrTable(int adress)
 {
     model->removeObserver(discr_models[adress]);
-    model->removeObserver(labelshasword[adress]);
+    foreach (MdiFormDiscr* f, forms) {
+        if(f->adress()==adress){
+            model->removeObserver(f->LabelHasWord());
+            delete f;
+            forms.removeOne(f);
+        }
+    }
     delete discr_models[adress];
     discr_models.remove(adress);
-    delete discr_tables[adress];
-    discr_tables.remove(adress);
-    delete labels[adress];
-    labels.remove(adress);
-    delete labelshasword[adress];
-    labelshasword.remove(adress);
-    labels_layout[adress]->deleteLater();
-    labels_layout.remove(adress);
-    box_layout[adress]->deleteLater();
-    box_layout.remove(adress);
-
 }
 
 int MdiForm::index() const
@@ -117,12 +106,6 @@ MdiForm::~MdiForm()
     emit MdiFormDeleted(i);
     foreach(ModelDiscrTable *tmod,discr_models)
         delete tmod;
-    foreach (QTableView *table, discr_tables) {
-        delete table;
-    }
-    foreach (QVBoxLayout *vbox, box_layout) {
-        delete vbox;
-    }
     delete ui;
 }
 
@@ -276,12 +259,11 @@ ModelTable::~ModelTable()
 
 void ModelTable::update(const QMap<int, ArincParametr *> &map)
 {
+    cout<<"updateModelTable begin"<<endl;
     if(rows!=map.count()){
         setRowCount(map.count());
-
     }
     int count=0;
-    cout<<"map.count="<<map.count()<<endl;
     foreach (int adress, map.keys()) {
         names_header[count]=QString::number(count+1);
         QModelIndex index;
@@ -320,8 +302,9 @@ void ModelTable::update(const QMap<int, ArincParametr *> &map)
     QModelIndex topleft=this->index(0,0);
     QModelIndex bottomright=this->index(rows,columns);
     emit dataChanged(topleft, bottomright);
-    emit headerDataChanged(Qt::Vertical,0,rows);
-    emit changeContent();
+    //emit headerDataChanged(Qt::Vertical,0,rows);
+    //emit changeContent();
+    cout<<"updateModelTable end"<<endl;
 }
 
 void ModelTable::setVisibleHeader(bool visible, Parametr::Format f)
@@ -364,128 +347,6 @@ void ModelTable::setVisibleHeader(bool visible, Parametr::Format f)
 
 }
 
-void ModelDiscrTable::setRowCount(int row)
-{
-    rows=row;
-    this->beginResetModel();
-    this->endResetModel();
-}
-
-void ModelDiscrTable::setColumnCount(int column)
-{
-    columns=column;
-    this->beginResetModel();
-    this->endResetModel();
-}
-
-
-ModelDiscrTable::ModelDiscrTable(int adress, int row, int column, QObject *parent):QAbstractTableModel(parent)
-{
-    this->adress=adress;
-    rows=row;
-    columns=column;
-}
-
-ModelDiscrTable::ModelDiscrTable(const ModelDiscrTable &table, QObject *parent):QAbstractTableModel(parent)
-{
-    rows=table.rows;
-    columns=table.columns;
-    dat=table.dat;
-    names_header=table.names_header;
-    iter=table.iter;
-    adress=table.adress;
-}
-
-int ModelDiscrTable::rowCount(const QModelIndex &) const
-{
-    return rows;
-}
-
-int ModelDiscrTable::columnCount(const QModelIndex &) const
-{
-    return columns;
-}
-
-QVariant ModelDiscrTable::data(const QModelIndex &index, int role) const
-{
-    if (!index.isValid()){
-        return QVariant();
-    }
-
-    if(role == Qt::DisplayRole || role == Qt::EditRole){
-        return dat[index];
-    }else return QVariant();
-}
-
-QVariant ModelDiscrTable::headerData(int section, Qt::Orientation orientation, int role) const
-{
-    if (role != Qt::DisplayRole){
-        return QVariant();
-    }
-    if(orientation==Qt::Vertical){
-            return names_header[section];
-
-    }
-    if(orientation==Qt::Horizontal){
-        if (section==0)
-            return Ui::TABLE_STATE;
-        else
-        return "";
-    }
-    return QVariant();
-}
-
-Qt::ItemFlags ModelDiscrTable::flags(const QModelIndex &index) const
-{
-    Qt::ItemFlags flags = QAbstractTableModel::flags(index);
-    return index.isValid() ? (flags | Qt::ItemIsEditable) : flags;
-}
-
-bool ModelDiscrTable::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-    if (index.isValid() && role == Qt::DisplayRole){
-        emit dataChanged(index, index);
-        return true;
-    }
-    return false;
-}
-
-void ModelDiscrTable::setAdress(int adress)
-{
-    this->adress=adress;
-}
-
-int ModelDiscrTable::getAdress() const
-{
-    return adress;
-}
-
-ModelDiscrTable::~ModelDiscrTable()
-{
-
-}
-
-void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map)
-{
-
-    ArincDiscrParametr *temp = dynamic_cast<ArincDiscrParametr*>(map[adress]);
-    if(temp!=0){
-        if(countOfStates!=temp->getNameStates().count()){
-            countOfStates=temp->getNameStates().count();
-            setRowCount(countOfStates);
-            setColumnCount(1);
-        }
-        names_states=temp->getNameStates();
-        value_states=temp->getValueStates();
-        for(int i=0;i<names_states.size();++i){
-            QModelIndex index=this->index(i,0);
-            emit dataChanged(index, index);
-            names_header[i]=names_states.at(i);
-            dat[index]=value_states.at(i);
-        }
-    }
-}
-
 void MdiForm::on_splitter_splitterMoved(int pos, int index)
 {
 
@@ -516,15 +377,3 @@ void MdiForm::setVisibleUnpack(bool f)
     table->setVisibleHeader(f,Parametr::UnpackValue);
 }
 
-QLabelHasWord::QLabelHasWord(int adress, QWidget *parent):QLabel(parent)
-{
-    this->adress=adress;
-}
-
-void QLabelHasWord::update(const QMap<int, ArincParametr *> &map)
-{
-    if(map[adress]->HasValue())
-        this->setText("");
-    else
-        this->setText("- Слово отсутствует");
-}
