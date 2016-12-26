@@ -494,7 +494,9 @@ QSizeGrip {
     height: 12px;
 }
 
-
+QMdiSubWindow:active{
+    color:black;
+}
 QMainWindow::separator
 {
     background-color: #31363b;
