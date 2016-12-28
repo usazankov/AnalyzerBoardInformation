@@ -49,6 +49,7 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
+    int adressOfRow(int row)const;
     ~ModelTable();
     // ArincParametrObserver interface
 public:
@@ -86,6 +87,7 @@ private:
     QAction* actionVisibleValue;
     QAction* actionVisibleUnpack;
     QAction* actionVisibleMS;
+    QAction* actionBuildGraf;
     QList<MdiFormDiscr*> forms;
     QMap<int, ModelDiscrTable*> discr_models;
     int i;//Индекс окна
@@ -100,6 +102,8 @@ private slots:
     void setVisibleValue(bool f);
     void setVisibleMS(bool f);
     void setVisibleUnpack(bool f);
+    void BuildGraf();
+
 signals:
     void MdiFormDeleted(int index);
 };

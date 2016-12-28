@@ -27,6 +27,7 @@ MdiForm::MdiForm(QString nameTitle,int index, QWidget *parent):QWidget(parent), 
     ui->tableView->horizontalHeader()->addAction(actionVisibleAdress);
     ui->tableView->horizontalHeader()->addAction(actionVisibleUnpack);
     ui->tableView->horizontalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
+    ui->tableView->addAction(actionBuildGraf);
 }
 
 void MdiForm::setModel(ArincModelInterface *m)
@@ -148,6 +149,8 @@ void MdiForm::createActions()
     actionVisibleUnpack=new QAction(QObject::tr("Все слово"),ui->tableView->horizontalHeader());
     actionVisibleUnpack->setCheckable(true);
     actionVisibleUnpack->setChecked(true);
+
+    actionBuildGraf=new QAction(QObject::tr("Вывести на график"),ui->tableView);
 }
 
 void MdiForm::connectActionsToSlots()
@@ -157,6 +160,7 @@ void MdiForm::connectActionsToSlots()
     connect(actionVisibleValue,SIGNAL(triggered(bool)),this,SLOT(setVisibleValue(bool)));
     connect(actionVisibleMS,SIGNAL(triggered(bool)),this,SLOT(setVisibleMS(bool)));
     connect(actionVisibleUnpack,SIGNAL(triggered(bool)),this,SLOT(setVisibleUnpack(bool)));
+    connect(actionBuildGraf,SIGNAL(triggered()),this,SLOT(BuildGraf()));
 }
 
 void ModelTable::setRowCount(int row)
@@ -252,6 +256,20 @@ bool ModelTable::setData(const QModelIndex &index, const QVariant &value, int ro
     return false;
 }
 
+int ModelTable::adressOfRow(int row) const
+{
+    QModelIndex index=this->index(row,visible_columns.indexOf(Ui::TABLE_ADRESS));
+    int x=dat[index].toInt();
+    int y,s=0,i=0;
+    while(x){//Переводим из восьмеричной системы в десятичную
+        y=x;
+        x /= 10;
+        y=(y-x*10)*pow(8,i++);
+        s+=y;
+    }
+    return s;
+}
+
 ModelTable::~ModelTable()
 {
 
@@ -259,7 +277,6 @@ ModelTable::~ModelTable()
 
 void ModelTable::update(const QMap<int, ArincParametr *> &map)
 {
-    cout<<"updateModelTable begin"<<endl;
     if(rows!=map.count()){
         setRowCount(map.count());
     }
@@ -304,7 +321,6 @@ void ModelTable::update(const QMap<int, ArincParametr *> &map)
     emit dataChanged(topleft, bottomright);
     //emit headerDataChanged(Qt::Vertical,0,rows);
     //emit changeContent();
-    cout<<"updateModelTable end"<<endl;
 }
 
 void ModelTable::setVisibleHeader(bool visible, Parametr::Format f)
@@ -376,4 +392,12 @@ void MdiForm::setVisibleUnpack(bool f)
 {
     table->setVisibleHeader(f,Parametr::UnpackValue);
 }
+
+void MdiForm::BuildGraf()
+{
+    int adress=table->adressOfRow(ui->tableView->selectionModel()->currentIndex().row());
+    model->readValues(200);
+    //cout<<"vect.count="<<vect.count()<<endl;
+}
+
 
