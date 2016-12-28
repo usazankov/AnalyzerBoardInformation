@@ -20,6 +20,13 @@ Parametr::Parametr(QString Name,QString Dimension)
     setDefaultFormat();
 }
 
+Parametr::Parametr(const Parametr &p)
+{
+    name=p.name;
+    dimension=p.dimension;
+    hasValue=p.hasValue;
+}
+
 QString Parametr::Name()const
 {
     if(name=="")return "Неизвестный параметр";

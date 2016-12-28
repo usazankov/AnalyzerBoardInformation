@@ -13,6 +13,11 @@ ArincParametr::ArincParametr(int word, QString Name, QString Dimension):Parametr
     ++count;
 }
 
+ArincParametr::ArincParametr(const ArincParametr &p):Parametr(p)
+{
+    db=new DataArinc32(*dynamic_cast<DataArinc32*>(p.db));
+}
+
 void ArincParametr::setWord(int word)
 {
     db->setPart(params::Part::TotalWord,word);
@@ -98,6 +103,11 @@ ArincDecParametr::ArincDecParametr(int word, QString name, QString Dimension, do
     unpack_const=UnpackConst;
 }
 
+ArincDecParametr::ArincDecParametr(const ArincDecParametr &p):ArincParametr(p)
+{
+    unpack_const=p.unpack_const;
+}
+
 double ArincDecParametr::Value()const
 {
     if(db->Bit(30)==1&&db->Part(params::Part::MatrixState)==0){
@@ -180,6 +190,11 @@ ArincDiscrParametr::ArincDiscrParametr(int word, QString Name, StateContanier *s
 {
     setStates(sc);
     k++;
+}
+
+ArincDiscrParametr::ArincDiscrParametr(const ArincDiscrParametr &p):ArincParametr(p)
+{
+    states=p.states;
 }
 
 QString ArincDiscrParametr::displayStates() const

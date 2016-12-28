@@ -4,6 +4,7 @@
 #include "dataarinc32.h"
 #include "states.h"
 #include <iostream>
+#include <QDataStream>
 namespace params {
 class ArincParametr;
 class ArincDecParametr;
@@ -13,6 +14,7 @@ class ArincParametr : public Parametr
 public:
     explicit ArincParametr(int word=0);
     explicit ArincParametr(int word,QString Name, QString Dimension="");
+    explicit ArincParametr(const ArincParametr &p);
     virtual void setWord(int word);
     virtual int Adress()const;
     virtual int MatrixState()const;
@@ -31,6 +33,7 @@ class ArincDecParametr : public ArincParametr
 public:
     explicit ArincDecParametr(int word=0, double UnpackConst=params::DEFAULT_UNPACK_CONST);
     explicit ArincDecParametr(int word, QString name, QString Dimension, double UnpackConst=params::DEFAULT_UNPACK_CONST);
+    explicit ArincDecParametr(const ArincDecParametr &p);
     double Value()const;
     void setUnpackConst(double unpack_const);
     double getUnpackConst()const;
@@ -52,6 +55,7 @@ public:
     explicit ArincDiscrParametr(int word, QString Name);
     explicit ArincDiscrParametr(int word, StateContanier *sc);
     explicit ArincDiscrParametr(int word, QString Name, StateContanier *sc);
+    explicit ArincDiscrParametr(const ArincDiscrParametr &p);
     QString displayStates()const;
     QStringList getStates()const;
     void setStates(StateContanier *sc);

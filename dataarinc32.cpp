@@ -5,6 +5,11 @@ DataArinc32::DataArinc32(int word)
     this->word=word;
 }
 
+DataArinc32::DataArinc32(const DataArinc32 &d)
+{
+    this->word=d.word;
+}
+
 void DataArinc32::setPart(params::Part part, int value)
 {
     switch (part) {

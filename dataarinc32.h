@@ -8,6 +8,7 @@ class DataArinc32: public DataBehavior
 {
 public:
     DataArinc32(int word=0);
+    DataArinc32(const DataArinc32 &d);
     void setPart(params::Part part, int value);
     bool Bit(int number_bit)const;
     void setBit(int number_bit, bool value);

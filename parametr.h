@@ -24,6 +24,7 @@ public:
                      StateParametr=8,MatrixStateParametr=16,Adress=32,UnpackValue=64};
     explicit Parametr();
     explicit Parametr(QString Name, QString Dimension="");
+    explicit Parametr(const Parametr &p);
     QString Name()const;
     QString Dimension()const;
     void setUnpackValue(params::Part part,int value);
