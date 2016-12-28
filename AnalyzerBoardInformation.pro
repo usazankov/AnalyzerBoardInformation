@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     formdecparam.cpp \
     formdiscrparam.cpp \
     device.cpp \
-    mdiformdiscr.cpp
+    mdiformdiscr.cpp \
+    logsmanager.cpp
 
 HEADERS  += \
     arincparametr.h \
@@ -57,7 +58,8 @@ HEADERS  += \
     formdecparam.h \
     formdiscrparam.h \
     device.h \
-    mdiformdiscr.h
+    mdiformdiscr.h \
+    logsmanager.h
 
 FORMS    += \
     mainview.ui \

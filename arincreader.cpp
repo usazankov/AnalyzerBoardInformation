@@ -5,13 +5,16 @@ int ArincReader::count_model=0;
 ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc, QObject *obj):QObject(obj)
 {
     this->arinc=arinc;
-    time_step_to_arinc_map=0.2;
+    time_step_to_arinc_map=0.01;
+    time_step_to_notify=0.1;
+    time_step_to_flush=1.0;
     timer=new QTimer(this);
     qRegisterMetaType<QVector<int>>();
     qRegisterMetaType<Qt::Orientation>();
     connect(timer,SIGNAL(timeout()),this,SLOT(update()));
     connect(this,SIGNAL(stopTimer()),timer,SLOT(stop()));
     connect(this,SIGNAL(start_Timer(int)),timer,SLOT(start(int)));
+    manager = new LogsManager(obj);
 }
 
 void ArincReader::lockMutex()
@@ -27,21 +30,27 @@ void ArincReader::unlockMutex()
 void ArincReader::update()
 {
     if(running){
-        cout<<"BEGIN Cycle"<<endl;
         if(arinc!=Q_NULLPTR){
-            cout<<"arin!=Q_NULLPTR"<<endl;
             double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
-            cout<<"CurrentDateTime End"<<endl;
             static double lastKeyToArincMap = 0;
-            cout<<"lastKeyToArincMap"<<endl;
-            if(key-lastKeyToArincMap>time_step_to_arinc_map){
-                cout<<"IF"<<endl;
-                updateArincMap();
+            static double lastKeyToFlush=0;
+            static double lastKeyToNotify=0;
+            if(key-lastKeyToArincMap>=time_step_to_arinc_map){
+                cout<<"Current_time="<<key-start_time<<endl;
+                if(writeToFile)
+                    manager->writeTime(key-start_time);
+                process();
+                lastKeyToArincMap=key;
+            }
+            if(key-lastKeyToNotify>=time_step_to_notify){
                 notifyObservers();
                 setWordsToZero();
-                lastKeyToArincMap=key;
-                //cout<<"lastKeyArincMap="<<lastKeyToArincMap<<endl;
-                cout<<"END Cycle"<<endl;
+                lastKeyToNotify=key;
+            }
+            if(key-lastKeyToFlush>=time_step_to_flush){
+                manager->closeFile();
+                manager->openFile();
+                lastKeyToFlush=key;
             }
         }
     }
@@ -85,6 +94,11 @@ void ArincReader::clearParametrs()
     cout<<"clearParametrs end"<<endl;
     mutex.unlock();
     cout<<"UNLOCKED!"<<endl<<endl;
+}
+
+void ArincReader::readValues(int adress)
+{
+    manager->read(adress);
 }
 
 void ArincReader::setTypeParametr(int adress, Parametr::TypeParametr type)
@@ -166,13 +180,13 @@ void ArincReader::removeObserver(ArincParametrObserver *o)
 }
 
 void ArincReader::notifyObservers()
-{   mutex.lock();
-    cout<<"notifyObservers begin"<<endl;
+{
+    mutex.lock();
     for(int i=0;i<observers.size();i++){
         observers[i]->update(arinc_map);
     }
     mutex.unlock();
-    cout<<"notifyObservers end"<<endl;
+
 }
 
 Parametr::TypeParametr ArincReader::TypeParametr(int adress)
@@ -206,16 +220,22 @@ void ArincReader::addArincParametr(ArincParametr *arincword)
 void ArincReader::startArinc(int time_milliseconds)
 {
     running=1;
+    writeToFile=1;
     arinc->Start();
+    start_time=QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+    manager->openFile();
+    manager->writeSizeBuf(arinc->sizeOfBuffer());
     emit start_Timer(time_milliseconds);
 }
 
 void ArincReader::stopArinc()
 {
     running=0;
+    writeToFile=0;
     arinc->Stop();
     emit stopTimer();
-    updateArincMap();
+    process();
+    manager->closeFile();
     deleteUnregisteredWords();
     notifyObservers();
 }
@@ -229,42 +249,38 @@ ArincReader::~ArincReader()
     timer->deleteLater();
 }
 
-void ArincReader::updateArincMap()
+void ArincReader::process()
 {
-    cout<<"PreMutex!"<<endl;
     mutex.lock();
-    cout<<"LOCKED!"<<endl;
-    cout<<"updateArincMap begin"<<endl;
     int adress;
+    unsigned int temp;
     for(int i=0;i<arinc->sizeOfBuffer();++i){
-        adress=(arinc->readBuffer()[i]) & 0xff;
+        temp=arinc->readBuffer()[i];
+        if(writeToFile)
+            manager->writeWord(temp);
+        adress=(temp) & 0xff;
         if(adress!=0){
             if(!arinc_map.contains(adress)){
-                ArincParametr *word=new ArincParametr(arinc->readBuffer()[i]);
+                ArincParametr *word=new ArincParametr(temp);
                 word->setHasValue(true);
                 arinc_map[adress]=word;
             }else if(arinc_map.contains(adress)){
-                arinc_map[adress]->setWord(arinc->readBuffer()[i]);
+                arinc_map[adress]->setWord(temp);
                 arinc_map[adress]->setHasValue(true);
             }
             adress=0;
         }
     }
-    cout<<"updateArincMap end"<<endl;
     mutex.unlock();
-    cout<<"UNLOCKED!"<<endl<<endl;
-
 }
 
 void ArincReader::setWordsToZero()
 {
-    cout<<"setWordsToZero begin"<<endl;
     foreach (ArincParametr *word, arinc_map) {
         if(word->HasValue())
             word->setWord(0);
             word->setHasValue(false);
     }
-    cout<<"setWordsToZero end"<<endl;
 }
 
 void ArincReader::deleteUnregisteredWords()

@@ -4,6 +4,7 @@
 #include "readingbuffer.h"
 #include "parametr_impl.h"
 #include "arincmodelinterface.h"
+#include "logsmanager.h"
 #include <QVector>
 #include <QThread>
 #include <QMap>
@@ -24,10 +25,15 @@ private:
     QMap<int, ArincParametr*>::iterator iter;
     QVector<ArincParametrObserver*> observers;
     QMutex	mutex;
+    LogsManager *manager;
     int size;
+    double start_time;
     bool running;
+    bool writeToFile;
     double time_step_to_arinc_map;
-    void updateArincMap();
+    double time_step_to_notify;
+    double time_step_to_flush;
+    void process();
     void setWordsToZero();
     void deleteUnregisteredWords();
     // ArincModelInterface interface
@@ -59,6 +65,10 @@ public:
 public:
     void clearParametrs();
 
+
+    // ArincModelInterface interface
+public:
+    void readValues(int adress);
 };
 
 #endif // ARINCREADER_H
