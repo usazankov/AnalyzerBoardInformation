@@ -24,6 +24,7 @@ void MdiFormDiscr::setModel(ModelDiscrTable *model,const QString &name)
     ui->tableView->setModel(model);
     ui->label->setAdress(model->getAdress());
     adr=model->getAdress();
+    ui->label_2->setText(name);
 }
 
 int MdiFormDiscr::adress() const
@@ -144,7 +145,6 @@ ModelDiscrTable::~ModelDiscrTable()
 
 void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map)
 {
-    cout<<"updateDiscrTable begin"<<endl;
     ArincDiscrParametr *temp = dynamic_cast<ArincDiscrParametr*>(map[adress]);
     if(temp!=0){
         if(countOfStates!=temp->getNameStates().count()){
@@ -163,8 +163,6 @@ void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map)
         QModelIndex bottomright=this->index(rows,columns);
         emit dataChanged(topleft, bottomright);
     }
-    cout<<"updateDiscrTable end"<<endl;
-
 }
 QLabelHasWord::QLabelHasWord(QWidget *parent, int adress):QLabel(parent)
 {
@@ -180,7 +178,6 @@ void QLabelHasWord::setAdress(int adress)
 
 void QLabelHasWord::update(const QMap<int, ArincParametr *> &map)
 {
-    cout<<"adress="<<adress<<endl;
     if(map.contains(adress)){
         if(map[adress]->HasValue()&&adress!=0)
             this->setText("");

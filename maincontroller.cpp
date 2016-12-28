@@ -138,10 +138,10 @@ void MainController::delDevice(int index)
     int indexBoard;
     threads[index]->quit();
     threads[index]->wait();
-    delete devices[index];
-    devices.remove(index);
     delete threads[index];
     threads.remove(index);
+    delete devices[index];
+    devices.remove(index);
     foreach (ArincBoardInterface *item, pciBoards){
         if(item->boardName()==nameBoard){
             indexBoard=pciBoards.key(item);

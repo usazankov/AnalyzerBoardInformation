@@ -172,7 +172,7 @@ unsigned int *ArincChannelPCI429::readBuffer()
     if(started)
     for (int i=0;i<SIZE_BUF;i++){
         //READ_PRM_SS(hARINC, Data, nc, nb, i, tword);
-        tword=i+199;
+        tword=i+1683095552;
         buf[i]=tword;
     }
     /*else{
