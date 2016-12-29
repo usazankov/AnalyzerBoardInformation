@@ -11,10 +11,12 @@ ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc, QObject *obj):QObj
     timer=new QTimer(this);
     qRegisterMetaType<QVector<int>>();
     qRegisterMetaType<Qt::Orientation>();
+    qRegisterMetaType<QVector<TimeParametr>>();
     connect(timer,SIGNAL(timeout()),this,SLOT(update()));
     connect(this,SIGNAL(stopTimer()),timer,SLOT(stop()));
     connect(this,SIGNAL(start_Timer(int)),timer,SLOT(start(int)));
     manager = new LogsManager(obj);
+    connect(manager->reader,SIGNAL(data(QVector<TimeParametr>)),this,SLOT(getLogsData(QVector<TimeParametr>)));
 }
 
 void ArincReader::lockMutex()
@@ -36,7 +38,7 @@ void ArincReader::update()
             static double lastKeyToFlush=0;
             static double lastKeyToNotify=0;
             if(key-lastKeyToArincMap>=time_step_to_arinc_map){
-                cout<<"Current_time="<<key-start_time<<endl;
+                //cout<<"Current_time="<<key-start_time<<endl;
                 if(writeToFile)
                     manager->writeTime(key-start_time);
                 process();
@@ -54,6 +56,11 @@ void ArincReader::update()
             }
         }
     }
+}
+
+void ArincReader::getLogsData(const QVector<TimeParametr> &p)
+{
+    emit sendLogsData(p);
 }
 
 bool ArincReader::hasArincParametr(int adress)

@@ -160,7 +160,7 @@ void MdiForm::connectActionsToSlots()
     connect(actionVisibleValue,SIGNAL(triggered(bool)),this,SLOT(setVisibleValue(bool)));
     connect(actionVisibleMS,SIGNAL(triggered(bool)),this,SLOT(setVisibleMS(bool)));
     connect(actionVisibleUnpack,SIGNAL(triggered(bool)),this,SLOT(setVisibleUnpack(bool)));
-    connect(actionBuildGraf,SIGNAL(triggered()),this,SLOT(BuildGraf()));
+    connect(actionBuildGraf,SIGNAL(triggered()),this,SLOT(actionGraf()));
 }
 
 void ModelTable::setRowCount(int row)
@@ -393,11 +393,12 @@ void MdiForm::setVisibleUnpack(bool f)
     table->setVisibleHeader(f,Parametr::UnpackValue);
 }
 
-void MdiForm::BuildGraf()
+void MdiForm::actionGraf()
 {
     int adress=table->adressOfRow(ui->tableView->selectionModel()->currentIndex().row());
-    model->readValues(200);
-    //cout<<"vect.count="<<vect.count()<<endl;
+    model->readValues(adress);
 }
+
+
 
 

@@ -8,7 +8,6 @@ LogsManager::LogsManager(QObject *parent) : QObject(parent)
     stream=new QDataStream(file);
     array=new QByteArray;
     buf=new QBuffer(array);
-    buf->open(QIODevice::ReadWrite);
     stream_buf=new QDataStream(buf);
     thread=new QThread;
     reader=new FileReader(file);
@@ -24,8 +23,9 @@ void LogsManager::writeTime(double time)
 {
     if(!openedFile)
         (*stream)<<time;
-    else
+    else if(!blockBuf){
         (*stream_buf)<<time;
+    }
 }
 
 void LogsManager::writeSizeBuf(unsigned int size)
@@ -60,6 +60,8 @@ void LogsManager::closeFile()
 void LogsManager::read(int adress)
 {
     reader->setAdress(adress);
+    buf->open(QIODevice::WriteOnly);
+    blockBuf=false;
     openedFile=true;
     file->close();
     thread->start();
@@ -69,8 +71,9 @@ void LogsManager::writeWord(unsigned int word)
 {
     if(!openedFile)
         (*stream)<<word;
-    else
+    else if(!blockBuf){
         (*stream_buf)<<word;
+    }
 }
 
 int LogsManager::sizeBuffer() const
@@ -91,17 +94,20 @@ LogsManager::~LogsManager()
 
 void LogsManager::applyBuffer()
 {
+    blockBuf=true;
     if(!file->open(QIODevice::WriteOnly|QIODevice::Append)){
         cout<<"Невозможно открыть файл\n";return;
     }
+    buf->open(QIODevice::ReadOnly);
     if(array->size()!=0){
         unsigned int i;
         cout<<"array.size="<<array->size()<<endl;
         cout<<"seek="<<buf->seek(0)<<endl;
         while(!stream_buf->atEnd()){
-                (*stream_buf)>>i;
-                (*stream)<<i;
+            (*stream_buf)>>i;
+            (*stream)<<i;
         }
+        buf->close();
         array->clear();
         cout<<"array.size="<<array->size()<<endl;
     }
@@ -130,7 +136,7 @@ void FileReader::read()
     stream_read->setFloatingPointPrecision(QDataStream::DoublePrecision);
     (*stream_read)>>time;
     int count=0;
-    int k=1;
+    double lastTime=0;
     cout<<"time_read="<<time<<endl;
     TimeParametr p;
     p.time=time;
@@ -138,22 +144,23 @@ void FileReader::read()
         if(count==size){
             (*stream_read)>>time;
             p.time=time;
-            cout<<"time_read="<<time<<endl;
+            //cout<<"time_read="<<time<<endl;
             count=-1;
-            k=1;
         }else{
             unsigned int i;
             (*stream_read)>>i;
-            p.parametr=i;
-            //if((i&0xff)==adress)
-                //cout<<"count="<<k++<<endl;
+            if((i&0xff)==adress)
+                p.parametr=i;
                 //cout<<"stream_read="<<i<<endl;
-
         }
-        vect.push_back(p);
+        if(time-lastTime>=1.0){
+            vect.push_back(p);
+            lastTime=time;
+        }
         ++count;
     }
     file->close();
+    emit data(vect);
     emit endToRead();
 }
 

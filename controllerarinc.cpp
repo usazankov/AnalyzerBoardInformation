@@ -4,6 +4,8 @@ ControllerArinc::ControllerArinc(MdiForm *form, ArincModelInterface *model)
 {
     this->model=model;
     this->form=form;
+    ArincReader *r=dynamic_cast<ArincReader*>(model);
+    connect(r,SIGNAL(sendLogsData(QVector<TimeParametr>)),this,SLOT(buildGrafik(QVector<TimeParametr>)));
 }
 
 ControllerArinc::~ControllerArinc()
@@ -106,6 +108,14 @@ void ControllerArinc::setStateContanier(StateContanier *cont, int adress)
 void ControllerArinc::clearArincParametrs()
 {
     model->clearParametrs();
+}
+
+void ControllerArinc::buildGrafik(const QVector<TimeParametr> &p)
+{
+    cout<<"getLogsData!"<<endl;
+    QVector<TimeParametr>::const_iterator iter;
+    for(iter=p.begin();iter!=p.end();++iter)
+        cout<<"time: "<<iter->time<<" value: 0x"<<hex<<iter->parametr<<endl<<dec;
 }
 
 void ControllerArinc::update()

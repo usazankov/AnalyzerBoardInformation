@@ -7,6 +7,7 @@ struct TimeParametr
     double time;
     unsigned int parametr;
 };
+Q_DECLARE_METATYPE(TimeParametr)
 class ArincModelInterface{
 public:
     virtual void startArinc(int time_milliseconds)=0;

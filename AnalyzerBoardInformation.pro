@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     formdiscrparam.cpp \
     device.cpp \
     mdiformdiscr.cpp \
-    logsmanager.cpp
+    logsmanager.cpp \
+    qlabelhasword.cpp
 
 HEADERS  += \
     arincparametr.h \
@@ -59,7 +60,8 @@ HEADERS  += \
     formdiscrparam.h \
     device.h \
     mdiformdiscr.h \
-    logsmanager.h
+    logsmanager.h \
+    qlabelhasword.h
 
 FORMS    += \
     mainview.ui \

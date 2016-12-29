@@ -2,13 +2,13 @@
 #define CONTROLLERARINC_H
 #include "mainview.h"
 #include "controllerinterface.h"
-#include "arincmodelinterface.h"
+#include "arincreader.h"
 #include "mdiform.h"
 #include <iostream>
 using namespace std;
-class ControllerArinc: public ControllerInterface
+class ControllerArinc: public QObject, public ControllerInterface
 {
-
+    Q_OBJECT
 public:
     explicit ControllerArinc(MdiForm *form, ArincModelInterface *model);
     ~ControllerArinc();
@@ -36,7 +36,8 @@ public:
     void setTypeParametr(Parametr::TypeParametr type, int adress);
     void setStateContanier(StateContanier *cont, int adress);
     void clearArincParametrs();
-
+public slots:
+    void buildGrafik(const QVector<TimeParametr> &p);
 
     // ControllerInterface interface
 public:

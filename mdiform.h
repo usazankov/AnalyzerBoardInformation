@@ -102,8 +102,7 @@ private slots:
     void setVisibleValue(bool f);
     void setVisibleMS(bool f);
     void setVisibleUnpack(bool f);
-    void BuildGraf();
-
+    void actionGraf();
 signals:
     void MdiFormDeleted(int index);
 };

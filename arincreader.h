@@ -53,6 +53,9 @@ private slots:
 signals:
     void stopTimer();
     void start_Timer(int);
+    void sendLogsData(const QVector<TimeParametr> &p);
+public slots:
+    void getLogsData(const QVector<TimeParametr> &p);
     // ArincModelInterface interface
 public:
     bool hasArincParametr(int adress);
