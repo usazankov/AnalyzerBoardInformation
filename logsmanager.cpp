@@ -137,7 +137,7 @@ void FileReader::read()
     (*stream_read)>>time;
     int count=0;
     double lastTime=0;
-    cout<<"time_read="<<time<<endl;
+    //cout<<"time_read="<<time<<endl;
     TimeParametr p;
     p.time=time;
     while(!stream_read->atEnd()){

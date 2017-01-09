@@ -1,8 +1,8 @@
 #ifndef ARINCREADER_H
 #define ARINCREADER_H
 
-#include "readingbuffer.h"
-#include "parametr_impl.h"
+#include "ArincBoards/arincintefaces.h"
+#include "UnpackingArinc/parametr_impl.h"
 #include "arincmodelinterface.h"
 #include "logsmanager.h"
 #include <QVector>
@@ -42,7 +42,7 @@ private:
     void setTypeParametr(int adress, Parametr::TypeParametr type);
     ArincParametr *getParametr(int adress);
     Parametr::TypeParametr TypeParametr(int adress);
-    void addArincParametr(ArincParametr *arincword);
+    void addArincParametr(int adress);
     void registerObserver(ArincParametrObserver *o);
     void removeObserver(ArincParametrObserver *o);
     void notifyObservers();

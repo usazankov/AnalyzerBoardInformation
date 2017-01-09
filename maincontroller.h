@@ -5,11 +5,11 @@
 #include "controllerarinc.h"
 #include "arincmodelinterface.h"
 #include "arincreader.h"
-#include "arincboardpci429linux.h"
-#include "formadddevice.h"
-#include "formconfparamsdevice.h"
+#include "ArincBoards/arincboardpci429linux.h"
+#include "FormsModels/formadddevice.h"
+#include "FormsModels/formconfparamsdevice.h"
 #include <iostream>
-#include "device.h"
+#include "arincdevice.h"
 #include <QThread>
 namespace Ui {
 class MainController;

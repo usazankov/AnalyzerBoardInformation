@@ -13,10 +13,10 @@
 #include <QFile>
 #include <QFileDialog>
 #include <typeinfo>
+#include "settingsdevice.h"
 namespace Ui {
 class FormConfParamsDevice;
 class ComboBoxDelegate;
-
 }
 using namespace std;
 class ComboBoxDelegate: public QItemDelegate{
@@ -35,18 +35,17 @@ private:
 class FormConfParamsDevice : public QDialog
 {
     Q_OBJECT
-
 public:
     explicit FormConfParamsDevice(QWidget *parent = 0);
-    void insertChannel(const QString &name,int index);
-    void deleteChannel(int index);
-    QList<ConfParametr*> conf(int index)const;
-    void saveToFile(int index, const QString &filePath);
+    void insertChannel(const QString &name,int i);
+    void deleteChannel(int i);
+    SettingsDevice* conf(int i)const;
+    void saveToFile(int i, const QString &filePath);
     QList<ConfParametr*> openFile(const QString &filePath);
-    bool ContainsChannel(int index)const;
+    bool ContainsChannel(int i)const;
     bool ContainsChannel(const QString &name)const;
     bool ChannelsIsEmpty()const;
-    void renameChannel(const QString &newname, int index);
+    void renameChannel(const QString &newname, int i);
     ~FormConfParamsDevice();
 
 private slots:

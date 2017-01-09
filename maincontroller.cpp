@@ -112,17 +112,17 @@ void MainController::addDevice()
         if(channel!=Q_NULLPTR){
             MdiForm *mdi=view->createMdiChild(form->nameChannel(),index);
             connect(mdi, SIGNAL(MdiFormDeleted(int)), this, SLOT(delDevice(int)));
-            Device* dev = new Device(index,channel,mdi);
+            Device* dev = new ArincDevice(index,channel,mdi);
             devices[index]=dev; 
+            dev->setName(form->nameChannel());
             QThread *thread = new QThread;
             dev->moveToThread(thread);
-
             if(ThreadsisRunning()){
                 thread->start();
             }
             threads[index]=thread;
-            connect(thread,SIGNAL(started()),dev,SLOT(startDev()));
-            connect(thread,SIGNAL(finished()),dev,SLOT(stopDev()));
+            connect(thread,SIGNAL(started()),dev,SLOT(start()));
+            connect(thread,SIGNAL(finished()),dev,SLOT(stop()));
             cout<<"Created dev index="<<index<<endl;
             ++countDevices;
         }
@@ -133,22 +133,25 @@ void MainController::addDevice()
 
 void MainController::delDevice(int index)
 {
-    int channel=devices[index]->numberChannel();
-    QString nameBoard=devices[index]->nameBoard();
-    int indexBoard;
-    threads[index]->quit();
-    threads[index]->wait();
-    delete threads[index];
-    threads.remove(index);
-    delete devices[index];
-    devices.remove(index);
-    foreach (ArincBoardInterface *item, pciBoards){
-        if(item->boardName()==nameBoard){
-            indexBoard=pciBoards.key(item);
+    if(devices[index]->typeDevice()==dev::ArincDevice){
+        ArincDevice *dev=dynamic_cast<ArincDevice*>(devices[index]);
+        int channel=dev->numberChannel();
+        QString nameBoard=dev->nameBoard();
+        int indexBoard;
+        threads[index]->quit();
+        threads[index]->wait();
+        delete threads[index];
+        threads.remove(index);
+        delete devices[index];
+        devices.remove(index);
+        foreach (ArincBoardInterface *item, pciBoards){
+            if(item->boardName()==nameBoard){
+                indexBoard=pciBoards.key(item);
+            }
         }
+        pciBoards[indexBoard]->deleteChannel(channel);
+        std::cout<<"Deleted index="<<index<<std::endl;
     }
-    pciBoards[indexBoard]->deleteChannel(channel);
-    std::cout<<"Deleted index="<<index<<std::endl;
     if(formConfDev!=Q_NULLPTR)
         formConfDev->deleteChannel(index);
     --countDevices;
@@ -168,9 +171,9 @@ void MainController::confParamsDevice()
         formConfDev->show();
     foreach (Device *dev, devices) {
         if(!formConfDev->ContainsChannel(dev->index()))
-            formConfDev->insertChannel(dev->title(), dev->index());
+            formConfDev->insertChannel(dev->name(), dev->index());
         else if(formConfDev->ContainsChannel(Ui::EMPTY_CHANNEL)){
-            formConfDev->renameChannel(dev->title(),dev->index());
+            formConfDev->renameChannel(dev->name(),dev->index());
         }
     }
     if(formConfDev->ChannelsIsEmpty()){
@@ -178,7 +181,7 @@ void MainController::confParamsDevice()
     }
     if(formConfDev->exec()==FormConfParamsDevice::Accepted){
         foreach (Device *dev, devices) {
-            dev->applyConf(formConfDev->conf(dev->index()));
+            dev->setSettingsDevice(formConfDev->conf(dev->index()));
             cout<<"APPLYED! index="<<dev->index()<<endl;
         }
     }

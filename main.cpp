@@ -1,8 +1,6 @@
 #include <QApplication>
-#include "mainview.h"
+#include "FormsModels/mainview.h"
 #include "maincontroller.h"
-
-
 #include <QTextStream>
 #include <QPalette>
 

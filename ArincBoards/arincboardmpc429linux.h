@@ -1,6 +1,6 @@
 #ifndef ARINCBOARDMPC429LINUX_H
 #define ARINCBOARDMPC429LINUX_H
-#include "readingbuffer.h"
+#include "arincintefaces.h"
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>

@@ -11,7 +11,6 @@ class FormDiscrParam;
 class FormDiscrParam : public QWidget
 {
     Q_OBJECT
-
 public:
     explicit FormDiscrParam(QWidget *parent = 0);
     QTableView* TableView();

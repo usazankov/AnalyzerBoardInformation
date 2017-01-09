@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QAbstractTableModel>
 #include <iostream>
-#include "states.h"
+#include "UnpackingArinc/states.h"
 #include <QDataStream>
 #include <typeinfo>
 namespace params {
@@ -12,10 +12,10 @@ namespace params {
 }
 
 struct ConfParametr{
-    params::TypeParametr type;
     QString name;
     QString dimension;
     int adress;
+    params::TypeParametr type;
     ConfParametr(){
         type=params::DEC;
         name="-";

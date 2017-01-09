@@ -58,9 +58,9 @@ void FormConfParamsDevice::deleteChannel(int index)
     updateItemsComboBox();
 }
 
-QList<ConfParametr *> FormConfParamsDevice::conf(int index) const
+SettingsDevice *FormConfParamsDevice::conf(int i) const
 {
-    return models[index]->getConfParametrs();
+    return new SettingsArincDevice(models[i]->getConfParametrs());
 }
 
 

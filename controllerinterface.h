@@ -1,8 +1,8 @@
 #ifndef CONTROLLERINTERFACE_H
 #define CONTROLLERINTERFACE_H
 #include <QString>
-#include "parametr.h"
-#include "states.h"
+#include "UnpackingArinc/parametr.h"
+#include "UnpackingArinc/states.h"
 
 class ControllerInterface{
 public:

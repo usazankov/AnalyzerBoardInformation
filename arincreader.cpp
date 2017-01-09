@@ -209,20 +209,18 @@ Parametr::TypeParametr ArincReader::TypeParametr(int adress)
     cout<<"UNLOCKED!"<<endl<<endl;
 }
 
-void ArincReader::addArincParametr(ArincParametr *arincword)
+void ArincReader::addArincParametr(int adress)
 {
     mutex.lock();
     cout<<"LOCKED!"<<endl;
     cout<<"addArincParametr begin"<<endl;
-    int adress=arincword->Adress();
     if(!arinc_map.contains(adress)){
-        arinc_map[adress]=arincword;
+        arinc_map[adress]=new ArincParametr(adress);
     }
     cout<<"addArincParametr end"<<endl;
     mutex.unlock();
     cout<<"UNLOCKED!"<<endl<<endl;
 }
-
 
 void ArincReader::startArinc(int time_milliseconds)
 {

@@ -16,7 +16,7 @@ public:
     virtual ArincParametr* getParametr(int adress)=0;
     virtual void readValues(int adress)=0;
     virtual Parametr::TypeParametr TypeParametr(int adress)=0;
-    virtual void addArincParametr(ArincParametr* arincword)=0;
+    virtual void addArincParametr(int adress)=0;
     virtual void clearParametrs()=0;
     virtual bool hasArincParametr(int adress)=0;
     virtual bool isRunningArinc()=0;

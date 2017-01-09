@@ -1,6 +1,6 @@
 #ifndef ARINCBOARDPCI429LINUX_H
 #define ARINCBOARDPCI429LINUX_H
-#include "readingbuffer.h"
+#include "arincintefaces.h"
 #include "pci429LNX.h"
 #include <unistd.h>
 #include <fcntl.h>

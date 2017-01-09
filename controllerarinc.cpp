@@ -31,15 +31,12 @@ void ControllerArinc::addObserveredArincWord(int adress)
 
 void ControllerArinc::addDiscrModel(int adress)
 {
-    if(!discrs_models.contains(adress)){
-        discrs_models.push_back(adress);
-    }
+
 }
 
 void ControllerArinc::deleteDiscrModel(int adress)
 {
-    discrs_models.removeOne(adress);
-    form->deleteDiscrTable(adress);
+
 }
 
 void ControllerArinc::setTitleForm(const QString &name)
@@ -49,9 +46,7 @@ void ControllerArinc::setTitleForm(const QString &name)
 
 void ControllerArinc::deleteAllDiscrModel()
 {
-    while(!discrs_models.empty()){
-        deleteDiscrModel(discrs_models.back());
-    }
+
 
 }
 
@@ -107,7 +102,7 @@ void ControllerArinc::setStateContanier(StateContanier *cont, int adress)
 
 void ControllerArinc::clearArincParametrs()
 {
-    model->clearParametrs();
+
 }
 
 void ControllerArinc::buildGrafik(const QVector<TimeParametr> &p)
@@ -120,9 +115,7 @@ void ControllerArinc::buildGrafik(const QVector<TimeParametr> &p)
 
 void ControllerArinc::update()
 {
-    if(!model->isRunningArinc()){
-        model->notifyObservers();
-    }
+
 }
 
 void ControllerArinc::setRegisteredParametr(bool flag, int adress)
@@ -132,15 +125,7 @@ void ControllerArinc::setRegisteredParametr(bool flag, int adress)
 
 void ControllerArinc::buildDiscrsModel()
 {
-    foreach (int adress, discrs_models) {
-        if(!form->containsDiscrModel(adress)){
-            form->addDiscrTable(adress);
-        }
-    }
-    if(discrs_models.empty())
-        form->setVisibleDiscrTables(false);
-    else
-        form->setVisibleDiscrTables(true);
+
 }
 
 

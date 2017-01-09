@@ -1,37 +1,24 @@
-#ifndef DEVICE_H
-#define DEVICE_H
-
-#include <readingbuffer.h>
-#include "arincreader.h"
-#include "controllerarinc.h"
-#include "modelconfparams.h"
+#ifndef DEVICEINTERFACE_H
+#define DEVICEINTERFACE_H
+#include "settingsdevice.h"
 #include <QObject>
-class Device:public QObject
-{
+class Device:public QObject{
     Q_OBJECT
 public:
-    explicit Device(int index, ReadingBuffer<unsigned int*> *buf, MdiForm *form);
-    int index()const;
-    QString title()const;
-    void applyConf(const QList<ConfParametr*> &list);
-    int numberChannel();
-    QString nameBoard();
-    bool isRunningDev();
-
+    explicit Device(int index, QObject* parent=Q_NULLPTR);
     virtual ~Device();
-private:
-    int i;//Индекс Device
-    int number_channel;
-    QString name_board;
-    ArincModelInterface *reader;
-    ReadingBuffer<unsigned int*>* pciChannel;
-    ControllerInterface* controller;
-    MdiForm *form;
-    bool wasRun;
+    int index()const;
+    QString name()const;
+    void setName(const QString &name);
+    dev::TypeDevice virtual typeDevice()const=0;
+    virtual void setSettingsDevice(SettingsDevice* settings);
 public slots:
-    void startDev();
-    void stopDev();
-
+    virtual void start()=0;
+    virtual void stop()=0;
+private:
+    int i;//Индекс
+    QString n;//Имя
+protected:
+    SettingsDevice* settings;
 };
-
-#endif // DEVICE_H
+#endif // DEVICEINTERFACE_H

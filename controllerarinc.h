@@ -1,9 +1,9 @@
 #ifndef CONTROLLERARINC_H
 #define CONTROLLERARINC_H
-#include "mainview.h"
+#include "FormsModels/mainview.h"
 #include "controllerinterface.h"
 #include "arincreader.h"
-#include "mdiform.h"
+#include "FormsModels/mdiform.h"
 #include <iostream>
 using namespace std;
 class ControllerArinc: public QObject, public ControllerInterface

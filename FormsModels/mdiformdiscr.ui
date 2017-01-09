@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>415</width>
-    <height>356</height>
+    <width>416</width>
+    <height>232</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,7 +48,7 @@
   <customwidget>
    <class>QLabelHasWord</class>
    <extends>QLabel</extends>
-   <header>qlabelhasword.h</header>
+   <header>FormsModels/qlabelhasword.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

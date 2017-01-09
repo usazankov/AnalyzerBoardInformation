@@ -30,7 +30,6 @@ QString FormAddDevice::nameChannel()
 
 QString FormAddDevice::nameDevice()
 {
-
     return namedev;
 }
 

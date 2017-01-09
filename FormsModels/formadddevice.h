@@ -3,8 +3,8 @@
 
 #include <QDialog>
 #include <iostream>
-#include "arincboardpci429linux.h"
-#include "arincboardmpc429linux.h"
+#include "ArincBoards/arincboardpci429linux.h"
+#include "ArincBoards/arincboardmpc429linux.h"
 #include "QPushButton"
 namespace Ui {
 class FormAddDevice;
@@ -13,7 +13,6 @@ class FormAddDevice;
 class FormAddDevice : public QDialog
 {
     Q_OBJECT
-
 public:
     explicit FormAddDevice(QWidget *parent = 0);
     ~FormAddDevice();
