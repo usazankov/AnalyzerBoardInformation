@@ -17,12 +17,18 @@ SettingsDevice::~SettingsDevice()
 
 }
 
-SettingsArincDevice::SettingsArincDevice(const QList<ConfParametr *> &list):SettingsDevice()
+SettingsArincDevice::SettingsArincDevice():SettingsDevice()
 {
-    params=list;
+
 }
 
 QList<ConfParametr *> *SettingsArincDevice::confParametrs()
 {
     return &params;
 }
+
+void SettingsArincDevice::setConfParametrs(const QList<ConfParametr *> &p)
+{
+    params=p;
+}
+

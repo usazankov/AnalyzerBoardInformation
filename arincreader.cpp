@@ -6,7 +6,8 @@ ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc, QObject *obj):QObj
 {
     this->arinc=arinc;
     time_step_to_arinc_map=0.01;
-    time_step_to_notify=0.1;
+    time_step_to_zero=0.1;
+    time_step_to_write_file=0.1;
     time_step_to_flush=1.0;
     timer=new QTimer(this);
     qRegisterMetaType<QVector<int>>();
@@ -16,38 +17,32 @@ ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc, QObject *obj):QObj
     connect(this,SIGNAL(stopTimer()),timer,SLOT(stop()));
     connect(this,SIGNAL(start_Timer(int)),timer,SLOT(start(int)));
     manager = new LogsManager(obj);
-    connect(manager->reader,SIGNAL(data(QVector<TimeParametr>)),this,SLOT(getLogsData(QVector<TimeParametr>)));
-}
-
-void ArincReader::lockMutex()
-{
-    mutex.lock();
-}
-
-void ArincReader::unlockMutex()
-{
-    mutex.unlock();
+    connect(manager->reader,SIGNAL(data(QVector<TimeParametr>*)),this,SLOT(getLogsData(QVector<TimeParametr>*)));
 }
 
 void ArincReader::update()
 {
     if(running){
         if(arinc!=Q_NULLPTR){
-            double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+            key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
             static double lastKeyToArincMap = 0;
             static double lastKeyToFlush=0;
-            static double lastKeyToNotify=0;
+            static double lastKeyToZero=0;
+            static double lastKeyToWrite=0;
             if(key-lastKeyToArincMap>=time_step_to_arinc_map){
                 //cout<<"Current_time="<<key-start_time<<endl;
-                if(writeToFile)
+                if(writeToFile&&(key-lastKeyToWrite)>=time_step_to_write_file){
                     manager->writeTime(key-start_time);
+                    flagToWrite=1;
+                    lastKeyToWrite=key;
+                }
                 process();
+                notifyObservers();
                 lastKeyToArincMap=key;
             }
-            if(key-lastKeyToNotify>=time_step_to_notify){
-                notifyObservers();
+            if(key-lastKeyToZero>=time_step_to_zero){
                 setWordsToZero();
-                lastKeyToNotify=key;
+                lastKeyToZero=key;
             }
             if(key-lastKeyToFlush>=time_step_to_flush){
                 manager->closeFile();
@@ -58,7 +53,7 @@ void ArincReader::update()
     }
 }
 
-void ArincReader::getLogsData(const QVector<TimeParametr> &p)
+void ArincReader::getLogsData(QVector<TimeParametr> *p)
 {
     emit sendLogsData(p);
 }
@@ -165,8 +160,11 @@ void ArincReader::registerObserver(ArincParametrObserver *o)
     mutex.lock();
     cout<<"LOCKED!"<<endl;
     cout<<"registerObserver begin"<<endl;
-    if(!observers.contains(o))
+    if(!observers.contains(o)){
+        cout<<"observer REGISTERED"<<endl;
         observers.push_back(o);
+        lastKeysToNotify.push_back(0.0);
+    }
     cout<<"registerObserver end"<<endl;
     mutex.unlock();
     cout<<"UNLOCKED!"<<endl<<endl;
@@ -190,7 +188,10 @@ void ArincReader::notifyObservers()
 {
     mutex.lock();
     for(int i=0;i<observers.size();i++){
-        observers[i]->update(arinc_map);
+        if((key-lastKeysToNotify[i]>=observers[i]->timeToUpdate()/1000.0)||!isRunningArinc()){
+            observers[i]->update(arinc_map);
+            lastKeysToNotify[i]=key;
+        }
     }
     mutex.unlock();
 
@@ -261,8 +262,9 @@ void ArincReader::process()
     unsigned int temp;
     for(int i=0;i<arinc->sizeOfBuffer();++i){
         temp=arinc->readBuffer()[i];
-        if(writeToFile)
+        if(writeToFile&&flagToWrite){
             manager->writeWord(temp);
+        }
         adress=(temp) & 0xff;
         if(adress!=0){
             if(!arinc_map.contains(adress)){
@@ -276,6 +278,7 @@ void ArincReader::process()
             adress=0;
         }
     }
+    flagToWrite=0;
     mutex.unlock();
 }
 

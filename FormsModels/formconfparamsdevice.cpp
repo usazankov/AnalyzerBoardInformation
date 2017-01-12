@@ -59,8 +59,9 @@ void FormConfParamsDevice::deleteChannel(int index)
 }
 
 SettingsDevice *FormConfParamsDevice::conf(int i) const
-{
-    return new SettingsArincDevice(models[i]->getConfParametrs());
+{   SettingsDevice *settings=new SettingsArincDevice();
+    dynamic_cast<SettingsArincDevice*>(settings)->setConfParametrs(models[i]->getConfParametrs());
+    return settings;
 }
 
 

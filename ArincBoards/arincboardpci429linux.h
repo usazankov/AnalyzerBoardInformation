@@ -70,7 +70,7 @@ private:
     bool started;
     int nc;
     int nb;
-    static const int SIZE_BUF = 255;
+    static const int SIZE_BUF = 20;
     unsigned int buf[SIZE_BUF];
 };
 

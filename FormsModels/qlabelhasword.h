@@ -15,5 +15,9 @@ public:
     void update(const QMap<int, ArincParametr *> &map);
 private:
     int adress;
+
+    // ArincParametrObserver interface
+public:
+    int timeToUpdate();
 };
 #endif // QLABELHASWORD_H

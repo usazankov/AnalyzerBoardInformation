@@ -1,14 +1,20 @@
 #include "arincdevice.h"
 
-ArincDevice::ArincDevice(int index, ReadingBuffer<unsigned int *> *buf, MdiForm *form, QObject *obj):Device(index,obj)
+ArincDevice::ArincDevice(int index, ReadingBuffer<unsigned int *> *buf, MainView *view, QObject *obj):Device(index,obj)
 {
     this->i=index;
     pciChannel=buf;
-    this->form=form;
+    this->view=view;
+    Device::setName("Неизвестное устройство");
+    form=view->createMdiChild(Device::name(),index);
     number_channel=buf->index();
     name_board=buf->name();
     reader=new ArincReader(pciChannel,this);
     form->setModel(reader);
+    connect(form,SIGNAL(buildGrafik(int)),this,SLOT(buildGraf(int)));
+    connect((dynamic_cast<ArincReader*>(reader)),SIGNAL(sendLogsData(QVector<TimeParametr>*)),this,SLOT(receiveData(QVector<TimeParametr>*)));
+    connect(view,SIGNAL(MdiGrafCreated(int)),this,SLOT(mdiGrafCreated(int)));
+
 }
 
 QString ArincDevice::title() const
@@ -67,8 +73,38 @@ void ArincDevice::applyConf()
             }
         }
         delete settings;
+        if(!reader->isRunningArinc())
+            reader->notifyObservers();
         cout<<"CONF APLYED!"<<endl;
     }
+}
+
+void ArincDevice::buildGraf(int adress)
+{
+    adressBuildGraf=adress;
+    ArincParametr *p=reader->getParametr(adress);
+    if(p!=Q_NULLPTR){
+        int index=grafmanager->generateIndex();
+        grafmanager->createGrafikMdiForm("График: "+p->Name(), index);
+    }
+}
+
+void ArincDevice::receiveData(QVector<TimeParametr> *p)
+{
+    QVector<TimeParametr>::const_iterator iter;
+    for (iter=p->begin();iter!=p->end();++iter){
+        //cout<<"time: "<<iter->time<<" value: "<<iter->parametr<<endl;
+    }
+    p->clear();
+    delete p;
+}
+
+void ArincDevice::mdiGrafCreated(int indexOfMdi)
+{
+    view->grafForm(indexOfMdi)->setModel(reader);
+    grafmanager->createGrafik(indexOfMdi,adressBuildGraf);
+    if(isRunningDev())
+        reader->readValues(adressBuildGraf);
 }
 
 void ArincDevice::start()
@@ -79,6 +115,7 @@ void ArincDevice::start()
 void ArincDevice::stop()
 {
     reader->stopArinc();
+    this->moveToThread(view->thread());
 }
 
 int ArincDevice::numberChannel()
@@ -89,6 +126,11 @@ int ArincDevice::numberChannel()
 QString ArincDevice::nameBoard()
 {
     return name_board;
+}
+
+MdiForm *ArincDevice::MdiView() const
+{
+    return form;
 }
 
 bool ArincDevice::isRunningDev()
@@ -111,6 +153,16 @@ dev::TypeDevice ArincDevice::typeDevice() const
     return dev::ArincDevice;
 }
 
+void ArincDevice::setName(const QString &name)
+{
+    Device::setName(name);
+    form->setWindowTitle(Device::name());
+}
+
+void ArincDevice::setGrafikManager(GrafikManager *manager)
+{
+    grafmanager=manager;
+}
 
 ArincDevice::~ArincDevice()
 {

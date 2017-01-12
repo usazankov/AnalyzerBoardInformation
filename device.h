@@ -9,7 +9,7 @@ public:
     virtual ~Device();
     int index()const;
     QString name()const;
-    void setName(const QString &name);
+    virtual void setName(const QString &name);
     dev::TypeDevice virtual typeDevice()const=0;
     virtual void setSettingsDevice(SettingsDevice* settings);
 public slots:

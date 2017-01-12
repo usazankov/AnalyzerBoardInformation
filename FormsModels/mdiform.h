@@ -2,7 +2,6 @@
 #define MDIFORM_H
 
 #include <QWidget>
-#include "controllerinterface.h"
 #include "arincmodelinterface.h"
 #include <QAbstractTableModel>
 #include <QHash>
@@ -54,10 +53,13 @@ public:
     // ArincParametrObserver interface
 public:
     void update(const QMap<int, ArincParametr *> &map);
+    int timeToUpdate();
 signals:
     void changeContent();
 public slots:
     void setVisibleHeader(bool visible,Parametr::Format f);
+
+
 };
 
 
@@ -105,6 +107,7 @@ private slots:
     void actionGraf();
 signals:
     void MdiFormDeleted(int index);
+    void buildGrafik(int adress);
 };
 
 

@@ -43,6 +43,10 @@ public:
     // ArincParametrObserver interface
 public:
     void update(const QMap<int, ArincParametr *> &map);
+
+    // ArincParametrObserver interface
+public:
+    int timeToUpdate();
 };
 
 class MdiFormDiscr : public QWidget

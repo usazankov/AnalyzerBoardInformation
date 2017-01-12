@@ -125,6 +125,9 @@
          <property name="horizontalScrollMode">
           <enum>QAbstractItemView::ScrollPerPixel</enum>
          </property>
+         <property name="wordWrap">
+          <bool>false</bool>
+         </property>
          <attribute name="horizontalHeaderMinimumSectionSize">
           <number>30</number>
          </attribute>

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -31,9 +31,13 @@ SOURCES += main.cpp\
     FormsModels/mdiformdiscr.cpp \
     FormsModels/modelconfparams.cpp \
     FormsModels/qlabelhasword.cpp \
+    FormsModels/QCustomPlot/qcustomplot.cpp \
     arincdevice.cpp \
     device.cpp \
-    settingsdevice.cpp
+    settingsdevice.cpp \
+    FormsModels/mdigrafform.cpp \
+    grafikmanager.cpp \
+    FormsModels/arincgrafikpanel.cpp
 
 HEADERS  += \
     arincmodelinterface.h \
@@ -60,9 +64,13 @@ HEADERS  += \
     FormsModels/mdiformdiscr.h \
     FormsModels/modelconfparams.h \
     FormsModels/qlabelhasword.h \
+    FormsModels/QCustomPlot/qcustomplot.h \
     settingsdevice.h \
     arincdevice.h \
-    device.h
+    device.h \
+    FormsModels/mdigrafform.h \
+    grafikmanager.h \
+    FormsModels/arincgrafikpanel.h
 
 FORMS    += \
     FormsModels/formadddevice.ui \
@@ -71,7 +79,9 @@ FORMS    += \
     FormsModels/mainview.ui \
     FormsModels/mdiform.ui \
     FormsModels/mdiformdiscr.ui \
-    FormsModels/formdiscrparam.ui
+    FormsModels/formdiscrparam.ui \
+    FormsModels/mdigrafform.ui \
+    FormsModels/arincgrafikpanel.ui
 
 
 RESOURCES += \

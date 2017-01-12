@@ -165,3 +165,8 @@ void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map)
     }
 }
 
+int ModelDiscrTable::timeToUpdate()
+{
+    return Ui::default_time_to_update_tables;
+}
+

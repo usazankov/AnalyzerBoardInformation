@@ -6,6 +6,11 @@ struct TimeParametr
 {
     double time;
     unsigned int parametr;
+    TimeParametr(){}
+    TimeParametr(const TimeParametr &p){
+        time=p.time;
+        parametr=p.parametr;
+    }
 };
 Q_DECLARE_METATYPE(TimeParametr)
 class ArincModelInterface{

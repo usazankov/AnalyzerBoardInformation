@@ -24,7 +24,7 @@ public slots:
     void read();
 signals:
     void endToRead();
-    void data(const QVector<TimeParametr> &p);
+    void data(QVector<TimeParametr> *p);
 private:
     QFile *file;
     QDataStream *stream_read;
@@ -40,6 +40,7 @@ private:
     QDataStream *stream_buf;
     QFile *file;
     QThread *thread;
+    static int numbers_logs_file;
     bool openedFile;
     bool sizeBufWrited;
     bool blockBuf;
@@ -50,7 +51,6 @@ public:
     void writeTime(double time);
     void writeSizeBuf(unsigned int size);
     void openFile();
-    void flushFile();
     void closeFile();
     void read(int adress);
     int sizeBuffer()const;

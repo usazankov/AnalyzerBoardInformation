@@ -17,8 +17,9 @@ public:
 class SettingsArincDevice:public SettingsDevice
 {
 public:
-    explicit SettingsArincDevice(const QList<ConfParametr*> &list);
+    explicit SettingsArincDevice();
     QList<ConfParametr*>* confParametrs();
+    void setConfParametrs(const QList<ConfParametr *> &p);
 private:
     QList<ConfParametr*> params;
 };

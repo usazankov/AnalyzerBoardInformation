@@ -22,3 +22,8 @@ void QLabelHasWord::update(const QMap<int, ArincParametr *> &map)
     }else
         this->setText("- Слово отсутствует");
 }
+
+int QLabelHasWord::timeToUpdate()
+{
+    return Ui::default_time_to_update_tables;
+}

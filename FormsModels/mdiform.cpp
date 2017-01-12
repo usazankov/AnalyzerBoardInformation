@@ -1,6 +1,6 @@
 #include "mdiform.h"
 #include "ui_mdiform.h"
-
+#include <QThread>
 MdiForm::MdiForm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MdiForm)
@@ -28,6 +28,7 @@ MdiForm::MdiForm(QString nameTitle,int index, QWidget *parent):QWidget(parent), 
     ui->tableView->horizontalHeader()->addAction(actionVisibleUnpack);
     ui->tableView->horizontalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
     ui->tableView->addAction(actionBuildGraf);
+
 }
 
 void MdiForm::setModel(ArincModelInterface *m)
@@ -281,6 +282,7 @@ void ModelTable::update(const QMap<int, ArincParametr *> &map)
         setRowCount(map.count());
     }
     int count=0;
+
     foreach (int adress, map.keys()) {
         names_header[count]=QString::number(count+1);
         QModelIndex index;
@@ -321,6 +323,11 @@ void ModelTable::update(const QMap<int, ArincParametr *> &map)
     emit dataChanged(topleft, bottomright);
     //emit headerDataChanged(Qt::Vertical,0,rows);
     //emit changeContent();
+}
+
+int ModelTable::timeToUpdate()
+{
+    return Ui::default_time_to_update_tables;
 }
 
 void ModelTable::setVisibleHeader(bool visible, Parametr::Format f)
@@ -396,7 +403,7 @@ void MdiForm::setVisibleUnpack(bool f)
 void MdiForm::actionGraf()
 {
     int adress=table->adressOfRow(ui->tableView->selectionModel()->currentIndex().row());
-    model->readValues(adress);
+    emit buildGrafik(adress);
 }
 
 

@@ -12,7 +12,6 @@
 #include "arincdevice.h"
 #include <QThread>
 namespace Ui {
-class MainController;
 const QString EMPTY_CHANNEL="Нет устройств";
 }
 using namespace std;
@@ -28,6 +27,7 @@ private:
     QMap<int, Device*> devices;
     QMap<int, QThread*> threads;
     FormConfParamsDevice *formConfDev;
+    GrafikManager *grafManager;
     int countDevices;
     int countBoards;
     void connectActionsToSlots();

@@ -108,10 +108,11 @@ MdiForm *MainView::activeMdiChild()
     return 0;
 }
 
-QMdiSubWindow *MainView::findMdiChild(const QString &fileName)
+MdiGrafForm *MainView::grafForm(int index)
 {
-
+    return grafForms[index];
 }
+
 
 void MainView::closeActiveMdiForm()
 {
@@ -156,14 +157,35 @@ void MainView::setActiveSubWindow(QWidget *window)
     ui->mdiArea->setActiveSubWindow(qobject_cast<QMdiSubWindow *>(window));
 }
 
+void MainView::deleteMdiGrafChild(int index)
+{
+    emit deleteMdiGraf(index);
+}
+
 
 MdiForm *MainView::createMdiChild(QString nameTitle,int index)
 {
-    MdiForm *child = new MdiForm(nameTitle,index);
-
-    QMdiSubWindow *mdi=ui->mdiArea->addSubWindow(child);
+    MdiForm *child = new MdiForm(nameTitle,index,this);
+    cout<<"parent MDI is: "<<child->parent()->objectName().toStdString()<<endl;
+    ui->mdiArea->addSubWindow(child);
     child->showMaximized();
     return child;
+}
+
+MdiGrafForm *MainView::createMdiGrafChild(QString nameTitle, int index)
+{
+    cout<<"MainView in Thread:"<<this->thread()->objectName().toStdString()<<endl;
+    MdiGrafForm *child = new MdiGrafForm(nameTitle,index,this);
+    grafForms[index]=child;
+    ui->mdiArea->addSubWindow(child);
+    child->showMaximized();
+    emit MdiGrafCreated(index);
+    return child;
+}
+
+void MainView::addGrafikToMdiChild(int indexChild, int adress)
+{
+    grafForm(indexChild)->addGrafik(adress);
 }
 
 

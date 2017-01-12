@@ -2,8 +2,8 @@
 #define ARINCREADER_H
 
 #include "ArincBoards/arincintefaces.h"
-#include "UnpackingArinc/parametr_impl.h"
 #include "arincmodelinterface.h"
+#include "UnpackingArinc/parametr_impl.h"
 #include "logsmanager.h"
 #include <QVector>
 #include <QThread>
@@ -16,23 +16,25 @@ class ArincReader:public QObject, public ArincModelInterface
     Q_OBJECT
 public:
     ArincReader(ReadingBuffer<unsigned int*> *arinc,QObject *obj=0);
-    void lockMutex();
-    void unlockMutex();
     ~ArincReader();
 private:
     ReadingBuffer<unsigned int*> *arinc;
     QMap<int, ArincParametr*> arinc_map;
     QMap<int, ArincParametr*>::iterator iter;
     QVector<ArincParametrObserver*> observers;
+    QVector<double> lastKeysToNotify;
     QMutex	mutex;
     LogsManager *manager;
+    double key;
     int size;
     double start_time;
     bool running;
     bool writeToFile;
+    bool flagToWrite;
     double time_step_to_arinc_map;
-    double time_step_to_notify;
+    double time_step_to_zero;
     double time_step_to_flush;
+    double time_step_to_write_file;
     void process();
     void setWordsToZero();
     void deleteUnregisteredWords();
@@ -53,9 +55,9 @@ private slots:
 signals:
     void stopTimer();
     void start_Timer(int);
-    void sendLogsData(const QVector<TimeParametr> &p);
+    void sendLogsData(QVector<TimeParametr> *p);
 public slots:
-    void getLogsData(const QVector<TimeParametr> &p);
+    void getLogsData(QVector<TimeParametr> *p);
     // ArincModelInterface interface
 public:
     bool hasArincParametr(int adress);

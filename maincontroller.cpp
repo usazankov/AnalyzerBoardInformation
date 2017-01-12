@@ -8,6 +8,8 @@ MainController::MainController(MainView *view, QObject *parent) : QObject(parent
     formConfDev=Q_NULLPTR;
     connectActionsToSlots();
     checkActions();
+    this->thread()->setObjectName("MainThread");
+    grafManager=new GrafikManager(view,this);
 }
 
 MainController::~MainController()
@@ -109,17 +111,14 @@ void MainController::addDevice()
             channel=arincBoard->createChannel(form->numberChannel(),1);
             ++countBoards;
         }
-        if(channel!=Q_NULLPTR){
-            MdiForm *mdi=view->createMdiChild(form->nameChannel(),index);
-            connect(mdi, SIGNAL(MdiFormDeleted(int)), this, SLOT(delDevice(int)));
-            Device* dev = new ArincDevice(index,channel,mdi);
+        if(channel!=Q_NULLPTR){            
+            Device* dev = new ArincDevice(index,channel,view);
+            connect((dynamic_cast<ArincDevice*>(dev))->MdiView(), SIGNAL(MdiFormDeleted(int)), this, SLOT(delDevice(int)));
             devices[index]=dev; 
             dev->setName(form->nameChannel());
+            dynamic_cast<ArincDevice*>(dev)->setGrafikManager(grafManager);
             QThread *thread = new QThread;
-            dev->moveToThread(thread);
-            if(ThreadsisRunning()){
-                thread->start();
-            }
+            thread->setObjectName(form->nameChannel());
             threads[index]=thread;
             connect(thread,SIGNAL(started()),dev,SLOT(start()));
             connect(thread,SIGNAL(finished()),dev,SLOT(stop()));
@@ -189,9 +188,16 @@ void MainController::confParamsDevice()
 
 void MainController::startDevice()
 {
-    foreach (QThread *t, threads)
-        if(!t->isRunning())
+    QMap<int,QThread*>::iterator iter;
+    for(iter=threads.begin();iter!=threads.end();++iter){
+        devices[iter.key()]->moveToThread(iter.value());
+        if(!iter.value()->isRunning())
+            iter.value()->start();
+    }
+    /*foreach (QThread *t, threads)
+        if(!t->isRunning()){
             t->start();
+        }*/
     view->action_stop->setEnabled(true);
     view->action_start->setEnabled(false);
 }
@@ -202,6 +208,8 @@ void MainController::stopDevice()
         if(!t->isFinished())
             t->quit();
     }
+//    foreach (Device *dev, devices)
+//        dev->moveToThread(this->thread());
     view->action_start->setEnabled(true);
     view->action_stop->setEnabled(false);
 }

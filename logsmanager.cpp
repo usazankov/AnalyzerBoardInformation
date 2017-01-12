@@ -1,10 +1,8 @@
 #include "logsmanager.h"
-
-
-
+int LogsManager::numbers_logs_file=0;
 LogsManager::LogsManager(QObject *parent) : QObject(parent)
 {
-    file=new QFile(Ui::pathToLog);
+    file=new QFile(QString::number(numbers_logs_file++)+Ui::pathToLog);
     stream=new QDataStream(file);
     array=new QByteArray;
     buf=new QBuffer(array);
@@ -43,12 +41,6 @@ void LogsManager::openFile()
         if(!file->open(QIODevice::WriteOnly|QIODevice::Append)){
             cout<<"Невозможно открыть файл\n";return;
         }
-}
-
-void LogsManager::flushFile()
-{
-    file->flush();
-    file->close();
 }
 
 void LogsManager::closeFile()
@@ -95,6 +87,8 @@ LogsManager::~LogsManager()
 void LogsManager::applyBuffer()
 {
     blockBuf=true;
+    if(!file->exists())
+        return;
     if(!file->open(QIODevice::WriteOnly|QIODevice::Append)){
         cout<<"Невозможно открыть файл\n";return;
     }
@@ -123,12 +117,19 @@ FileReader::FileReader(QFile *file, QObject *parent):QObject(parent)
 
 void FileReader::read()
 {
-    QVector<TimeParametr> vect;
+    QVector<TimeParametr> *vect=new QVector<TimeParametr>;
     cout<<"Opened File"<<endl;
-    if(!file->open(QIODevice::ReadOnly)){
-        cout<<"Невозможно открыть файл\n";return;
+    if(!file->exists()){
+        emit data(vect);
+        emit endToRead();
+        return;
     }
-
+    if(!file->open(QIODevice::ReadOnly)){
+        cout<<"Невозможно открыть файл\n";
+        //emit data(vect);
+        //emit endToRead();
+        return;
+    }
     int size;
     (*stream_read)>>size;
     cout<<"size="<<size<<endl;
@@ -138,23 +139,28 @@ void FileReader::read()
     int count=0;
     double lastTime=0;
     //cout<<"time_read="<<time<<endl;
-    TimeParametr p;
-    p.time=time;
+
+    double time_par;
+    unsigned int par;
     while(!stream_read->atEnd()){
         if(count==size){
             (*stream_read)>>time;
-            p.time=time;
+            time_par=time;
             //cout<<"time_read="<<time<<endl;
             count=-1;
         }else{
             unsigned int i;
             (*stream_read)>>i;
             if((i&0xff)==adress)
-                p.parametr=i;
+                par=i;
                 //cout<<"stream_read="<<i<<endl;
         }
         if(time-lastTime>=1.0){
-            vect.push_back(p);
+            TimeParametr p;
+            p.time=time_par;
+            p.parametr=par;
+            //cout<<"time_read="<<time_par<<endl;
+            vect->push_back(p);
             lastTime=time;
         }
         ++count;
