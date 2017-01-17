@@ -19,6 +19,7 @@ public:
     QString nameBoard();
     MdiForm* MdiView()const;
     bool isRunningDev();
+    void deleteAllObserveredGrafiks();
     virtual ~ArincDevice();
     // Device interface
     void start();
@@ -28,7 +29,6 @@ public:
     void setName(const QString &name);
     void setGrafikManager(GrafikManager* manager);
 private:
-    int i;//Индекс Device
     QList<int> discrs_models;
     int number_channel;
     QString name_board;
@@ -38,14 +38,18 @@ private:
     MainView *view;
     GrafikManager *grafmanager;
     int adressBuildGraf;
+    int indexBuildMdi;
     bool wasRun;
     void buildDiscrsModel();
     void deleteDiscrTable(int adress);
     void deleteAllDiscrTable();
     void applyConf();
+signals:
+    void arincModelDeleted(int indexDevice);
 public slots:
     void receiveData(QVector<TimeParametr> *p);
-    void mdiGrafCreated(int indexOfMdi);
+    void mdiGrafCreated(int indexOfMdi, int indexDevice);
+    void GrafCreated(int adress,int indexOfMdi,int indexDevice);
     void buildGraf(int adress);
 };
 

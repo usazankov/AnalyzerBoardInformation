@@ -78,6 +78,8 @@ public:
     int countDiscrModels()const;
     void deleteDiscrTable(int adress);
     void setVisibleDiscrTables(bool visible);
+    void removeAllObserver();
+    void deregisterObservers();
     int index()const;
     ~MdiForm();
 private:
@@ -92,6 +94,7 @@ private:
     QAction* actionBuildGraf;
     QList<MdiFormDiscr*> forms;
     QMap<int, ModelDiscrTable*> discr_models;
+    QList<ArincParametrObserver*> observers;
     int i;//Индекс окна
     void createActions();
     void connectActionsToSlots();

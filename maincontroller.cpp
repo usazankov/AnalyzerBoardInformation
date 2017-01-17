@@ -63,15 +63,20 @@ bool MainController::ThreadsisRunning()
 void MainController::checkActions()
 {
     if(devices.isEmpty()){
+        view->action_add_device->setEnabled(true);
         view->action_del_device->setEnabled(false);
         view->action_start->setEnabled(false);
         view->action_stop->setEnabled(false);
         view->action_save_file->setEnabled(false);
+        view->action_start->setChecked(false);
     }else{
-        if(!ThreadsisRunning())
+        if(!ThreadsisRunning()){
             view->action_start->setEnabled(true);
+
+        }
         view->action_save_file->setEnabled(true);
         view->action_del_device->setEnabled(true);
+
     }
 }
 
@@ -151,6 +156,7 @@ void MainController::delDevice(int index)
         pciBoards[indexBoard]->deleteChannel(channel);
         std::cout<<"Deleted index="<<index<<std::endl;
     }
+
     if(formConfDev!=Q_NULLPTR)
         formConfDev->deleteChannel(index);
     --countDevices;
@@ -200,6 +206,11 @@ void MainController::startDevice()
         }*/
     view->action_stop->setEnabled(true);
     view->action_start->setEnabled(false);
+    view->action_start->setChecked(true);
+    view->action_add_device->setEnabled(false);
+    view->action_del_device->setEnabled(false);
+
+    view->activeMdiChild(view->currentActiveWindow());
 }
 
 void MainController::stopDevice()
@@ -212,4 +223,7 @@ void MainController::stopDevice()
 //        dev->moveToThread(this->thread());
     view->action_start->setEnabled(true);
     view->action_stop->setEnabled(false);
+    view->action_start->setChecked(false);
+    view->action_add_device->setEnabled(true);
+    view->action_del_device->setEnabled(true);
 }

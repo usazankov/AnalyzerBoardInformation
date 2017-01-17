@@ -16,9 +16,10 @@ public slots:
     virtual void start()=0;
     virtual void stop()=0;
 private:
+
+protected:
     int i;//Индекс
     QString n;//Имя
-protected:
     SettingsDevice* settings;
 };
 #endif // DEVICEINTERFACE_H

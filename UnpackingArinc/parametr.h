@@ -7,7 +7,7 @@
 #include <iostream>
 namespace params {
 const double ARINC_SCALE=1048576;
-const double DEFAULT_UNPACK_CONST=1048576;
+const double DEFAULT_UNPACK_CONST=0;
 class Parametr;
 }
 using namespace std;

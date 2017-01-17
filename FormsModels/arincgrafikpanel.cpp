@@ -9,27 +9,38 @@ ArincGrafikPanel::ArincGrafikPanel(int adressOfParametr,QWidget *parent) :
     adress=adressOfParametr;
     setStyleGrafik();
     graph=ui->customPlot->addGraph();
-
     graph->setPen(QPen(QColor(0xC0C0C0), 3));
-    startTime=QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
-    QTimer *timer=new QTimer;
+    timer=new QTimer;
     connect(timer,SIGNAL(timeout()),this,SLOT(upd()));
-    timer->start(10);
-    time=0;
     cout<<"ArincGrafikPanel in Thread: "<<this->thread()->objectName().toStdString()<<endl;
+    timeStepToUpdate=Ui::default_time_to_update_grafik;
 }
-
+double ArincGrafikPanel::current_time;
+double ArincGrafikPanel::startTime;
 ArincGrafikPanel::~ArincGrafikPanel()
 {
+    timer->stop();
     delete ui;
+    delete timer;
 }
 
 
 void ArincGrafikPanel::setLastData(const QVector<double> &x, const QVector<double> &y)
 {
-
+    cout<<"SettingLastData"<<endl;
+    graph->addData(0,0);
+    graph->addData(x,y);
 }
 
+void ArincGrafikPanel::clearData()
+{
+    graph->clearData();
+}
+
+void ArincGrafikPanel::setTimeStepToUpdate(int timeStepToUpdate)
+{
+    this->timeStepToUpdate=timeStepToUpdate;
+}
 
 void ArincGrafikPanel::setStyleGrafik()
 {
@@ -81,18 +92,36 @@ void ArincGrafikPanel::setStyleGrafik()
 
 void ArincGrafikPanel::upd()
 {
-    ui->customPlot->graph(0)->rescaleAxes();
-    //ui->customPlot->xAxis->setRange(time+50, 500, Qt::AlignRight);
+    //ui->customPlot->graph(0)->rescaleAxes();
+    ui->customPlot->xAxis->setRange(current_time+0.5, 5, Qt::AlignRight);
     ui->customPlot->replot();
+    current_time=QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0-startTime;
+}
+
+void ArincGrafikPanel::start()
+{
+    if(!timer->isActive())
+        timer->start(10);
+    cout<<"StartPlotting adress: 0"<<oct<<adress<<dec<<endl;
+}
+
+void ArincGrafikPanel::stop()
+{
+    if(timer->isActive())
+        timer->stop();
+    cout<<"StopPlotting adress: 0"<<oct<<adress<<dec<<endl;
 }
 
 void ArincGrafikPanel::update(const QMap<int, ArincParametr *> &map)
 {
-    graph->addData(QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0-startTime,5);
-
+    if(map.contains(adress)){
+        if(map[adress]->FormatValue(Parametr::ValueParametr)!="-")
+            graph->addData(current_time,map[adress]->FormatValue(Parametr::ValueParametr).toDouble());
+        else graph->addData(current_time,0);
+    }else graph->addData(current_time,0);
 }
 
 int ArincGrafikPanel::timeToUpdate()
 {
-    return Ui::default_time_to_update_grafik;
+    return timeStepToUpdate;
 }

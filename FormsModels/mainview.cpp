@@ -8,6 +8,7 @@ MainView::MainView(QWidget *parent) :
     ui->setupUi(this);
     ui->mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    connect(ui->mdiArea,SIGNAL(subWindowActivated(QMdiSubWindow*)),this,SLOT(activeMdiChild(QMdiSubWindow*)));
     createActions();
     createToolBars();
     createMenu();
@@ -47,6 +48,9 @@ void MainView::createActions()
     action_start->setIcon(icon6);
     action_start->setText("&Запуск");
     action_start->setIconVisibleInMenu(false);
+    action_start->setCheckable(true);
+    action_start->setChecked(false);
+    action_start->setIconVisibleInMenu(false);
 
     action_stop = new QAction(this);
     action_stop->setObjectName("action_stop");
@@ -75,7 +79,7 @@ void MainView::createActions()
     QIcon icon5;
     icon5.addFile(QStringLiteral(":/images/settings.png"), QSize(), QIcon::Normal, QIcon::Off);
     action_confparams_device->setIcon(icon5);
-    action_confparams_device->setText("&Параметры распаковки");
+    action_confparams_device->setText("&Настройка");
     action_confparams_device->setIconVisibleInMenu(false);
     action_open_file = new QAction(this);
     action_open_file->setObjectName(QStringLiteral("action_open_file"));
@@ -101,16 +105,14 @@ void MainView::createActions()
 }
 
 
-MdiForm *MainView::activeMdiChild()
-{
-    if (QMdiSubWindow *activeSubWindow = ui->mdiArea->activeSubWindow())
-        return qobject_cast<MdiForm *>(activeSubWindow->widget());
-    return 0;
-}
-
 MdiGrafForm *MainView::grafForm(int index)
 {
     return grafForms[index];
+}
+
+QMdiSubWindow *MainView::currentActiveWindow()
+{
+    return ui->mdiArea->currentSubWindow();
 }
 
 
@@ -119,7 +121,10 @@ void MainView::closeActiveMdiForm()
     ui->mdiArea->closeActiveSubWindow();
 }
 
-
+bool MainView::containsIndexMdiGraf(int index)
+{
+    return grafForms.contains(index);
+}
 
 void MainView::createMenu()
 {
@@ -157,35 +162,101 @@ void MainView::setActiveSubWindow(QWidget *window)
     ui->mdiArea->setActiveSubWindow(qobject_cast<QMdiSubWindow *>(window));
 }
 
-void MainView::deleteMdiGrafChild(int index)
+void MainView::deletedMdiGrafChild(int index)
 {
+    grafForms.remove(index);   
     emit deleteMdiGraf(index);
+    cout<<"grafForms.count: "<<grafForms.count()<<endl;
 }
 
+void MainView::deleteMdiForm(int index)
+{
+    devForms.remove(index);
+}
+
+void MainView::arincModelIsDeleted(int indexMdi)
+{
+    if(grafForms.contains(indexMdi)){
+        grafForms[indexMdi]->resetModel();
+
+    }
+}
+
+void MainView::activeMdiChild(QMdiSubWindow *mdi)
+{
+    if(mdi!=Q_NULLPTR&&action_start->isChecked()){
+        if(mdi->widget()->objectName()=="MdiGrafForm"){
+            MdiGrafForm *form=qobject_cast<MdiGrafForm*>(mdi->widget());
+            if(form!=Q_NULLPTR){
+                int index=form->index();
+                foreach (MdiGrafForm* f, grafForms) {
+                    if(index!=f->index()){
+                        emit f->stopPlotting();
+                        f->setTimeStepToUpdate(1000);
+                    }else if(index==f->index()){
+                        emit f->startPlotting();
+                        f->setTimeStepToUpdate(Ui::default_time_to_update_grafik);
+                    }
+                }
+                foreach (MdiForm* f, devForms) {
+                    f->removeAllObserver();
+                }
+            }
+        }else if(mdi->widget()->objectName()=="MdiForm"){
+            MdiForm *form=qobject_cast<MdiForm*>(mdi->widget());
+            if(form!=Q_NULLPTR){
+                int index=form->index();
+                foreach (MdiForm* f, devForms) {
+                    if(index!=f->index()){
+                        f->removeAllObserver();
+                    }else if(index==f->index()){
+                        f->deregisterObservers();
+                    }
+                }
+            }
+            foreach (MdiGrafForm* f, grafForms) {
+                emit f->stopPlotting();
+                f->setTimeStepToUpdate(1000);
+            }
+        }
+    }
+}
 
 MdiForm *MainView::createMdiChild(QString nameTitle,int index)
 {
     MdiForm *child = new MdiForm(nameTitle,index,this);
-    cout<<"parent MDI is: "<<child->parent()->objectName().toStdString()<<endl;
+    devForms[index]=child;
     ui->mdiArea->addSubWindow(child);
     child->showMaximized();
     return child;
 }
 
-MdiGrafForm *MainView::createMdiGrafChild(QString nameTitle, int index)
+MdiGrafForm *MainView::createMdiGrafChild(QString nameTitle, int index,int indexDevice)
 {
-    cout<<"MainView in Thread:"<<this->thread()->objectName().toStdString()<<endl;
     MdiGrafForm *child = new MdiGrafForm(nameTitle,index,this);
+    connect(child,SIGNAL(deletedGrafForm(int)),this,SLOT(deletedMdiGrafChild(int)));
     grafForms[index]=child;
     ui->mdiArea->addSubWindow(child);
     child->showMaximized();
-    emit MdiGrafCreated(index);
+    emit MdiGrafCreated(index,indexDevice);
+    cout<<"grafForms.count: "<<grafForms.count()<<endl;
     return child;
 }
 
-void MainView::addGrafikToMdiChild(int indexChild, int adress)
+void MainView::addGrafikToMdiChild(int indexChild, int adress, int indexDevice)
 {
     grafForm(indexChild)->addGrafik(adress);
+    emit grafCreated(adress,indexChild,indexDevice);
+}
+
+void MainView::deleteObserversMdiForm(int index)
+{
+    grafForms[index]->delObservers();
+}
+
+void MainView::addObserversMdiForm(int index)
+{
+    grafForms[index]->addObservers();
 }
 
 

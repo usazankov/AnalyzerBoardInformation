@@ -7,12 +7,19 @@ MdiGrafForm::MdiGrafForm(QString title, int index, QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowTitle(title);
-    this->index=index;
+    this->i=index;
+    count_Observers=0;
+    runningPlot=0;
 }
 
 ArincGrafikPanel *MdiGrafForm::graphPanel(int adress)
 {
     return grafiks[adress];
+}
+
+int MdiGrafForm::index() const
+{
+    return i;
 }
 
 void MdiGrafForm::addGrafik(int adress)
@@ -21,9 +28,39 @@ void MdiGrafForm::addGrafik(int adress)
     if(!grafiks.contains(adress)){
         ArincGrafikPanel *grafik=new ArincGrafikPanel(adress,this);
         model->registerObserver(grafik);
+        ++count_Observers;
+        connect(this,SIGNAL(signalToStartPlotting()),grafik,SLOT(start()));
+        connect(this,SIGNAL(signalToStopPlotting()),grafik,SLOT(stop()));
         ui->verticalLayout->addWidget(grafik);
         grafiks[adress]=grafik;
     }
+}
+
+void MdiGrafForm::delObservers()
+{
+    cout<<"count_Observers del before: "<<count_Observers<<endl;
+    emit stopPlotting();
+    foreach (ArincGrafikPanel* p, grafiks) {
+        if(count_Observers>0){
+            if(model!=Q_NULLPTR)
+                model->removeObserver(p);
+            p->stop();
+            --count_Observers;
+        }
+    }
+   cout<<"count_Observers del after: "<<count_Observers<<endl;
+}
+
+void MdiGrafForm::addObservers()
+{
+    cout<<"count_Observers before: "<<count_Observers<<endl;
+    foreach (ArincGrafikPanel* p, grafiks) {
+        if(model!=Q_NULLPTR)
+            model->registerObserver(p);
+        ++count_Observers;
+    }
+    emit startPlotting();
+    cout<<"count_Observers after: "<<count_Observers<<endl;
 }
 
 void MdiGrafForm::setModel(ArincModelInterface *model)
@@ -31,14 +68,65 @@ void MdiGrafForm::setModel(ArincModelInterface *model)
     this->model=model;
 }
 
-MdiGrafForm::~MdiGrafForm()
+void MdiGrafForm::clearDataGrafiks()
+{
+    foreach (ArincGrafikPanel* p, grafiks) {
+        p->clearData();
+    }
+}
+
+int MdiGrafForm::countObservers()
+{
+    return count_Observers;
+}
+
+void MdiGrafForm::startPlotting()
+{
+    if(count_Observers>0){
+        emit signalToStartPlotting();
+        runningPlot=1;
+    }
+}
+
+void MdiGrafForm::stopPlotting()
+{
+    emit signalToStopPlotting();
+    runningPlot=0;
+}
+
+void MdiGrafForm::setTimeStepToUpdate(int timeStep)
 {
     foreach (ArincGrafikPanel* grafik, grafiks) {
+        grafik->setTimeStepToUpdate(timeStep);
+    }
+}
+
+bool MdiGrafForm::isRunningPlot() const
+{
+    return runningPlot;
+}
+
+MdiGrafForm::~MdiGrafForm()
+{
+    emit deletedGrafForm(index());
+    foreach (ArincGrafikPanel* grafik, grafiks) {
+        if(count_Observers>0){
+            if(model!=Q_NULLPTR){
+                model->removeObserver(grafik);
+                --count_Observers;
+            }
+        }
+        disconnect(this,SIGNAL(signalToStartPlotting()),grafik,SLOT(start()));
+        disconnect(this,SIGNAL(signalToStopPlotting()),grafik,SLOT(stop()));
         delete grafik;
         grafiks.remove(grafiks.key(grafik));
     }
-    emit deletedGrafForm(index);
     delete ui;
+}
+
+void MdiGrafForm::resetModel()
+{
+    model=Q_NULLPTR;
 }
 
 

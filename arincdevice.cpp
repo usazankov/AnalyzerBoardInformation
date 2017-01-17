@@ -11,10 +11,14 @@ ArincDevice::ArincDevice(int index, ReadingBuffer<unsigned int *> *buf, MainView
     name_board=buf->name();
     reader=new ArincReader(pciChannel,this);
     form->setModel(reader);
+    connect(form,SIGNAL(MdiFormDeleted(int)),view,SLOT(deleteMdiForm(int)));
     connect(form,SIGNAL(buildGrafik(int)),this,SLOT(buildGraf(int)));
     connect((dynamic_cast<ArincReader*>(reader)),SIGNAL(sendLogsData(QVector<TimeParametr>*)),this,SLOT(receiveData(QVector<TimeParametr>*)));
-    connect(view,SIGNAL(MdiGrafCreated(int)),this,SLOT(mdiGrafCreated(int)));
-
+    connect(view,SIGNAL(MdiGrafCreated(int,int)),this,SLOT(mdiGrafCreated(int,int)));
+    connect(view,SIGNAL(grafCreated(int,int,int)),this,SLOT(GrafCreated(int,int,int)));
+    adressBuildGraf=0;
+    indexBuildMdi=0;
+    wasRun=0;
 }
 
 QString ArincDevice::title() const
@@ -83,37 +87,56 @@ void ArincDevice::buildGraf(int adress)
 {
     adressBuildGraf=adress;
     ArincParametr *p=reader->getParametr(adress);
+    cout<<"buildGraf: "<<this->name().toStdString()<<endl;
     if(p!=Q_NULLPTR){
         int index=grafmanager->generateIndex();
-        grafmanager->createGrafikMdiForm("График: "+p->Name(), index);
+        grafmanager->createGrafikMdiForm("График: "+p->Name()+" 0"+QString::number(p->Adress(),8), index, Device::index());
     }
 }
 
 void ArincDevice::receiveData(QVector<TimeParametr> *p)
 {
-    QVector<TimeParametr>::const_iterator iter;
-    for (iter=p->begin();iter!=p->end();++iter){
-        //cout<<"time: "<<iter->time<<" value: "<<iter->parametr<<endl;
-    }
-    p->clear();
-    delete p;
+    cout<<"adress=0"<<oct<<adressBuildGraf<<endl;
+    cout<<this->name().toStdString()<<endl;
+    grafmanager->setOldData(indexBuildMdi,adressBuildGraf,p,reader->getParametr(adressBuildGraf));
+    view->activeMdiChild(view->currentActiveWindow());
 }
 
-void ArincDevice::mdiGrafCreated(int indexOfMdi)
+void ArincDevice::mdiGrafCreated(int indexOfMdi,int indexDevice)
 {
-    view->grafForm(indexOfMdi)->setModel(reader);
-    grafmanager->createGrafik(indexOfMdi,adressBuildGraf);
-    if(isRunningDev())
-        reader->readValues(adressBuildGraf);
+    if(indexDevice==Device::index()){
+        indexBuildMdi=indexOfMdi;
+        view->grafForm(indexOfMdi)->setModel(reader);
+        grafmanager->createGrafik(indexOfMdi, adressBuildGraf,indexDevice);
+    }
+}
+
+void ArincDevice::GrafCreated(int adress, int indexOfMdi, int indexDevice)
+{
+    if(indexDevice==Device::index()){
+        if(isRunningDev())
+            reader->readValues(adress);
+        cout<<"GrafCreated: "<<name().toStdString()<<endl;
+    }
 }
 
 void ArincDevice::start()
 {
-    reader->startArinc(1);
+    reader->startArinc(10);
+    grafmanager->addObserversMdiForm(index());
+    ArincGrafikPanel::startTime=QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+    ArincGrafikPanel::current_time=0;
+    if(wasRun)
+        grafmanager->clearData();
+    wasRun=1;
+    view->activeMdiChild(view->currentActiveWindow());
+    cout<<"start"<<endl;
+
 }
 
 void ArincDevice::stop()
 {
+    grafmanager->removeObserversMdiForm(index());
     reader->stopArinc();
     this->moveToThread(view->thread());
 }
@@ -136,6 +159,11 @@ MdiForm *ArincDevice::MdiView() const
 bool ArincDevice::isRunningDev()
 {
     return reader->isRunningArinc();
+}
+
+void ArincDevice::deleteAllObserveredGrafiks()
+{
+    grafmanager->removeObserversMdiForm(Device::index());
 }
 
 void ArincDevice::setSettingsDevice(SettingsDevice *settings)
@@ -162,16 +190,18 @@ void ArincDevice::setName(const QString &name)
 void ArincDevice::setGrafikManager(GrafikManager *manager)
 {
     grafmanager=manager;
+    connect(this,SIGNAL(arincModelDeleted(int)),grafmanager,SLOT(modelIsDeleted(int)));
 }
 
 ArincDevice::~ArincDevice()
 {
+    emit arincModelDeleted(index());
     delete reader;
 }
 
 void ArincDevice::buildDiscrsModel()
 {
-    foreach (int adress, discrs_models) {
+    foreach (int adress, discrs_models){
         if(!form->containsDiscrModel(adress)){
             form->addDiscrTable(adress);
         }

@@ -61,8 +61,8 @@ void ArincReader::getLogsData(QVector<TimeParametr> *p)
 bool ArincReader::hasArincParametr(int adress)
 {
     mutex.lock();
-    cout<<"LOCKED!"<<endl;
-    cout<<"hasArincParametr begin"<<endl;
+    //cout<<"LOCKED!"<<endl;
+    //cout<<"hasArincParametr begin"<<endl;
     if(arinc_map.contains(adress)){
         cout<<"hasArincParametr end"<<endl;
         mutex.unlock();
@@ -70,9 +70,9 @@ bool ArincReader::hasArincParametr(int adress)
         return true;
     }
     else{
-        cout<<"hasArincParametr end"<<endl;
+        //cout<<"hasArincParametr end"<<endl;
         mutex.unlock();
-        cout<<"UNLOCKED!"<<endl<<endl;
+        //cout<<"UNLOCKED!"<<endl<<endl;
         return false;
     }
 
@@ -80,22 +80,22 @@ bool ArincReader::hasArincParametr(int adress)
 
 bool ArincReader::isRunningArinc()
 {
-    return timer->isActive();
+    return running;
 }
 
 void ArincReader::clearParametrs()
 {
     mutex.lock();
-    cout<<"LOCKED!"<<endl;
-    cout<<"clearParametrs begin"<<endl;
+    //cout<<"LOCKED!"<<endl;
+    //cout<<"clearParametrs begin"<<endl;
     foreach (ArincParametr* p, arinc_map) {
-        cout<<"Cleared "<<p->Adress()<<endl;
+        //cout<<"Cleared "<<p->Adress()<<endl;
         delete p;
     }
     arinc_map.clear();
-    cout<<"clearParametrs end"<<endl;
+    //cout<<"clearParametrs end"<<endl;
     mutex.unlock();
-    cout<<"UNLOCKED!"<<endl<<endl;
+    //cout<<"UNLOCKED!"<<endl<<endl;
 }
 
 void ArincReader::readValues(int adress)
@@ -106,8 +106,8 @@ void ArincReader::readValues(int adress)
 void ArincReader::setTypeParametr(int adress, Parametr::TypeParametr type)
 {
     mutex.lock();
-    cout<<"LOCKED!"<<endl;
-    cout<<"setTypeParametr begin"<<endl;
+    //cout<<"LOCKED!"<<endl;
+    //cout<<"setTypeParametr begin"<<endl;
     if(arinc_map.contains(adress))
     if(arinc_map[adress]->Type()!=type){
         int word = arinc_map[adress]->UnpackWord();
@@ -131,26 +131,26 @@ void ArincReader::setTypeParametr(int adress, Parametr::TypeParametr type)
                 break;
         }
     }
-    cout<<"setTypeParametr end"<<endl;
+    //cout<<"setTypeParametr end"<<endl;
     mutex.unlock();
-    cout<<"UNLOCKED!"<<endl<<endl;
+    //cout<<"UNLOCKED!"<<endl<<endl;
 }
 
 ArincParametr *ArincReader::getParametr(int adress)
 {
     mutex.lock();
-    cout<<"LOCKED!"<<endl;
-    cout<<"getParametr begin"<<endl;
+    //cout<<"LOCKED!"<<endl;
+    //cout<<"getParametr begin"<<endl;
     if(arinc_map.contains(adress)){
-        cout<<"getParametr end"<<endl;
+        //cout<<"getParametr end"<<endl;
         mutex.unlock();
-        cout<<"UNLOCKED!"<<endl<<endl;
+        //cout<<"UNLOCKED!"<<endl<<endl;
         return arinc_map[adress];
     }
     else{
-        cout<<"getParametr end"<<endl;
+        //cout<<"getParametr end"<<endl;
         mutex.unlock();
-        cout<<"UNLOCKED!"<<endl<<endl;
+        //cout<<"UNLOCKED!"<<endl<<endl;
         return Q_NULLPTR;
     }
 }
@@ -158,30 +158,33 @@ ArincParametr *ArincReader::getParametr(int adress)
 void ArincReader::registerObserver(ArincParametrObserver *o)
 {
     mutex.lock();
-    cout<<"LOCKED!"<<endl;
-    cout<<"registerObserver begin"<<endl;
+    //cout<<"LOCKED!"<<endl;
+    //cout<<"registerObserver begin"<<endl;
     if(!observers.contains(o)){
-        cout<<"observer REGISTERED"<<endl;
+        //cout<<"observer REGISTERED"<<endl;
         observers.push_back(o);
         lastKeysToNotify.push_back(0.0);
     }
-    cout<<"registerObserver end"<<endl;
+    //cout<<"registerObserver end"<<endl;
+    //cout<<"countObservers: "<<observers.count()<<endl;
     mutex.unlock();
-    cout<<"UNLOCKED!"<<endl<<endl;
+    //cout<<"UNLOCKED!"<<endl<<endl;
 }
 
 void ArincReader::removeObserver(ArincParametrObserver *o)
 {
     mutex.lock();
-    cout<<"LOCKED!"<<endl;
-    cout<<"removeObserver begin"<<endl;
+    //cout<<"LOCKED!"<<endl;
+    //cout<<"removeObserver begin"<<endl;
     int index=observers.indexOf(o);
     if(index>=0){
         observers.remove(index);
     }
-    cout<<"addArincParametr end"<<endl;
+    //cout<<"addArincParametr end"<<endl;
+    //cout<<"countObservers: "<<observers.count()<<endl;
     mutex.unlock();
-    cout<<"UNLOCKED!"<<endl<<endl;
+    //cout<<"UNLOCKED!"<<endl<<endl;
+
 }
 
 void ArincReader::notifyObservers()
@@ -200,27 +203,27 @@ void ArincReader::notifyObservers()
 Parametr::TypeParametr ArincReader::TypeParametr(int adress)
 {
     mutex.lock();
-    cout<<"LOCKED!"<<endl;
-    cout<<"TypeParametr begin"<<endl;
+    //cout<<"LOCKED!"<<endl;
+    //cout<<"TypeParametr begin"<<endl;
     if(arinc_map.contains(adress))
         return arinc_map[adress]->Type();
     else return Parametr::NoType;
-    cout<<"addArincParametr end"<<endl;
+    //cout<<"addArincParametr end"<<endl;
     mutex.unlock();
-    cout<<"UNLOCKED!"<<endl<<endl;
+    //cout<<"UNLOCKED!"<<endl<<endl;
 }
 
 void ArincReader::addArincParametr(int adress)
 {
     mutex.lock();
-    cout<<"LOCKED!"<<endl;
-    cout<<"addArincParametr begin"<<endl;
+    //cout<<"LOCKED!"<<endl;
+    //cout<<"addArincParametr begin"<<endl;
     if(!arinc_map.contains(adress)){
         arinc_map[adress]=new ArincParametr(adress);
     }
-    cout<<"addArincParametr end"<<endl;
+    //cout<<"addArincParametr end"<<endl;
     mutex.unlock();
-    cout<<"UNLOCKED!"<<endl<<endl;
+    //cout<<"UNLOCKED!"<<endl<<endl;
 }
 
 void ArincReader::startArinc(int time_milliseconds)

@@ -126,8 +126,6 @@ void FileReader::read()
     }
     if(!file->open(QIODevice::ReadOnly)){
         cout<<"Невозможно открыть файл\n";
-        //emit data(vect);
-        //emit endToRead();
         return;
     }
     int size;

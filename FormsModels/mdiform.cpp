@@ -35,6 +35,7 @@ void MdiForm::setModel(ArincModelInterface *m)
 {
     model=m;
     model->registerObserver(table);
+    observers.push_back(table);
 }
 
 void MdiForm::addDiscrTable(int adress)
@@ -50,7 +51,9 @@ void MdiForm::addDiscrTable(int adress)
     forms.append(discr);
     ui->verticalLayout_2->insertWidget(ui->verticalLayout_2->count()-1,discr);
     model->registerObserver(mod);
+    observers.push_back(mod);
     model->registerObserver(discr->LabelHasWord());
+    observers.push_back(discr->LabelHasWord());
 }
 
 void MdiForm::setDiscrTable(int index,int adress)
@@ -61,11 +64,13 @@ void MdiForm::setDiscrTable(int index,int adress)
         name=model->getParametr(adress)->Name()+" (0"+QString::number(adress,8)+")";
     }
     model->removeObserver(discr_models[forms.at(index)->adress()]);
+    observers.removeOne(discr_models[forms.at(index)->adress()]);
     delete discr_models[forms.at(index)->adress()];
     discr_models.remove(forms.at(index)->adress());
     forms.at(index)->setModel(mod,name);
     discr_models[adress]=mod;
     model->registerObserver(mod);
+    observers.push_back(mod);
     forms.at(index)->LabelHasWord()->setAdress(adress);
 }
 
@@ -87,9 +92,11 @@ int MdiForm::countDiscrModels() const
 void MdiForm::deleteDiscrTable(int adress)
 {
     model->removeObserver(discr_models[adress]);
+    observers.removeOne(discr_models[adress]);
     foreach (MdiFormDiscr* f, forms) {
         if(f->adress()==adress){
             model->removeObserver(f->LabelHasWord());
+            observers.removeOne(f->LabelHasWord());
             delete f;
             forms.removeOne(f);
         }
@@ -126,6 +133,23 @@ void MdiForm::setVisibleDiscrTables(bool visible)
         QList<int> list;
         list<<ui->tableView->width()/2<<ui->tableView->width()/4;
         ui->splitter->setSizes(list);
+    }
+}
+
+void MdiForm::removeAllObserver()
+{
+    cout<<"NameMdi: "<<windowTitle().toStdString()<<" count observers: "<<observers.count()<<endl;
+    foreach (ArincParametrObserver* p, observers) {
+        model->removeObserver(p);
+    }
+}
+
+void MdiForm::deregisterObservers()
+{
+    cout<<"NameMdi: "<<windowTitle().toStdString()<<" count observers: "<<observers.count()<<endl;
+
+    foreach (ArincParametrObserver* p, observers) {
+        model->registerObserver(p);
     }
 }
 

@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include "arincmodelinterface.h"
+#include "arincreader.h"
+#include <QScopedPointer>
 #include "FormsModels/arincgrafikpanel.h"
 namespace Ui {
 class MdiGrafForm;
@@ -15,17 +17,30 @@ class MdiGrafForm : public QWidget
 public:
     explicit MdiGrafForm(QString title,int index, QWidget *parent = 0);
     ArincGrafikPanel* graphPanel(int adress);
-
+    int index()const;
     void setModel(ArincModelInterface* model);
+    void clearDataGrafiks();
+    int countObservers();
+    void startPlotting();
+    void stopPlotting();
+    void setTimeStepToUpdate(int timeStep);
+    bool isRunningPlot()const;
     virtual ~MdiGrafForm();
+    void resetModel();
 signals:
     void deletedGrafForm(int index);
+    void signalToStartPlotting();
+    void signalToStopPlotting();
 public slots:
     void addGrafik(int adress);
+    void delObservers();
+    void addObservers();
 private:
     Ui::MdiGrafForm *ui;
     QString title;
-    int index;
+    int count_Observers;
+    int i;
+    bool runningPlot;
     ArincModelInterface* model;
     QMap<int,ArincGrafikPanel*> grafiks;
 };
