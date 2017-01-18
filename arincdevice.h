@@ -20,6 +20,7 @@ public:
     MdiForm* MdiView()const;
     bool isRunningDev();
     void deleteAllObserveredGrafiks();
+    void setTimeStepToUpdateGraphiks(int timeStep);
     virtual ~ArincDevice();
     // Device interface
     void start();

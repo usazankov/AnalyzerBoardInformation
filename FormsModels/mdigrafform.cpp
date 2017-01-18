@@ -10,6 +10,7 @@ MdiGrafForm::MdiGrafForm(QString title, int index, QWidget *parent) :
     this->i=index;
     count_Observers=0;
     runningPlot=0;
+    timeStepToUpdate=Ui::DefaultTimeStepToUpdateGrafiks;
 }
 
 ArincGrafikPanel *MdiGrafForm::graphPanel(int adress)
@@ -98,6 +99,18 @@ void MdiGrafForm::setTimeStepToUpdate(int timeStep)
 {
     foreach (ArincGrafikPanel* grafik, grafiks) {
         grafik->setTimeStepToUpdate(timeStep);
+    }
+}
+
+void MdiGrafForm::setDefaultTimeStepToUpdate(int timeStep)
+{
+    this->timeStepToUpdate=timeStep;
+}
+
+void MdiGrafForm::applyDefaultTimeStepToUpdate()
+{
+    foreach (ArincGrafikPanel* grafik, grafiks) {
+        grafik->setTimeStepToUpdate(timeStepToUpdate);
     }
 }
 

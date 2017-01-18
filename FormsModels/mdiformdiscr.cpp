@@ -143,7 +143,7 @@ ModelDiscrTable::~ModelDiscrTable()
 
 }
 
-void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map)
+void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map, double time)
 {
     ArincDiscrParametr *temp = dynamic_cast<ArincDiscrParametr*>(map[adress]);
     if(temp!=0){
@@ -167,6 +167,6 @@ void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map)
 
 int ModelDiscrTable::timeToUpdate()
 {
-    return Ui::default_time_to_update_tables;
+    return Ui::DefaultTimeStepToUpdateTables;
 }
 

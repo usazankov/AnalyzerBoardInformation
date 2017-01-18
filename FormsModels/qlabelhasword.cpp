@@ -12,7 +12,7 @@ void QLabelHasWord::setAdress(int adress)
     this->adress=adress;
 }
 
-void QLabelHasWord::update(const QMap<int, ArincParametr *> &map)
+void QLabelHasWord::update(const QMap<int, ArincParametr *> &map, double time)
 {
     if(map.contains(adress)){
         if(map[adress]->HasValue()&&adress!=0)
@@ -25,5 +25,5 @@ void QLabelHasWord::update(const QMap<int, ArincParametr *> &map)
 
 int QLabelHasWord::timeToUpdate()
 {
-    return Ui::default_time_to_update_tables;
+    return 500;
 }

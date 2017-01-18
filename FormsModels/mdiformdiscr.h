@@ -8,10 +8,10 @@
 #include "qlabelhasword.h"
 namespace Ui {
 class MdiFormDiscr;
+class MdiForm;
 const QString TABLE_STATE="Значение";
+const int DefaultTimeStepToUpdateTables=100;
 }
-
-
 
 class ModelDiscrTable: public QAbstractTableModel, public ArincParametrObserver
 {
@@ -42,7 +42,7 @@ public:
     ~ModelDiscrTable();
     // ArincParametrObserver interface
 public:
-    void update(const QMap<int, ArincParametr *> &map);
+    void update(const QMap<int, ArincParametr *> &map, double time);
 
     // ArincParametrObserver interface
 public:

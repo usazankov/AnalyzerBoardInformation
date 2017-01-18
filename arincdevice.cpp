@@ -125,7 +125,6 @@ void ArincDevice::start()
     reader->startArinc(10);
     grafmanager->addObserversMdiForm(index());
     ArincGrafikPanel::startTime=QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
-    ArincGrafikPanel::current_time=0;
     if(wasRun)
         grafmanager->clearData();
     wasRun=1;
@@ -164,6 +163,14 @@ bool ArincDevice::isRunningDev()
 void ArincDevice::deleteAllObserveredGrafiks()
 {
     grafmanager->removeObserversMdiForm(Device::index());
+}
+
+void ArincDevice::setTimeStepToUpdateGraphiks(int timeStep)
+{
+    QList<int> list=grafmanager->indexsMdiForms(index());
+    foreach (int i, list) {
+        view->grafForm(i)->setTimeStepToUpdate(timeStep);
+    }
 }
 
 void ArincDevice::setSettingsDevice(SettingsDevice *settings)

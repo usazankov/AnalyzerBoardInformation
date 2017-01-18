@@ -16,6 +16,8 @@ class ArincReader:public QObject, public ArincModelInterface
     Q_OBJECT
 public:
     ArincReader(ReadingBuffer<unsigned int*> *arinc,QObject *obj=0);
+    void setTimeStepToUpdateData(int timeStep);
+    void setTimeStepToWriteFile(int timeStep);
     ~ArincReader();
 private:
     ReadingBuffer<unsigned int*> *arinc;
@@ -35,6 +37,10 @@ private:
     double time_step_to_zero;
     double time_step_to_flush;
     double time_step_to_write_file;
+    double lastKeyToArincMap;
+    double lastKeyToFlush;
+    double lastKeyToZero;
+    double lastKeyToWrite;
     void process();
     void setWordsToZero();
     void deleteUnregisteredWords();

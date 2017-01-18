@@ -87,6 +87,17 @@ void GrafikManager::clearData()
     }
 }
 
+QList<int> GrafikManager::indexsMdiForms(int indexDevice)
+{
+    QList<int> list;
+    QMap<int,int>::const_iterator iter;
+    for(iter=indexsForms_indexsDevice.begin();iter!=indexsForms_indexsDevice.end();++iter){
+        if(iter.value()==indexDevice)
+            list.push_back(iter.key());
+    }
+    return list;
+}
+
 
 void GrafikManager::delGrafikMdiForm(int index)
 {

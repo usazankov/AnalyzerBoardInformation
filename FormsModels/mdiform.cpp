@@ -300,7 +300,7 @@ ModelTable::~ModelTable()
 
 }
 
-void ModelTable::update(const QMap<int, ArincParametr *> &map)
+void ModelTable::update(const QMap<int, ArincParametr *> &map, double time)
 {
     if(rows!=map.count()){
         setRowCount(map.count());
@@ -351,7 +351,7 @@ void ModelTable::update(const QMap<int, ArincParametr *> &map)
 
 int ModelTable::timeToUpdate()
 {
-    return Ui::default_time_to_update_tables;
+    return Ui::DefaultTimeStepToUpdateTables;
 }
 
 void ModelTable::setVisibleHeader(bool visible, Parametr::Format f)

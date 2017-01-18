@@ -21,6 +21,7 @@ const QString TABLE_UNPACK="Всё слово";
 const QString TABLE_DIMENSION="Ед.изм";
 const QString TABLE_MS="МС";
 const QString TABLE_ADRESS="Адрес";
+
 }
 
 using namespace std;
@@ -52,7 +53,7 @@ public:
     ~ModelTable();
     // ArincParametrObserver interface
 public:
-    void update(const QMap<int, ArincParametr *> &map);
+    void update(const QMap<int, ArincParametr *> &map, double time);
     int timeToUpdate();
 signals:
     void changeContent();

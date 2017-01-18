@@ -8,6 +8,7 @@
 #include "FormsModels/arincgrafikpanel.h"
 namespace Ui {
 class MdiGrafForm;
+const int DefaultTimeStepToUpdateGrafiks=10;
 }
 
 class MdiGrafForm : public QWidget
@@ -24,6 +25,8 @@ public:
     void startPlotting();
     void stopPlotting();
     void setTimeStepToUpdate(int timeStep);
+    void setDefaultTimeStepToUpdate(int timeStep);
+    void applyDefaultTimeStepToUpdate();
     bool isRunningPlot()const;
     virtual ~MdiGrafForm();
     void resetModel();
@@ -40,6 +43,7 @@ private:
     QString title;
     int count_Observers;
     int i;
+    int timeStepToUpdate;
     bool runningPlot;
     ArincModelInterface* model;
     QMap<int,ArincGrafikPanel*> grafiks;

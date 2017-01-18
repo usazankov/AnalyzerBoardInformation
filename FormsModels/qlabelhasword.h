@@ -12,7 +12,7 @@ public:
     void setAdress(int adress);
     // ArincParametrObserver interface
 public:
-    void update(const QMap<int, ArincParametr *> &map);
+    void update(const QMap<int, ArincParametr *> &map, double time);
 private:
     int adress;
 

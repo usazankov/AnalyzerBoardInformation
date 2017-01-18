@@ -13,7 +13,11 @@
 #include <QStyleFactory>
 namespace Ui {
 class MainView;
+const int DefaultTimeStepToUpdateData=10;
+const int DefaultTimeStepToWriteFile=1000;
+const int TimeStepToAddDataToUnvisibleGrafiks=1000;
 }
+
 class MainView : public QMainWindow
 {
     Q_OBJECT
