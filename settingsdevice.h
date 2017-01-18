@@ -20,7 +20,20 @@ public:
     explicit SettingsArincDevice();
     QList<ConfParametr*>* confParametrs();
     void setConfParametrs(const QList<ConfParametr *> &p);
+
+    int getTimeStepToUpdateData() const;
+    void setTimeStepToUpdateData(int value);
+
+    int getTimeStepToWriteFile() const;
+    void setTimeStepToWriteFile(int value);
+
+    int getTimeStepToUpdateGraphs() const;
+    void setTimeStepToUpdateGraphs(int value);
+
 private:
     QList<ConfParametr*> params;
+    int timeStepToUpdateData;
+    int timeStepToWriteFile;
+    int timeStepToUpdateGraphs;
 };
 #endif // SETTINGSDEVICE_H

@@ -41,6 +41,7 @@ void ArincGrafikPanel::clearData()
 void ArincGrafikPanel::setTimeStepToUpdate(int timeStepToUpdate)
 {
     this->timeStepToUpdate=timeStepToUpdate;
+    timer->setInterval(timeStepToUpdate);
 }
 
 void ArincGrafikPanel::setStyleGrafik()

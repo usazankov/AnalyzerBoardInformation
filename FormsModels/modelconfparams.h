@@ -30,6 +30,7 @@ struct ConfParametr{
     }
     virtual params::TypeParametr getType()const;
     static params::TypeParametr toTypeParametr(int i);
+
     friend QDataStream& operator >>(QDataStream& st, ConfParametr &conf){
         int type;
         st>>type;

@@ -32,3 +32,33 @@ void SettingsArincDevice::setConfParametrs(const QList<ConfParametr *> &p)
     params=p;
 }
 
+int SettingsArincDevice::getTimeStepToUpdateData() const
+{
+    return timeStepToUpdateData;
+}
+
+void SettingsArincDevice::setTimeStepToUpdateData(int value)
+{
+    timeStepToUpdateData = value;
+}
+
+int SettingsArincDevice::getTimeStepToWriteFile() const
+{
+    return timeStepToWriteFile;
+}
+
+void SettingsArincDevice::setTimeStepToWriteFile(int value)
+{
+    timeStepToWriteFile = value;
+}
+
+int SettingsArincDevice::getTimeStepToUpdateGraphs() const
+{
+    return timeStepToUpdateGraphs;
+}
+
+void SettingsArincDevice::setTimeStepToUpdateGraphs(int value)
+{
+    timeStepToUpdateGraphs = value;
+}
+

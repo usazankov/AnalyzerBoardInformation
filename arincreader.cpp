@@ -23,6 +23,7 @@ ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc, QObject *obj):QObj
 void ArincReader::setTimeStepToUpdateData(int timeStep)
 {
     time_step_to_arinc_map=timeStep/1000.0;
+    timer->setInterval(timeStep);
 }
 
 void ArincReader::setTimeStepToWriteFile(int timeStep)

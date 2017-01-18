@@ -122,7 +122,7 @@ void ArincDevice::GrafCreated(int adress, int indexOfMdi, int indexDevice)
 
 void ArincDevice::start()
 {
-    reader->startArinc(10);
+    reader->startArinc();
     grafmanager->addObserversMdiForm(index());
     ArincGrafikPanel::startTime=QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
     if(wasRun)

@@ -15,7 +15,7 @@ struct TimeParametr
 Q_DECLARE_METATYPE(TimeParametr)
 class ArincModelInterface{
 public:
-    virtual void startArinc(int time_milliseconds)=0;
+    virtual void startArinc(int time_milliseconds=10)=0;
     virtual void stopArinc()=0;
     virtual void setTypeParametr(int adress, Parametr::TypeParametr type)=0;
     virtual ArincParametr* getParametr(int adress)=0;
