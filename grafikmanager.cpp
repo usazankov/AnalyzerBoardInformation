@@ -50,7 +50,7 @@ void GrafikManager::setOldData(int indexMdiForm, int adress, QVector<TimeParamet
             y.push_back(0);
         }
     }
-    view->grafForm(indexMdiForm)->graphPanel(adress)->setLastData(x,y);
+    view->grafForm(indexMdiForm)->graphPanel(adress)->setData(x,y,arp);
 }
 
 void GrafikManager::createGrafikMdiForm(QString title, int index, int indexDevice)

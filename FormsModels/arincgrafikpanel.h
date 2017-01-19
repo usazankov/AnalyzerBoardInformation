@@ -6,7 +6,7 @@
 #include "FormsModels/QCustomPlot/qcustomplot.h"
 namespace Ui {
 class ArincGrafikPanel;
-const double timeStepToRestructData=300;
+const double timeStepToRestructData=10;
 const double restructedStep=0.95;//Шаг перерисовки графика (в секундах)
 }
 
@@ -16,7 +16,7 @@ class ArincGrafikPanel : public QWidget, public ArincParametrObserver
 public:
     explicit ArincGrafikPanel(int adressOfParametr, QWidget *parent = 0);
     ~ArincGrafikPanel();
-    void setLastData(const QVector<double> &x, const QVector<double> &y);
+    void setData(const QVector<double> &x, const QVector<double> &y, Parametr *p);
     void clearData();
     void setTimeStepToUpdate(int timeStepToUpdate);
     static double startTime;
@@ -28,6 +28,7 @@ private:
     QTimer *timer_restruct;
     int adress;
     bool loadedLastData;
+    QMap<double, QCPData>::iterator last_restruct_data;
     double beginAddedDataTime;
     double lastKeyToRestructData;
     int timeStepToUpdate;

@@ -128,7 +128,6 @@ void ArincDevice::start()
     if(wasRun)
         grafmanager->clearData();
     wasRun=1;
-    view->activeMdiChild(view->currentActiveWindow());
     cout<<"start"<<endl;
 
 }

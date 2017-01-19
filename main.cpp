@@ -9,12 +9,16 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     setStyle();
+    try {
+        MainView w;
+        MainController c(&w);
+        w.show();
+        return a.exec();
+        } catch (const std::bad_alloc& e) {
+            std::cout << "Allocation failed: " << e.what() << '\n';
+        }
 
-    MainView w;
-    MainController c(&w);
-    w.show();
 
-    return a.exec();
 }
 static void setStyle()
 {

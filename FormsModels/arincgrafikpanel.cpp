@@ -13,6 +13,9 @@ ArincGrafikPanel::ArincGrafikPanel(int adressOfParametr,QWidget *parent) :
     timer=new QTimer;
     connect(timer,SIGNAL(timeout()),this,SLOT(upd()));
     timeStepToUpdate=10;
+    beginAddedDataTime=0;
+    graph->addData(0,0);
+    last_restruct_data=graph->data()->begin();
 }
 double ArincGrafikPanel::startTime;
 ArincGrafikPanel::~ArincGrafikPanel()
@@ -22,20 +25,32 @@ ArincGrafikPanel::~ArincGrafikPanel()
     delete timer;
 }
 
-
-void ArincGrafikPanel::setLastData(const QVector<double> &x, const QVector<double> &y)
+void ArincGrafikPanel::setData(const QVector<double> &x, const QVector<double> &y, Parametr* p)
 {
     cout<<"SettingLastData"<<endl;
+    cout<<"cout time"<<x.count()<<endl;
     graph->addData(0,0);
     graph->addData(x,y);
-    if(!x.empty())
+    ui->customPlot->yAxis->setLabel(p->Name()+", "+p->Dimension());
+    ui->customPlot->xAxis->setLabel("Время");
+    if(!x.empty()){
         beginAddedDataTime=x.last();
-    else beginAddedDataTime=0;
+        last_restruct_data=graph->data()->end();
+        --last_restruct_data;
+        cout<<"!x.empty"<<endl;
+    }else{
+        beginAddedDataTime=0;
+        last_restruct_data=graph->data()->begin();
+        cout<<"last_restruct_data.begin"<<endl;
+    }
 }
 
 void ArincGrafikPanel::clearData()
 {
     graph->clearData();
+    graph->addData(0,0);
+    last_restruct_data=graph->data()->begin();
+    lastKeyToRestructData=0;
 }
 
 void ArincGrafikPanel::setTimeStepToUpdate(int timeStepToUpdate)
@@ -58,6 +73,8 @@ void ArincGrafikPanel::setStyleGrafik()
     ui->customPlot->yAxis->setBasePen(QPen(Qt::white, 1));
     ui->customPlot->xAxis->setTickPen(QPen(Qt::white, 1));
     ui->customPlot->yAxis->setTickPen(QPen(Qt::white, 1));
+    ui->customPlot->yAxis->setLabelColor(Qt::white);
+    ui->customPlot->xAxis->setLabelColor(Qt::white);
     ui->customPlot->xAxis->setSubTickPen(QPen(Qt::white, 1));
     ui->customPlot->yAxis->setSubTickPen(QPen(Qt::white, 1));
     ui->customPlot->xAxis->setTickLabelColor(Qt::white);
@@ -98,10 +115,18 @@ void ArincGrafikPanel::restructData()
 //        cout<<"before key="<<it.key()<<endl;
 //    }
     double delta=Ui::restructedStep;
-    cout<<"begin="<<beginAddedDataTime<<endl;
-    auto it_p = graph->data()->find(beginAddedDataTime);
-    auto it = graph->data()->find(beginAddedDataTime);
-    --it_p;
+    cout<<"begin="<<last_restruct_data.key()<<endl;
+    QMap<double, QCPData>::iterator it_p = last_restruct_data;
+    QMap<double, QCPData>::iterator it;
+    if(last_restruct_data==graph->data()->begin()){
+        it=graph->data()->begin();
+        ++it;
+        cout<<"begin"<<endl;
+    }else{
+        it = graph->data()->find(last_restruct_data.key());
+        ++it;
+    }
+    if(it_p!=graph->data()->end()&&it!=graph->data()->end()){
     for (; it != graph->data()->end();){
         if(it.key()-it_p.key()<delta&&it.key()!=0){
             graph->data()->erase(it++);
@@ -110,13 +135,17 @@ void ArincGrafikPanel::restructData()
             ++it;
         }
     }
+    }else{
+        cout<<"iters is end"<<endl;
+    }
     double lastData=graph->data()->last().key;
     cout<<"end="<<lastData<<endl;
     for (auto it = graph->data()->begin(); it != graph->data()->end();++it){
         cout<<"key="<<it.key()<<endl;
     }
     cout<<"count="<<graph->data()->count()<<endl;
-    beginAddedDataTime=lastData;
+    last_restruct_data=graph->data()->end();
+    --last_restruct_data;
     cout<<"Restructed Graphiks 0"<<oct<<adress<<dec<<endl;
 }
 
@@ -124,7 +153,7 @@ void ArincGrafikPanel::upd()
 {
     //ui->customPlot->graph(0)->rescaleAxes();
     ui->customPlot->replot();
-    ui->customPlot->xAxis->setRange(QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0-startTime+0.5, 10, Qt::AlignRight);
+    ui->customPlot->xAxis->setRange(QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0-startTime+0.5, 5, Qt::AlignRight);
 }
 
 void ArincGrafikPanel::start()
@@ -150,7 +179,9 @@ void ArincGrafikPanel::update(const QMap<int, ArincParametr *> &map, double time
     }else graph->addData(time,0);
 
     if(time-lastKeyToRestructData>=Ui::timeStepToRestructData){
-        restructData();
+        cout<<"count.graph"<<graph->data()->count()<<endl;
+        if(graph->data()->count()>=5)
+            restructData();
         lastKeyToRestructData=time;
     }
 }

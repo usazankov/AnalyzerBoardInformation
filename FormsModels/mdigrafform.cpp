@@ -11,6 +11,7 @@ MdiGrafForm::MdiGrafForm(QString title, int index, QWidget *parent) :
     count_Observers=0;
     runningPlot=0;
     timeStepToUpdate=Ui::DefaultTimeStepToUpdateGrafiks;
+    model=Q_NULLPTR;
 }
 
 ArincGrafikPanel *MdiGrafForm::graphPanel(int adress)
@@ -83,16 +84,20 @@ int MdiGrafForm::countObservers()
 
 void MdiGrafForm::startPlotting()
 {
-    if(count_Observers>0){
-        emit signalToStartPlotting();
-        runningPlot=1;
-    }
+    if(model!=Q_NULLPTR)
+        if(count_Observers>0&&model->isRunningArinc()){
+            emit signalToStartPlotting();
+            runningPlot=1;
+        }
 }
 
 void MdiGrafForm::stopPlotting()
 {
-    emit signalToStopPlotting();
-    runningPlot=0;
+    if(model!=Q_NULLPTR)
+        if(count_Observers>0&&model->isRunningArinc()){
+            emit signalToStopPlotting();
+            runningPlot=0;
+        }
 }
 
 void MdiGrafForm::setTimeStepToUpdate(int timeStep)
