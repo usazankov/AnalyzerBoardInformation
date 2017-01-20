@@ -6,8 +6,10 @@
 #include "FormsModels/QCustomPlot/qcustomplot.h"
 namespace Ui {
 class ArincGrafikPanel;
-const double timeStepToRestructData=10;
-const double restructedStep=0.95;//Шаг перерисовки графика (в секундах)
+const int DefaultTimeStepToUpdateGrafiks=10;
+const double DefaultTimeStepToRestructData=600;
+const double DefaultRestructedStep=0.95;//Шаг перерисовки графика (в секундах)
+const bool DefaultRestruct=false;
 }
 
 class ArincGrafikPanel : public QWidget, public ArincParametrObserver
@@ -18,7 +20,10 @@ public:
     ~ArincGrafikPanel();
     void setData(const QVector<double> &x, const QVector<double> &y, Parametr *p);
     void clearData();
-    void setTimeStepToUpdate(int timeStepToUpdate);
+    static void setRestructData(bool flag);
+    static void setTimeStepToUpdate(int timeStepToUpdate);
+    static void setStepToRestructData(double seconds);
+    static void setRestructedStep(double seconds);
     static double startTime;
     double current_time;
 private:
@@ -31,19 +36,25 @@ private:
     QMap<double, QCPData>::iterator last_restruct_data;
     double beginAddedDataTime;
     double lastKeyToRestructData;
-    int timeStepToUpdate;
+    static int timeStepToUpdate;
     double current_value;
+    static double timeStepToRestructData;
+    static double restructedStep;
+    static bool restruct;
     void setStyleGrafik();
     void restructData();
 private slots:
     void upd();
 public slots:
-    void start();
+    void start(int milliseconds);
     void stop();
+    void setTimeStepToReplot(int timeStep);
     // ArincParametrObserver interface
 public:
     void update(const QMap<int, ArincParametr *> &map, double time);
     int timeToUpdate();
+signals:
+
 };
 
 #endif // ARINCGRAFIKPANEL_H

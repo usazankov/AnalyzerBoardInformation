@@ -32,6 +32,7 @@ void ArincDevice::applyConf()
     if(this->settings->typeSettings()==dev::ArincDevice)
         s=dynamic_cast<SettingsArincDevice*>(this->settings);
     if(s!=Q_NULLPTR){
+        //Применяем настройки региструремых параметров
         QList<ConfParametr*> list=*(s->confParametrs());
         cout<<"CONF BEGIN!"<<endl;
         reader->clearParametrs();
@@ -76,6 +77,24 @@ void ArincDevice::applyConf()
                 }
             }
         }
+
+        //Применяем параметры записи и отображения данных
+
+        ArincReader::setTimeStepToUpdateData(s->getTimeStepToUpdateData());
+        ArincReader::setTimeStepToWriteFile(s->getTimeStepToWriteFile());
+        ArincReader::setLoadDataFromFile(s->getLoadDataFromFile());
+        ModelTable::setTimeStepToUpdate(s->getTimeStepToUpdateTable());
+        ModelDiscrTable::setTimeStepToUpdate(s->getTimeStepToUpdateTable());
+        ArincGrafikPanel::setRestructData(s->getIsRestructData());
+        ArincGrafikPanel::setTimeStepToUpdate(s->getTimeStepToUpdateData());
+        ArincGrafikPanel::setRestructedStep(s->getReducedStep());
+        ArincGrafikPanel::setStepToRestructData(static_cast<double>(s->getTimeStepToReduce()));
+        MdiGrafForm::setDefaultTimeStepToUpdate(s->getTimeStepToUpdateGraphs());
+        QList<int> l=grafmanager->indexsMdiForms(index());
+        foreach (int i, l){
+            MdiGrafForm* form=view->grafForm(i);
+            form->setTimeStepToUpdate(s->getTimeStepToUpdateGraphs());
+        }
         delete settings;
         if(!reader->isRunningArinc())
             reader->notifyObservers();
@@ -99,7 +118,7 @@ void ArincDevice::receiveData(QVector<TimeParametr> *p)
     cout<<"adress=0"<<oct<<adressBuildGraf<<endl;
     cout<<this->name().toStdString()<<endl;
     grafmanager->setOldData(indexBuildMdi,adressBuildGraf,p,reader->getParametr(adressBuildGraf));
-    view->activeMdiChild(view->currentActiveWindow());
+
 }
 
 void ArincDevice::mdiGrafCreated(int indexOfMdi,int indexDevice)
@@ -114,8 +133,10 @@ void ArincDevice::mdiGrafCreated(int indexOfMdi,int indexDevice)
 void ArincDevice::GrafCreated(int adress, int indexOfMdi, int indexDevice)
 {
     if(indexDevice==Device::index()){
-        if(isRunningDev())
-            reader->readValues(adress);
+        cout<<"Device in Thread:"<<this->thread()->objectName().toStdString()<<endl;
+        //if(isRunningDev())//||(this->thread()->objectName()=="MainThread")
+        reader->readValues(adress);
+        view->activeMdiChild(view->currentActiveWindow());
         cout<<"GrafCreated: "<<name().toStdString()<<endl;
     }
 }
@@ -164,14 +185,6 @@ void ArincDevice::deleteAllObserveredGrafiks()
     grafmanager->removeObserversMdiForm(Device::index());
 }
 
-void ArincDevice::setTimeStepToUpdateGraphiks(int timeStep)
-{
-    QList<int> list=grafmanager->indexsMdiForms(index());
-    foreach (int i, list) {
-        view->grafForm(i)->setTimeStepToUpdate(timeStep);
-    }
-}
-
 void ArincDevice::setSettingsDevice(SettingsDevice *settings)
 {
     this->settings=settings;
@@ -198,6 +211,7 @@ void ArincDevice::setGrafikManager(GrafikManager *manager)
     grafmanager=manager;
     connect(this,SIGNAL(arincModelDeleted(int)),grafmanager,SLOT(modelIsDeleted(int)));
 }
+
 
 ArincDevice::~ArincDevice()
 {

@@ -28,6 +28,7 @@ private:
     void setRowCount(int row);
     void setColumnCount(int column);
     int countOfStates;
+    static int timeStepToUpdate;
 public:
     explicit ModelDiscrTable(int adress, int row=0,int column=0, QObject *parent = 0);
     explicit ModelDiscrTable(const ModelDiscrTable &table, QObject *parent=0);
@@ -47,6 +48,7 @@ public:
     // ArincParametrObserver interface
 public:
     int timeToUpdate();
+    static void setTimeStepToUpdate(int value);
 };
 
 class MdiFormDiscr : public QWidget

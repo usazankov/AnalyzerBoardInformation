@@ -8,9 +8,12 @@
 #include <QThread>
 #include <QVector>
 #include <iostream>
+#include <QDir>
+#include <QDateTime>
 #include "arincmodelinterface.h"
 namespace Ui {
-    const QString pathToLog="Logs.log";
+    const QString DefaultNameDirLogs="/Logs";
+    const QString NameTemporary="/temp";
     const int SIZE_BUFFER_TO_LOG=5;
 }
 using namespace std;
@@ -40,13 +43,15 @@ private:
     QDataStream *stream_buf;
     QFile *file;
     QThread *thread;
+    QDir current_dir;
     static int numbers_logs_file;
     bool openedFile;
     bool sizeBufWrited;
     bool blockBuf;
     int sizeBuf;
 public:
-    explicit LogsManager(QObject *parent = 0);
+    explicit LogsManager(const QString name, QObject *parent = 0);
+    void setFilePath(const QString path);
     void writeWord(unsigned int word);
     void writeTime(double time);
     void writeSizeBuf(unsigned int size);
@@ -55,6 +60,7 @@ public:
     void read(int adress);
     int sizeBuffer()const;
     FileReader *reader;
+    QString path;
     ~LogsManager();
 signals:
 

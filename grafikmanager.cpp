@@ -87,7 +87,8 @@ void GrafikManager::clearData()
     }
 }
 
-QList<int> GrafikManager::indexsMdiForms(int indexDevice)
+
+QList<int> GrafikManager::indexsMdiForms(int indexDevice)const
 {
     QList<int> list;
     QMap<int,int>::const_iterator iter;

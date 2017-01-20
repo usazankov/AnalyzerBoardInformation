@@ -11,7 +11,6 @@ ModelConfParams::ModelConfParams(int rows, int columns,QObject *parent):QAbstrac
 
 void ModelConfParams::insertParam()
 {
-
     dat.append(new ConfDecParametr());
     ++rows;
     QModelIndex index=this->index(rows,0);

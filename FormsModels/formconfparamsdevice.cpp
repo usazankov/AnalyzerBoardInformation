@@ -59,8 +59,16 @@ void FormConfParamsDevice::deleteChannel(int index)
 }
 
 SettingsDevice *FormConfParamsDevice::conf(int i) const
-{   SettingsDevice *settings=new SettingsArincDevice();
-    dynamic_cast<SettingsArincDevice*>(settings)->setConfParametrs(models[i]->getConfParametrs());
+{   SettingsArincDevice *settings=new SettingsArincDevice();
+    settings->setConfParametrs(models[i]->getConfParametrs());
+    settings->setTimeStepToUpdateData((1.0/ui->doubleSpinBox_4->value())*1000);
+    settings->setTimeStepToUpdateGraphs((1.0/ui->doubleSpinBox_2->value())*1000);
+    settings->setIsRestructData(ui->checkBox_2->isChecked());//Уменьшать шаг построения графиков
+    settings->setTimeStepToWriteFile((1.0/ui->doubleSpinBox_3->value())*1000);
+    settings->setTimeStepToUpdateTable((1.0/ui->doubleSpinBox->value())*1000);
+    settings->setLoadDataFromFile(ui->checkBox->isChecked());
+    settings->setTimeStepToReduce(ui->spinBox->value()*60);//Уменьшать шаг построения каждые ... мин.
+    settings->setReducedStep(ui->doubleSpinBox_5->value());//Уменьшенный шаг
     return settings;
 }
 

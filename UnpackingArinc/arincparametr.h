@@ -15,6 +15,7 @@ public:
     explicit ArincParametr(int word=0);
     explicit ArincParametr(int word,QString Name, QString Dimension="");
     explicit ArincParametr(const ArincParametr &p);
+    void setAdress(int adress);
     virtual void setWord(int word);
     virtual int Adress()const;
     virtual int MatrixState()const;
@@ -35,6 +36,8 @@ public:
     explicit ArincDecParametr(int word, QString name, QString Dimension, double UnpackConst=params::DEFAULT_UNPACK_CONST);
     explicit ArincDecParametr(const ArincDecParametr &p);
     double Value()const;
+    void setData(double d);
+    void setMS(unsigned int ms);
     void setUnpackConst(double unpack_const);
     double getUnpackConst()const;
     QStringList FormatAllValues()const;

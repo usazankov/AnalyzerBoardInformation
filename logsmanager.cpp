@@ -1,9 +1,20 @@
 #include "logsmanager.h"
 int LogsManager::numbers_logs_file=0;
-LogsManager::LogsManager(QObject *parent) : QObject(parent)
+LogsManager::LogsManager(const QString name, QObject *parent) : QObject(parent)
 {
-    file=new QFile(QString::number(numbers_logs_file++)+Ui::pathToLog);
+    QString path=QDir::currentPath()+Ui::DefaultNameDirLogs;
+    QDir dir(path);
+    if(!dir.exists()){
+        dir.mkdir(path);
+    }
+    path+=Ui::NameTemporary;
+    current_dir.setPath(path);
+    if(!current_dir.exists())
+        current_dir.mkdir(path);
+    cout<<path.toStdString()+"/"+name.toStdString()+".log"<<endl;
+    file=new QFile(path+"/"+name+".log");
     stream=new QDataStream(file);
+    file->open(QIODevice::WriteOnly|QIODevice::Append);
     array=new QByteArray;
     buf=new QBuffer(array);
     stream_buf=new QDataStream(buf);
@@ -15,6 +26,11 @@ LogsManager::LogsManager(QObject *parent) : QObject(parent)
     connect(reader,SIGNAL(endToRead()),this,SLOT(applyBuffer()));
     sizeBufWrited=false;
     stream->setFloatingPointPrecision(QDataStream::DoublePrecision);
+}
+
+void LogsManager::setFilePath(const QString path)
+{
+    this->path=path;
 }
 
 void LogsManager::writeTime(double time)
@@ -75,6 +91,7 @@ int LogsManager::sizeBuffer() const
 
 LogsManager::~LogsManager()
 {
+    file->remove();
     delete stream;
     delete buf;
     delete array;
@@ -153,7 +170,7 @@ void FileReader::read()
                 par=i;
                 //cout<<"stream_read="<<i<<endl;
         }
-        if(time-lastTime>=1.0){
+        if(time-lastTime>=0.01){
             TimeParametr p;
             p.time=time_par;
             p.parametr=par;

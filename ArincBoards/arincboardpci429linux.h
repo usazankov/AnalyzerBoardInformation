@@ -5,8 +5,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <iostream>
+#include "UnpackingArinc/parametr_impl.h"
 #include <QMap>
 #include <QVector>
+#include <QDateTime>
 namespace dev {
     class ArincBoardlPCI429;
     class ArincChannelPCI429;
@@ -65,12 +67,13 @@ public:
     class bad_arinc_channel{};
     ~ArincChannelPCI429();
 private:
+    double startTime;
     ArincBoardlPCI429 *board;
     QString nameArincBoard;
     bool started;
     int nc;
     int nb;
-    static const int SIZE_BUF = 20;
+    static const int SIZE_BUF = 3;
     unsigned int buf[SIZE_BUF];
 };
 

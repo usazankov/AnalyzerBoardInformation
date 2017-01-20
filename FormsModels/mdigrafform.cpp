@@ -1,6 +1,6 @@
 #include "mdigrafform.h"
 #include "ui_mdigrafform.h"
-
+int MdiGrafForm::timeStepToUpdate=Ui::DefaultTimeStepToUpdateGrafiks;
 MdiGrafForm::MdiGrafForm(QString title, int index, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MdiGrafForm)
@@ -10,13 +10,17 @@ MdiGrafForm::MdiGrafForm(QString title, int index, QWidget *parent) :
     this->i=index;
     count_Observers=0;
     runningPlot=0;
-    timeStepToUpdate=Ui::DefaultTimeStepToUpdateGrafiks;
     model=Q_NULLPTR;
 }
 
 ArincGrafikPanel *MdiGrafForm::graphPanel(int adress)
 {
     return grafiks[adress];
+}
+
+QMap<int, ArincGrafikPanel *> *MdiGrafForm::arincGrafikPanels()
+{
+    return &grafiks;
 }
 
 int MdiGrafForm::index() const
@@ -29,10 +33,12 @@ void MdiGrafForm::addGrafik(int adress)
     cout<<"ADD Grafik"<<endl;
     if(!grafiks.contains(adress)){
         ArincGrafikPanel *grafik=new ArincGrafikPanel(adress,this);
+        grafik->setTimeStepToReplot(MdiGrafForm::timeStepToUpdate);
         model->registerObserver(grafik);
         ++count_Observers;
-        connect(this,SIGNAL(signalToStartPlotting()),grafik,SLOT(start()));
+        connect(this,SIGNAL(signalToStartPlotting(int)),grafik,SLOT(start(int)));
         connect(this,SIGNAL(signalToStopPlotting()),grafik,SLOT(stop()));
+        connect(this,SIGNAL(setTimeStepToUpdate(int)),grafik,SLOT(setTimeStepToReplot(int)));
         ui->verticalLayout->addWidget(grafik);
         grafiks[adress]=grafik;
     }
@@ -86,7 +92,7 @@ void MdiGrafForm::startPlotting()
 {
     if(model!=Q_NULLPTR)
         if(count_Observers>0&&model->isRunningArinc()){
-            emit signalToStartPlotting();
+            emit signalToStartPlotting(MdiGrafForm::timeStepToUpdate);
             runningPlot=1;
         }
 }
@@ -100,23 +106,10 @@ void MdiGrafForm::stopPlotting()
         }
 }
 
-void MdiGrafForm::setTimeStepToUpdate(int timeStep)
-{
-    foreach (ArincGrafikPanel* grafik, grafiks) {
-        grafik->setTimeStepToUpdate(timeStep);
-    }
-}
 
 void MdiGrafForm::setDefaultTimeStepToUpdate(int timeStep)
 {
-    this->timeStepToUpdate=timeStep;
-}
-
-void MdiGrafForm::applyDefaultTimeStepToUpdate()
-{
-    foreach (ArincGrafikPanel* grafik, grafiks) {
-        grafik->setTimeStepToUpdate(timeStepToUpdate);
-    }
+    MdiGrafForm::timeStepToUpdate=timeStep;
 }
 
 bool MdiGrafForm::isRunningPlot() const
@@ -134,7 +127,7 @@ MdiGrafForm::~MdiGrafForm()
                 --count_Observers;
             }
         }
-        disconnect(this,SIGNAL(signalToStartPlotting()),grafik,SLOT(start()));
+        disconnect(this,SIGNAL(signalToStartPlotting(int)),grafik,SLOT(start(int)));
         disconnect(this,SIGNAL(signalToStopPlotting()),grafik,SLOT(stop()));
         delete grafik;
         grafiks.remove(grafiks.key(grafik));

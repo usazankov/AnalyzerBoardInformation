@@ -40,7 +40,6 @@ private:
     int adressBuildGraf;
     int indexBuildMdi;
     bool wasRun;
-    void setTimeStepToUpdateGraphiks(int timeStep);
     void buildDiscrsModel();
     void deleteDiscrTable(int adress);
     void deleteAllDiscrTable();

@@ -8,7 +8,6 @@
 #include "FormsModels/arincgrafikpanel.h"
 namespace Ui {
 class MdiGrafForm;
-const int DefaultTimeStepToUpdateGrafiks=10;
 }
 
 class MdiGrafForm : public QWidget
@@ -18,22 +17,23 @@ class MdiGrafForm : public QWidget
 public:
     explicit MdiGrafForm(QString title,int index, QWidget *parent = 0);
     ArincGrafikPanel* graphPanel(int adress);
+    QMap<int,ArincGrafikPanel*> *arincGrafikPanels();
     int index()const;
     void setModel(ArincModelInterface* model);
     void clearDataGrafiks();
     int countObservers();
     void startPlotting();
     void stopPlotting();
-    void setTimeStepToUpdate(int timeStep);
-    void setDefaultTimeStepToUpdate(int timeStep);
-    void applyDefaultTimeStepToUpdate();
+
+    static void setDefaultTimeStepToUpdate(int timeStep);
     bool isRunningPlot()const;
     virtual ~MdiGrafForm();
     void resetModel();
 signals:
     void deletedGrafForm(int index);
-    void signalToStartPlotting();
+    void signalToStartPlotting(int milliseconds);
     void signalToStopPlotting();
+    void setTimeStepToUpdate(int timeStep);
 public slots:
     void addGrafik(int adress);
     void delObservers();
@@ -43,7 +43,7 @@ private:
     QString title;
     int count_Observers;
     int i;
-    int timeStepToUpdate;
+    static int timeStepToUpdate;
     bool runningPlot;
     ArincModelInterface* model;
     QMap<int,ArincGrafikPanel*> grafiks;

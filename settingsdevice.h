@@ -30,10 +30,30 @@ public:
     int getTimeStepToUpdateGraphs() const;
     void setTimeStepToUpdateGraphs(int value);
 
+    bool getIsRestructData() const;
+    void setIsRestructData(bool value);
+
+    int getTimeStepToUpdateTable() const;
+    void setTimeStepToUpdateTable(int value);
+
+    bool getLoadDataFromFile() const;
+    void setLoadDataFromFile(bool value);
+
+    double getReducedStep() const;
+    void setReducedStep(double value);
+
+    int getTimeStepToReduce() const;
+    void setTimeStepToReduce(int value);
+
 private:
     QList<ConfParametr*> params;
-    int timeStepToUpdateData;
-    int timeStepToWriteFile;
-    int timeStepToUpdateGraphs;
+    int timeStepToUpdateData;//в миллисекундах
+    int timeStepToUpdateTable;//в миллисекундах
+    int timeStepToWriteFile;//в миллисекундах
+    int timeStepToUpdateGraphs;//в миллисекундах
+    double reducedStep;//в секундах
+    int timeStepToReduce;//в секундах
+    bool loadDataFromFile;
+    bool restructData;
 };
 #endif // SETTINGSDEVICE_H

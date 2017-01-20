@@ -15,7 +15,7 @@ public:
     void addObserversMdiForm(int indexDevice);
     void removeObserversMdiForm(int indexDevice);
     void clearData();
-    QList<int> indexsMdiForms(int indexDevice);
+    QList<int> indexsMdiForms(int indexDevice)const;
 private:
     MainView *view;
     static QMap<int,int> indexsForms_indexsDevice;

@@ -192,10 +192,8 @@ void MainView::activeMdiChild(QMdiSubWindow *mdi)
                 foreach (MdiGrafForm* f, grafForms) {
                     if(index!=f->index()){
                         emit f->stopPlotting();
-                        f->setTimeStepToUpdate(Ui::TimeStepToAddDataToUnvisibleGrafiks);
                     }else if(index==f->index()){
                         emit f->startPlotting();
-                        f->applyDefaultTimeStepToUpdate();
                     }
                 }
                 foreach (MdiForm* f, devForms) {
@@ -216,7 +214,6 @@ void MainView::activeMdiChild(QMdiSubWindow *mdi)
             }
             foreach (MdiGrafForm* f, grafForms) {
                 emit f->stopPlotting();
-                f->setTimeStepToUpdate(Ui::TimeStepToAddDataToUnvisibleGrafiks);
             }
         }
     }

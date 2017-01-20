@@ -62,3 +62,53 @@ void SettingsArincDevice::setTimeStepToUpdateGraphs(int value)
     timeStepToUpdateGraphs = value;
 }
 
+bool SettingsArincDevice::getIsRestructData() const
+{
+    return restructData;
+}
+
+void SettingsArincDevice::setIsRestructData(bool value)
+{
+    restructData = value;
+}
+
+int SettingsArincDevice::getTimeStepToUpdateTable() const
+{
+    return timeStepToUpdateTable;
+}
+
+void SettingsArincDevice::setTimeStepToUpdateTable(int value)
+{
+    timeStepToUpdateTable = value;
+}
+
+bool SettingsArincDevice::getLoadDataFromFile() const
+{
+    return loadDataFromFile;
+}
+
+void SettingsArincDevice::setLoadDataFromFile(bool value)
+{
+    loadDataFromFile = value;
+}
+
+double SettingsArincDevice::getReducedStep() const
+{
+    return reducedStep;
+}
+
+void SettingsArincDevice::setReducedStep(double value)
+{
+    reducedStep = value;
+}
+
+int SettingsArincDevice::getTimeStepToReduce() const
+{
+    return timeStepToReduce;
+}
+
+void SettingsArincDevice::setTimeStepToReduce(int value)
+{
+    timeStepToReduce = value;
+}
+

@@ -169,18 +169,24 @@ ArincChannelPCI429::ArincChannelPCI429(ArincBoardInterface *board, int number_ch
 unsigned int *ArincChannelPCI429::readBuffer()
 {
     int unsigned tword;
-    if(started)
+    ArincDecParametr p;
+    p.setUnpackConst(90);
+    p.setAdress(0211);
+    double currentTime=QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0-startTime;
+    p.setData(4*sin(currentTime));
+    buf[0]=p.UnpackWord();
+    p.setAdress(0210);
+    p.setData(cos(currentTime));
+    buf[1]=p.UnpackWord();
+    p.setAdress(0212);
+    double r=rand()/10000.0;
+    p.setData(r);
+    buf[2]=p.UnpackWord();
+    /*if(started)
     for (int i=0;i<SIZE_BUF;i++){
         //READ_PRM_SS(hARINC, Data, nc, nb, i, tword);
-        tword=i+1683095552;
+        tword=p.UnpackWord();
         buf[i]=tword;
-    }
-    /*else{
-        for (int i=0;i<SIZE_BUF;i++){
-            //READ_PRM_SS(hARINC, Data, nc, nb, i, tword);
-            tword=0;
-            buf[i]=tword;
-        }
     }*/
     return buf;
 }
@@ -192,6 +198,7 @@ void ArincChannelPCI429::Start()
     PUSK_SI(board->hARINC,board->Data,nc,nb,1,0);*/
     cout<<"ARINC STARTED"<<endl;
     started=true;
+    startTime=QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
 }
 
 void ArincChannelPCI429::Stop()

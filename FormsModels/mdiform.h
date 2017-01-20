@@ -39,6 +39,7 @@ private:
     void setColumnCount(int column);
     int ColumnCountOfVisibleHeaders();
     int maxRowCount;
+    static int timeStepToUpdate;
     //QAbstractItemModel interface
 public:
     explicit ModelTable(int row=0,int column=6, QObject *parent = 0);
@@ -55,6 +56,8 @@ public:
 public:
     void update(const QMap<int, ArincParametr *> &map, double time);
     int timeToUpdate();
+    static void setTimeStepToUpdate(int value);
+
 signals:
     void changeContent();
 public slots:

@@ -1,34 +1,41 @@
 #include "arincreader.h"
 
-int ArincReader::count_model=0;
 
+int ArincReader::count_model=0;
+double ArincReader::time_step_to_arinc_map=0.01;
+double ArincReader::time_step_to_write_file=0.01;
+bool ArincReader::loadDataFromFile=1;
 ArincReader::ArincReader(ReadingBuffer<unsigned int*> *arinc, QObject *obj):QObject(obj)
 {
     this->arinc=arinc;
-    time_step_to_arinc_map=0.01;
-    time_step_to_zero=0.1;
-    time_step_to_write_file=1.0;
-    time_step_to_flush=1.0;
+    time_step_to_zero=0.1;//Шаг выставления параметров в ноль
+    time_step_to_flush=1.0;//Шаг выгрузки данных в файл
     timer=new QTimer(this);
-    qRegisterMetaType<QVector<int>>();
+    qRegisterMetaType<QVector<int>>();//Регистрируем новые типы для использования их в сигнально-слотовых соединениях
     qRegisterMetaType<Qt::Orientation>();
     qRegisterMetaType<QVector<TimeParametr>>();
     connect(timer,SIGNAL(timeout()),this,SLOT(update()));
     connect(this,SIGNAL(stopTimer()),timer,SLOT(stop()));
     connect(this,SIGNAL(start_Timer(int)),timer,SLOT(start(int)));
-    manager = new LogsManager(obj);
+    QString temp=arinc->name();
+    temp=temp.right(temp.size()-temp.lastIndexOf("/")-1)+"_channel_"+QString::number(arinc->index());
+    manager = new LogsManager(temp,obj);
     connect(manager->reader,SIGNAL(data(QVector<TimeParametr>*)),this,SLOT(getLogsData(QVector<TimeParametr>*)));
 }
 
 void ArincReader::setTimeStepToUpdateData(int timeStep)
 {
     time_step_to_arinc_map=timeStep/1000.0;
-    timer->setInterval(timeStep);
 }
 
 void ArincReader::setTimeStepToWriteFile(int timeStep)
 {
     time_step_to_write_file=timeStep/1000.0;
+}
+
+void ArincReader::setPathToLogs(const QString path)
+{
+    manager->setFilePath(path);
 }
 
 void ArincReader::update()
@@ -47,10 +54,10 @@ void ArincReader::update()
                 notifyObservers();
                 lastKeyToArincMap=key;
             }
-            if(key-lastKeyToZero>=time_step_to_zero){
+            /*if(key-lastKeyToZero>=time_step_to_zero){
                 setWordsToZero();
                 lastKeyToZero=key;
-            }
+            }*/
             if(key-lastKeyToFlush>=time_step_to_flush){
                 manager->closeFile();
                 manager->openFile();
@@ -107,7 +114,8 @@ void ArincReader::clearParametrs()
 
 void ArincReader::readValues(int adress)
 {
-    manager->read(adress);
+    if(loadDataFromFile)
+        manager->read(adress);
 }
 
 void ArincReader::setTypeParametr(int adress, Parametr::TypeParametr type)
@@ -252,7 +260,7 @@ void ArincReader::stopArinc()
     emit stopTimer();
     process();
     manager->closeFile();
-    deleteUnregisteredWords();
+    //deleteUnregisteredWords();
     notifyObservers();
 }
 
@@ -263,6 +271,11 @@ ArincReader::~ArincReader()
         delete p;
     }
     timer->deleteLater();
+}
+
+void ArincReader::setLoadDataFromFile(bool value)
+{
+    loadDataFromFile = value;
 }
 
 void ArincReader::process()

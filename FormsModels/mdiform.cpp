@@ -188,6 +188,8 @@ void MdiForm::connectActionsToSlots()
     connect(actionBuildGraf,SIGNAL(triggered()),this,SLOT(actionGraf()));
 }
 
+int ModelTable::timeStepToUpdate=Ui::DefaultTimeStepToUpdateTables;
+
 void ModelTable::setRowCount(int row)
 {
     rows=row;
@@ -205,8 +207,12 @@ void ModelTable::setColumnCount(int column)
 int ModelTable::ColumnCountOfVisibleHeaders()
 {
     int count=1;
-
     return count;
+}
+
+void ModelTable::setTimeStepToUpdate(int value)
+{
+    timeStepToUpdate = value;
 }
 
 ModelTable::ModelTable(int row, int column, QObject *parent):QAbstractTableModel(parent)
@@ -351,7 +357,7 @@ void ModelTable::update(const QMap<int, ArincParametr *> &map, double time)
 
 int ModelTable::timeToUpdate()
 {
-    return Ui::DefaultTimeStepToUpdateTables;
+    return timeStepToUpdate;
 }
 
 void ModelTable::setVisibleHeader(bool visible, Parametr::Format f)

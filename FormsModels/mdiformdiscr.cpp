@@ -42,6 +42,8 @@ MdiFormDiscr::~MdiFormDiscr()
     delete ui;
 }
 
+int ModelDiscrTable::timeStepToUpdate=Ui::DefaultTimeStepToUpdateTables;
+
 ModelDiscrTable::ModelDiscrTable(int adress, int row, int column, QObject *parent):QAbstractTableModel(parent)
 {
     this->adress=adress;
@@ -81,6 +83,11 @@ void ModelDiscrTable::setColumnCount(int column)
     columns=column;
     this->beginResetModel();
     this->endResetModel();
+}
+
+void ModelDiscrTable::setTimeStepToUpdate(int value)
+{
+    timeStepToUpdate = value;
 }
 
 QVariant ModelDiscrTable::data(const QModelIndex &index, int role) const
@@ -167,6 +174,6 @@ void ModelDiscrTable::update(const QMap<int, ArincParametr *> &map, double time)
 
 int ModelDiscrTable::timeToUpdate()
 {
-    return Ui::DefaultTimeStepToUpdateTables;
+    return timeStepToUpdate;
 }
 

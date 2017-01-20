@@ -18,6 +18,11 @@ ArincParametr::ArincParametr(const ArincParametr &p):Parametr(p)
     db=new DataArinc32(*dynamic_cast<DataArinc32*>(p.db));
 }
 
+void ArincParametr::setAdress(int adress)
+{
+    db->setPart(params::Adress,adress);
+}
+
 void ArincParametr::setWord(int word)
 {
     db->setPart(params::Part::TotalWord,word);
@@ -116,7 +121,20 @@ double ArincDecParametr::Value()const
         db->setBit(30,1);
         return temp;
     }else
-    return (double)((db->Part(params::Part::Value)*unpack_const/params::ARINC_SCALE));
+        return (double)((db->Part(params::Part::Value)*unpack_const/params::ARINC_SCALE));
+}
+
+void ArincDecParametr::setData(double d)
+{
+    if (d < 0.0) this->setMS(1);
+        else this->setMS(0);
+        int data = (int)(d * params::ARINC_SCALE / unpack_const + 0.5);
+    this->db->setPart(params::Value, data);
+}
+
+void ArincDecParametr::setMS(unsigned int ms)
+{
+    this->db->setPart(params::MatrixState, ms);
 }
 
 void ArincDecParametr::setUnpackConst(double unpack_const)

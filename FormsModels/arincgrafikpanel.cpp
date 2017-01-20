@@ -1,6 +1,10 @@
 #include "arincgrafikpanel.h"
 #include "ui_arincgrafikpanel.h"
 
+int ArincGrafikPanel::timeStepToUpdate=Ui::DefaultTimeStepToUpdateGrafiks;
+double ArincGrafikPanel::timeStepToRestructData=Ui::DefaultTimeStepToRestructData;
+double ArincGrafikPanel::restructedStep=Ui::DefaultRestructedStep;
+bool ArincGrafikPanel::restruct=Ui::DefaultRestruct;
 ArincGrafikPanel::ArincGrafikPanel(int adressOfParametr,QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ArincGrafikPanel)
@@ -9,12 +13,12 @@ ArincGrafikPanel::ArincGrafikPanel(int adressOfParametr,QWidget *parent) :
     adress=adressOfParametr;
     setStyleGrafik();
     graph=ui->customPlot->addGraph();
-    graph->setPen(QPen(QColor(0xC0C0C0), 3));
+    graph->setPen(QPen(QColor(0xC0C0C0), 1));
     timer=new QTimer;
     connect(timer,SIGNAL(timeout()),this,SLOT(upd()));
     timeStepToUpdate=10;
     beginAddedDataTime=0;
-    graph->addData(0,0);
+    //graph->addData(0,0);
     last_restruct_data=graph->data()->begin();
 }
 double ArincGrafikPanel::startTime;
@@ -29,7 +33,7 @@ void ArincGrafikPanel::setData(const QVector<double> &x, const QVector<double> &
 {
     cout<<"SettingLastData"<<endl;
     cout<<"cout time"<<x.count()<<endl;
-    graph->addData(0,0);
+    //graph->addData(0,0);
     graph->addData(x,y);
     ui->customPlot->yAxis->setLabel(p->Name()+", "+p->Dimension());
     ui->customPlot->xAxis->setLabel("Время");
@@ -43,20 +47,35 @@ void ArincGrafikPanel::setData(const QVector<double> &x, const QVector<double> &
         last_restruct_data=graph->data()->begin();
         cout<<"last_restruct_data.begin"<<endl;
     }
+
 }
 
 void ArincGrafikPanel::clearData()
 {
     graph->clearData();
-    graph->addData(0,0);
+    //graph->addData(0,0);
     last_restruct_data=graph->data()->begin();
     lastKeyToRestructData=0;
 }
 
+void ArincGrafikPanel::setRestructData(bool flag)
+{
+    restruct=flag;
+}
+
 void ArincGrafikPanel::setTimeStepToUpdate(int timeStepToUpdate)
 {
-    this->timeStepToUpdate=timeStepToUpdate;
-    timer->setInterval(timeStepToUpdate);
+    ArincGrafikPanel::timeStepToUpdate=timeStepToUpdate;
+}
+
+void ArincGrafikPanel::setStepToRestructData(double seconds)
+{
+    timeStepToRestructData=seconds;
+}
+
+void ArincGrafikPanel::setRestructedStep(double seconds)
+{
+    restructedStep=seconds;
 }
 
 void ArincGrafikPanel::setStyleGrafik()
@@ -114,7 +133,7 @@ void ArincGrafikPanel::restructData()
 //    for (auto it = graph->data()->begin(); it != graph->data()->end();++it){
 //        cout<<"before key="<<it.key()<<endl;
 //    }
-    double delta=Ui::restructedStep;
+    double delta=restructedStep;
     cout<<"begin="<<last_restruct_data.key()<<endl;
     QMap<double, QCPData>::iterator it_p = last_restruct_data;
     QMap<double, QCPData>::iterator it;
@@ -151,23 +170,35 @@ void ArincGrafikPanel::restructData()
 
 void ArincGrafikPanel::upd()
 {
-    //ui->customPlot->graph(0)->rescaleAxes();
+    ui->customPlot->graph(0)->rescaleKeyAxis();
     ui->customPlot->replot();
-    ui->customPlot->xAxis->setRange(QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0-startTime+0.5, 5, Qt::AlignRight);
+    //ui->customPlot->xAxis->setRange(QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0-startTime+0.5, 10, Qt::AlignRight);
+    try{
+    if(current_time-lastKeyToRestructData>=timeStepToRestructData&&restruct){
+        cout<<"count.graph"<<graph->data()->count()<<endl;
+            restructData();
+            lastKeyToRestructData=current_time;
+        }
+    }catch(...){
+        std::cout << "Allocation failed: " << '\n';
+    }
 }
 
-void ArincGrafikPanel::start()
+void ArincGrafikPanel::start(int milliseconds)
 {
     if(!timer->isActive())
-        timer->start(10);
-    cout<<"StartPlotting adress: 0"<<oct<<adress<<dec<<endl;
+        timer->start(milliseconds);
 }
 
 void ArincGrafikPanel::stop()
 {
     if(timer->isActive())
         timer->stop();
-    cout<<"StopPlotting adress: 0"<<oct<<adress<<dec<<endl;
+}
+
+void ArincGrafikPanel::setTimeStepToReplot(int timeStep)
+{
+    timer->setInterval(timeStep);
 }
 
 void ArincGrafikPanel::update(const QMap<int, ArincParametr *> &map, double time)
@@ -177,13 +208,7 @@ void ArincGrafikPanel::update(const QMap<int, ArincParametr *> &map, double time
             graph->addData(time,map[adress]->FormatValue(Parametr::ValueParametr).toDouble());
         else graph->addData(time,0);
     }else graph->addData(time,0);
-
-    if(time-lastKeyToRestructData>=Ui::timeStepToRestructData){
-        cout<<"count.graph"<<graph->data()->count()<<endl;
-        if(graph->data()->count()>=5)
-            restructData();
-        lastKeyToRestructData=time;
-    }
+    current_time=time;
 }
 
 int ArincGrafikPanel::timeToUpdate()

@@ -4,6 +4,7 @@
 #include "ArincBoards/arincintefaces.h"
 #include "arincmodelinterface.h"
 #include "UnpackingArinc/parametr_impl.h"
+#include "FormsModels/QCustomPlot/qcustomplot.h"
 #include "logsmanager.h"
 #include <QVector>
 #include <QThread>
@@ -15,9 +16,11 @@ class ArincReader:public QObject, public ArincModelInterface
 {
     Q_OBJECT
 public:
-    ArincReader(ReadingBuffer<unsigned int*> *arinc,QObject *obj=0);
-    void setTimeStepToUpdateData(int timeStep);
-    void setTimeStepToWriteFile(int timeStep);
+    ArincReader(ReadingBuffer<unsigned int*> *arinc, QObject *obj=0);
+    static void setTimeStepToUpdateData(int timeStep);
+    static void setTimeStepToWriteFile(int timeStep);
+    static void setLoadDataFromFile(bool value);
+    void setPathToLogs(const QString path);
     ~ArincReader();
 private:
     ReadingBuffer<unsigned int*> *arinc;
@@ -33,10 +36,11 @@ private:
     bool running;
     bool writeToFile;
     bool flagToWrite;
-    double time_step_to_arinc_map;
+    static double time_step_to_arinc_map;
+    static bool loadDataFromFile;
     double time_step_to_zero;
     double time_step_to_flush;
-    double time_step_to_write_file;
+    static double time_step_to_write_file;
     double lastKeyToArincMap;
     double lastKeyToFlush;
     double lastKeyToZero;
